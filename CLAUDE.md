@@ -1,55 +1,45 @@
-# Milsen & Croft — Backend (CLAUDE.md)
+# Milsen & Croft — Frontend (CLAUDE.md)
 
-Premium niche fragrance house based in Kerala, India. This repo holds the database,
-business logic and privileged server-side APIs. The frontend repo only renders UI.
+Next.js, React and TypeScript storefront, customer account and admin dashboard for
+Milsen & Croft, a premium niche fragrance house based in Kerala, India.
+The backend repo owns the database, business rules and secrets. This repo never does.
 
-## Stack
-- Supabase (PostgreSQL, Auth with Google OAuth only, Storage)
-- TypeScript API service (Node) for everything that needs secrets or the service-role key
-- Razorpay (payments), WhatsApp Business Platform (customer messages), email provider
-- Google Chat integration is DEFERRED. Do not build it now, but keep the notification
-  outbox channel-agnostic so it can be added later without touching order logic.
+## Brand
+- Homepage headline: "A sense of place. A lasting impression."
+- Colours: Ivory #F2EEE5, Charcoal #24251F, Sage #68735D, Muted Bronze #9B8060, Stone #B7A995, White #FFFFFF
+- Elegant serif headings, clean sans-serif body, restrained uppercase navigation,
+  generous whitespace, subtle transitions, minimal animation.
+- Avoid generic perfume-store templates, heavy gold effects and clutter.
+- Define colours and type as design tokens once; never hard-code hex values in components.
 
-## Non-negotiable rules
-1. Google login only. No passwords, magic links, phone OTP or anonymous login.
-   A Google account alone never grants admin access. The first Super Admin is created
-   server-side from `SUPER_ADMIN_EMAIL`; all other staff are granted by a Super Admin.
-2. Never trust the browser for prices, discounts, stock, totals, payment status,
-   membership status, allocation counts or permissions. Recompute everything server-side.
-3. Money is integer paise. Never floats.
-4. Service-role key, Razorpay secrets, WhatsApp tokens live only in server env vars.
-5. Every privileged change writes to `audit_log` (append-only) with actor and reason.
-6. Authorisation is enforced twice: in the API and in Row Level Security.
-7. Order classification (launch pre-order vs regular retail) is decided server-side.
-8. Payment status and fulfilment status are separate state machines. Status history is immutable.
+## Rules
+1. No secrets in this repo. Only public env vars (Supabase URL, anon key, Razorpay key ID).
+2. Google sign-in only, via Supabase Auth. No password or OTP UI anywhere.
+3. The UI never decides prices, discounts, stock, totals, payment status, membership or
+   permissions. Display what the backend returns; send intent, not results.
+4. Admin screens must hide actions the user lacks permission for, but the backend is the
+   real gate. Never rely on hidden buttons for security.
+5. Draft, archived and concept content must never render on public pages.
+6. Launch products are purchasable only on the Launch page, never in the regular Shop
+   while the launch is active.
 
-## Launch slot rule (critical)
-- Every launch has ONE combined pool, default capacity 100, one slot per customer per launch.
-- Flow: `reserve_launch_slot` (before payment) -> create Razorpay order -> verified
-  `payment.captured` webhook -> `confirm_launch_slot`.
-- Reservation TTL default 15 minutes; set the Razorpay order expiry slightly shorter.
-- Remaining = capacity - allocated - active reservations. Launch closes permanently only
-  when verified allocations reach capacity.
-- If `confirm_launch_slot` returns `full` or `launch_unavailable` after a captured payment,
-  trigger an automatic Razorpay refund and notify the customer. This must be rare.
-- Webhooks: verify signature, verify amount, be idempotent, never process twice.
-- Any change to capacity or any override (pause, cancel, manual close) needs a reason in `audit_log`.
+## Launch page behaviour
+- Show combined progress, e.g. "72 / 100 allocated, 28 remaining", and note when slots are
+  temporarily held by customers mid-payment.
+- Checkout starts by asking the backend to reserve a slot. Show the hold countdown.
+  If the response is `full` or `closed`, show "Fully Allocated" and never open payment.
 
-## Society
-- Six tiers, caps stored in `society_tiers` and editable by Super Admin only (default 100 each).
-- Later launches also fit within the Tier 1 cap. Lowering a cap never removes existing members.
-- Membership number format: `MS-[LAUNCH CODE]-T[TIER]-[NUMBER]`.
-- One active membership per customer. Cancelled or postponed launches never count as missed.
-
-## Notifications
-- Single `notification_outbox` table: unique event ID, idempotent, retries with backoff,
-  failures visible in admin and retryable. A failed notification must never block or
-  duplicate an order.
-- WhatsApp starts in manual-approval mode. Never mark a message delivered because it was
-  opened or requested. Only delivery receipts mark delivered.
+## Responsive and foldable support
+- Layout adapts to the actual viewport, with no refresh needed on fold, unfold, rotate,
+  split-screen or resize.
+- Use container queries and fluid grids. No horizontal overflow in any state.
+- Where the Viewport Segments / `env(fold-*)` APIs exist, keep key controls (buy buttons,
+  totals, pay) off the hinge. Fall back gracefully when unsupported.
+- Touch targets at least 44px. Admin order tables must use available width when unfolded
+  and collapse to cards when folded.
 
 ## Working agreement
-- Small, reviewable commits per phase. Migrations are numbered, forward-only, never edited after merge.
-- Every migration ships with tests. Concurrency tests are required for allocation and inventory.
-- Do not invent tracking numbers, URLs or payment data. Ask when something is missing.
-- Keep `.env.example` and `docs/SETUP.md` current.
+- Reusable components, typed API client generated from the backend contract.
+- Accessibility: semantic HTML, alt text from the media library, visible focus states.
+- Tests for checkout, launch page states and permission-gated admin actions.
+- Small commits per phase. Keep `.env.example` current.
