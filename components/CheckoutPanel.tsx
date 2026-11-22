@@ -10,7 +10,7 @@ const STATES: [string, string][] = [["32", "Kerala"], ["29", "Karnataka"], ["33"
 type Phase = "form" | "paying" | "confirming" | "paid" | "failed";
 
 /** Collects the address, asks the backend to create the order, opens Razorpay, then waits for the webhook-confirmed status. */
-export function CheckoutPanel({ start, onCancel }: { start: (a: Address) => Promise<CheckoutResult>; onCancel?: () => void }) {
+export function CheckoutPanel({ start, onCancel, onPaid }: { start: (a: Address) => Promise<CheckoutResult>; onCancel?: () => void; onPaid?: () => void }) {
   const { session } = useSession();
   const [a, setA] = useState<Address>({ name: "", phone: "", line1: "", city: "", state_code: "32", pincode: "" });
   const [phase, setPhase] = useState<Phase>("form");
@@ -23,7 +23,7 @@ export function CheckoutPanel({ start, onCancel }: { start: (a: Address) => Prom
     for (let i = 0; i < 30; i++) {
       const { data } = await supabase.from("orders").select("payment_status").eq("id", orderId).maybeSingle();
       const s = data?.payment_status;
-      if (s === "captured") return setPhase("paid");
+      if (s === "captured") { onPaid?.(); return setPhase("paid"); }
       if (s === "refund_pending" || s === "refunded") { setMsg("We could not complete this order and your payment is being refunded."); return setPhase("failed"); }
       await new Promise((r) => setTimeout(r, 2000));
     }
