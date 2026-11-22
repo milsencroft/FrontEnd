@@ -1,14 +1,11 @@
 "use client";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
-import { refundOrder } from "@/lib/api";
-import { rupees } from "@/lib/money";
 
 type Tab = "overview" | "launches" | "orders" | "settings" | "staff";
-const FULFIL = ["unfulfilled", "processing", "packed", "shipped", "in_transit", "out_for_delivery", "delivery_failed", "delivered", "return_requested", "returned", "cancelled"];
-const FULFIL_LABEL: Record<string, string> = { unfulfilled: "Received", processing: "Processing", packed: "Ready to ship", shipped: "Shipped", in_transit: "In transit", out_for_delivery: "Out for delivery", delivery_failed: "Delivery failed", delivered: "Delivered", return_requested: "Return requested", returned: "Returned", cancelled: "Cancelled" };
 const LAUNCH_STATUS = ["draft", "pending_approval", "preorder_active", "paused", "closed", "post_launch_review", "published_in_shop", "completed", "postponed", "cancelled", "archived"];
 const ROLES = ["admin", "product_manager", "order_manager", "content_manager", "customer_support"];
 
@@ -31,7 +28,7 @@ function Admin() {
       <div className="mt-8">
         {tab === "overview" && <Overview />}
         {tab === "launches" && <Launches setNote={setNote} />}
-        {tab === "orders" && <Orders can={can} setNote={setNote} />}
+        {tab === "orders" && <div><Link href="/admin/orders" className="btn">Open order management</Link></div>}
         {tab === "settings" && <Settings setNote={setNote} />}
         {tab === "staff" && <Staff setNote={setNote} />}
       </div>
@@ -64,34 +61,6 @@ function Launches({ setNote }: { setNote: (s: string) => void }) {
             <input id={`c${l.id}`} className="field" type="number" min={1} defaultValue={l.capacity} disabled={!reason.trim()} onBlur={async (e) => { const n = Number(e.target.value); if (n === l.capacity) return; const { error } = await supabase.rpc("admin_set_launch_capacity", { p_launch: l.id, p_capacity: n, p_reason: reason }); setNote(msg(error)); void load(); }} /></div>
         </div>))}
     </div>
-  );
-}
-
-interface O { id: string; order_number: string; total_paise: number; payment_status: string; fulfilment_status: string; created_at: string }
-function Orders({ can, setNote }: { can: (p: string) => boolean; setNote: (s: string) => void }) {
-  const [rows, setRows] = useState<O[]>([]);
-  const [track, setTrack] = useState<Record<string, { courier: string; tracking: string; url: string }>>({});
-  const load = useCallback(() => supabase.from("orders").select("id,order_number,total_paise,payment_status,fulfilment_status,created_at").order("created_at", { ascending: false }).limit(100).then(({ data }) => setRows((data as O[]) ?? [])), []);
-  useEffect(() => { void load(); }, [load]);
-  return (
-    <ul className="grid gap-3">
-      {rows.map((o) => { const t = track[o.id] ?? { courier: "", tracking: "", url: "" }; return (
-        <li key={o.id} className="card grid gap-3 lg:grid-cols-[1fr_auto]">
-          <div><p className="font-medium">{o.order_number} · {rupees(o.total_paise)}</p><p className="text-sm">Payment {o.payment_status.replace(/_/g, " ")} · {FULFIL_LABEL[o.fulfilment_status] ?? o.fulfilment_status}</p></div>
-          {can("orders.manage") && (
-            <div className="flex flex-wrap items-end gap-2">
-              <select aria-label="Fulfilment status" className="field w-auto" value={o.fulfilment_status} onChange={async (e) => {
-                const { error } = await supabase.rpc("admin_set_fulfilment", { p_order: o.id, p_status: e.target.value, p_courier: t.courier || null, p_tracking: t.tracking || null, p_tracking_url: t.url || null, p_note: null }); setNote(msg(error)); void load(); }}>
-                {FULFIL.map((s) => <option key={s} value={s}>{FULFIL_LABEL[s]}</option>)}</select>
-              <input aria-label="Courier" placeholder="Courier" className="field w-32" value={t.courier} onChange={(e) => setTrack({ ...track, [o.id]: { ...t, courier: e.target.value } })} />
-              <input aria-label="Tracking number" placeholder="Tracking no." className="field w-40" value={t.tracking} onChange={(e) => setTrack({ ...track, [o.id]: { ...t, tracking: e.target.value } })} />
-              <input aria-label="Tracking URL" placeholder="Tracking URL" className="field w-48" value={t.url} onChange={(e) => setTrack({ ...track, [o.id]: { ...t, url: e.target.value } })} />
-              {can("payments.refund") && ["captured", "refund_pending"].includes(o.payment_status) && <button className="btn-ghost" onClick={async () => {
-                const reason = window.prompt("Reason for full refund?"); if (!reason) return;
-                try { await refundOrder(o.id, reason); setNote("Refund started."); } catch { setNote("Refund failed."); } void load(); }}>Refund</button>}
-            </div>)}
-        </li>); })}
-    </ul>
   );
 }
 

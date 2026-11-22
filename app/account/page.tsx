@@ -38,7 +38,7 @@ function Account() {
         {orders.length === 0 ? <p className="text-charcoal/70">No orders yet.</p> : (
           <ul className="grid gap-3">{orders.map((o) => (
             <li key={o.id} className="card flex flex-wrap items-center justify-between gap-3">
-              <div><p className="font-medium">{o.order_number}</p><p className="text-sm text-charcoal/70">{new Date(o.created_at).toLocaleDateString("en-IN")} · {o.order_type === "launch" ? "Launch pre-order" : "Retail"}</p></div>
+              <div><p className="font-medium">{o.order_number}</p><p className="text-sm text-charcoal/70">{new Date(o.created_at).toLocaleDateString("en-IN")} · {o.order_type === "launch_preorder" ? "Launch pre-order" : "Retail"}</p></div>
               <div className="text-sm text-right"><p>{rupees(o.total_paise)}</p><p>Payment: {o.payment_status.replace(/_/g, " ")} · {o.fulfilment_status}</p>{o.tracking_number && <p>{o.courier}: {o.tracking_number}</p>}</div>
             </li>))}</ul>)}
       </div>
