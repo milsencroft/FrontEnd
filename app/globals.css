@@ -45,3 +45,7 @@ a, button { transition: opacity .2s, background-color .2s, color .2s; }
 @media (prefers-reduced-motion: reduce) {
   .hero-in { animation: none; } .flacon, .liquid, a, button { transition: none !important; }
 }
+
+/* Admin order list: cards when the container is narrow or folded, table when there is room. */
+.orders-table { display: none; } .orders-cards { display: grid; }
+@container (min-width: 960px) { .orders-table { display: block; } .orders-cards { display: none; } }
