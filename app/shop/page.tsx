@@ -1,53 +1,66 @@
 "use client";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useShop } from "@/lib/useShop";
+import { useCart } from "@/lib/cart";
 import { rupees } from "@/lib/money";
-import { checkoutRetail } from "@/lib/api";
-import { useSession } from "@/lib/session";
-import { signInWithGoogle } from "@/lib/supabase";
-import { CheckoutPanel } from "@/components/CheckoutPanel";
 import { Flacon } from "@/components/Flacon";
 
-interface Row { product_code: string; product_name: string; family: string; region_name: string; story: string | null; sku: string; size_ml: number; price_paise: number; compare_at_paise: number | null; in_stock: boolean }
-interface Bundle { code: string; name: string; description: string | null; price_paise: number; in_stock: boolean }
+const tone = (region: string) => (region === "Japan" ? "bronze" : "sage");
 
 export default function Shop() {
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [bundles, setBundles] = useState<Bundle[]>([]);
-  const { session } = useSession();
-  const [buying, setBuying] = useState<{ label: string; item: { sku?: string; bundle?: string; qty: number } } | null>(null);
-  const buy = (label: string, item: { sku?: string; bundle?: string }) => (session ? setBuying({ label, item: { ...item, qty: 1 } }) : void signInWithGoogle());
-  useEffect(() => {
-    supabase.rpc("shop_catalogue").then(({ data }) => setRows((data as Row[]) ?? []));
-    supabase.rpc("shop_bundles").then(({ data }) => setBundles((data as Bundle[]) ?? []));
-  }, []);
+  const { rows, bundles } = useShop();
+  const { add } = useCart();
+  const [q, setQ] = useState(""); const [region, setRegion] = useState(""); const [family, setFamily] = useState("");
+  const [inStock, setInStock] = useState(false); const [sort, setSort] = useState("featured"); const [added, setAdded] = useState<string | null>(null);
+
+  // One card per product (cheapest size shown); sizes are chosen on the product page.
+  const products = useMemo(() => {
+    const m = new Map<string, NonNullable<typeof rows>[number]>();
+    for (const r of rows ?? []) { const cur = m.get(r.product_code); if (!cur || r.price_paise < cur.price_paise) m.set(r.product_code, r); }
+    let list = [...m.values()].filter((p) => (!region || p.region_name === region) && (!family || p.family === family) && (!inStock || p.in_stock) && (!q || `${p.product_name} ${p.region_name} ${p.family}`.toLowerCase().includes(q.toLowerCase())));
+    if (sort === "low") list.sort((a, b) => a.price_paise - b.price_paise); if (sort === "high") list.sort((a, b) => b.price_paise - a.price_paise);
+    return list;
+  }, [rows, q, region, family, inStock, sort]);
+  const regions = [...new Set((rows ?? []).map((r) => r.region_name))], families = [...new Set((rows ?? []).map((r) => r.family))];
+  const sel = "field w-auto";
+
   return (
-    <section className="wrap py-16 cq">
-      <h1 className="text-5xl sm:text-6xl">Shop</h1>
-      {rows === null && <p className="mt-8">Loading…</p>}
-      {rows && rows.length === 0 && bundles.length === 0 && <p className="mt-8 text-charcoal/70">Our first fragrances are launching soon. See the <a className="underline" href="/launch">launch page</a>.</p>}
-      {buying && <div className="mt-8"><p className="mb-3 font-serif text-xl">{buying.label}</p><CheckoutPanel start={(a) => checkoutRetail([buying.item], a)} onCancel={() => setBuying(null)} /></div>}
-      <div className="cq-grid mt-10 grid grid-cols-1 gap-6">
-        {rows?.map((r) => (
-          <article key={r.sku} className="border border-stone/60 bg-white p-6">
-            <Flacon tone={r.region_name === "Japan" ? "bronze" : "sage"} label={r.product_name.split(" ")[0]} className="mb-4" />
-            <p className="text-sm text-bronze">{r.region_name}</p>
-            <h2 className="mt-1 text-3xl">{r.product_name}</h2>
-            <p className="text-sm text-charcoal/70">{r.family} · {r.size_ml} ml</p>
-            <p className="mt-4">{rupees(r.price_paise)}</p>
-            {r.in_stock ? <button className="btn mt-4" onClick={() => buy(r.product_name, { sku: r.sku })}>{session ? "Buy" : "Sign in to buy"}</button> : <p className="mt-2 text-sm text-danger">Out of stock</p>}
+    <section className="wrap py-16">
+      <h1 className="text-5xl sm:text-7xl">Shop</h1>
+      <form role="search" aria-label="Filter products" className="mt-10 flex flex-wrap items-end gap-4" onSubmit={(e) => e.preventDefault()}>
+        <div><label className="label" htmlFor="q">Search</label><input id="q" className="field w-56" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+        <div><label className="label" htmlFor="rg">Region</label><select id="rg" className={sel} value={region} onChange={(e) => setRegion(e.target.value)}><option value="">All</option>{regions.map((r) => <option key={r}>{r}</option>)}</select></div>
+        <div><label className="label" htmlFor="fm">Family</label><select id="fm" className={sel} value={family} onChange={(e) => setFamily(e.target.value)}><option value="">All</option>{families.map((r) => <option key={r}>{r}</option>)}</select></div>
+        <div><label className="label" htmlFor="so">Sort</label><select id="so" className={sel} value={sort} onChange={(e) => setSort(e.target.value)}><option value="featured">Featured</option><option value="low">Price, low to high</option><option value="high">Price, high to low</option></select></div>
+        <label className="flex min-h-[44px] items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5" checked={inStock} onChange={(e) => setInStock(e.target.checked)} />In stock only</label>
+      </form>
+      {rows === null && <p className="mt-10">Loading…</p>}
+      {rows && products.length === 0 && bundles.length === 0 && <p className="mt-10 text-charcoal/70">{rows.length === 0 ? <>The first fragrances are in our launch. <Link className="underline underline-offset-4" href="/launch">See the launch</Link>.</> : "No products match these filters."}</p>}
+      <div className="cq mt-12"><div className="cq-grid grid grid-cols-1 gap-8">
+        {products.map((p) => (
+          <article key={p.product_code} className="border border-stone/60 bg-white p-6">
+            <Link href={`/shop/${p.product_code}`} aria-label={p.product_name}><Flacon tone={tone(p.region_name)} label={p.product_name.split(" ")[0]} interactive={false} /></Link>
+            <p className="mt-4 text-sm text-bronze">{p.region_name}</p>
+            <h2 className="mt-1 text-3xl"><Link href={`/shop/${p.product_code}`}>{p.product_name}</Link></h2>
+            <p className="text-sm text-charcoal/70">{p.family}</p>
+            <p className="mt-3">From {rupees(p.price_paise)}</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {p.in_stock ? <button className="btn" onClick={() => { add({ sku: p.sku }); setAdded(p.sku); }}>{added === p.sku ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}
+              <Link className="btn-ghost" href={`/shop/${p.product_code}`}>Details</Link>
+            </div>
           </article>
         ))}
         {bundles.map((b) => (
           <article key={b.code} className="border border-stone/60 bg-white p-6">
             <p className="text-sm text-bronze">Set</p>
             <h2 className="mt-1 text-3xl">{b.name}</h2>
-            {b.description && <p className="text-sm text-charcoal/70">{b.description}</p>}
-            <p className="mt-4">{rupees(b.price_paise)}</p>
-            {b.in_stock ? <button className="btn mt-4" onClick={() => buy(b.name, { bundle: b.code })}>{session ? "Buy" : "Sign in to buy"}</button> : <p className="mt-2 text-sm text-danger">Out of stock</p>}
+            {b.description && <p className="mt-2 text-charcoal/80">{b.description}</p>}
+            <p className="mt-3">{rupees(b.price_paise)}</p>
+            <div className="mt-4">{b.in_stock ? <button className="btn" onClick={() => { add({ bundle: b.code }); setAdded(b.code); }}>{added === b.code ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}</div>
           </article>
         ))}
-      </div>
+      </div></div>
     </section>
   );
 }

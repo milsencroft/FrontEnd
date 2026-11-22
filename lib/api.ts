@@ -24,7 +24,7 @@ export const refundOrder = (orderId: string, reason: string) => post<{ ok: true 
 export const ERROR_TEXT: Record<string, string> = {
   unauthorized: "Please sign in again.", closed: "This launch is fully allocated.", no_reservation: "Your slot hold has expired. Please start again.",
   launch_only: "This product is available only on its launch page.", out_of_stock: "Sorry, that item just went out of stock.",
-  invalid_address: "Please check your address.", invalid_request: "Please check the details you entered.",
+  invalid_address: "Please check your address.", invalid_coupon: "That coupon is not valid.", invalid_items: "Something in your cart is no longer available.", invalid_request: "Please check the details you entered.",
   payment_unavailable: "Payments are temporarily unavailable. Please try again shortly.", payments_not_configured: "Payments are not switched on yet.",
 };
 export const errorText = (e: unknown) => (e instanceof ApiError ? ERROR_TEXT[e.code] ?? "Something went wrong. Please try again." : "Something went wrong. Please try again.");
