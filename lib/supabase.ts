@@ -7,6 +7,10 @@ export const supabase = createClient(env.supabaseUrl || "http://localhost", env.
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
 });
 
-export const signInWithGoogle = () =>
-  supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/auth/callback` } });
+export const RETURN_KEY = "mc_return_to";
+export const signInWithGoogle = () => {
+  // Remember where the customer was so they land back there (e.g. the launch page) after Google sign-in.
+  try { sessionStorage.setItem(RETURN_KEY, window.location.pathname + window.location.search); } catch {}
+  return supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/auth/callback` } });
+};
 export const signOut = () => supabase.auth.signOut();
