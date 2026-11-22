@@ -7,6 +7,7 @@ export function Footer() {
         <p>© Milsen &amp; Croft · Kerala, India</p>
         <nav aria-label="Legal" className="flex flex-wrap gap-x-6">
           {["privacy", "terms", "shipping", "returns"].map((s) => <Link key={s} className={l} href={`/legal/${s}`}>{s[0].toUpperCase() + s.slice(1)}</Link>)}
+          <Link className={l} href="/faq">FAQ</Link>
         </nav>
       </div>
     </footer>
