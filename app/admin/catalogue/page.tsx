@@ -38,7 +38,7 @@ function Catalogue() {
 
       <div className="mt-12 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Regions</h2><button className="btn" onClick={() => { setMsg(null); setR({ code: "", name: "", country: "", description: "", story: "" }); setDlg("region"); }}>Add region</button></div>
       <ul className="mt-4 grid gap-3">{cat.regions.map((x: any) => (
-        <li key={x.code} className="flex flex-wrap items-center justify-between gap-3 border border-stone/60 bg-white p-4">
+        <li key={x.code} className="flex flex-wrap items-center justify-between gap-3 surface p-4">
           <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/70">{x.code} · {x.country}</span></p></div>
           <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`rs${x.code}`}>Status of {x.name}</label>
             <select id={`rs${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_region_status", { p_region: x.id, p_status: e.target.value, p_reason: reason })}>{REGION_STATUS.map((s) => <option key={s} value={s}>{label(PAGE_LABEL, s)}</option>)}</select>
@@ -58,7 +58,7 @@ function Catalogue() {
 
       <div className="mt-16 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Products</h2><button className="btn" onClick={() => { setMsg(null); setP({ code: "", name: "", region: "", family: "", story: "", notes: "" }); setDlg("product"); }}>Add product</button></div>
       <ul className="mt-4 grid gap-3">{cat.products.map((x: any) => (
-        <li key={x.code} className="border border-stone/60 bg-white p-4">
+        <li key={x.code} className="surface p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/70">{x.code} · {x.region_code} · {x.family}</span></p>
               <p className="text-sm text-charcoal/70">{x.variants.map((v: any) => `${v.size_ml} ml ${rupees(v.price_paise)} (${v.sku})`).join(" · ") || "No sizes yet"}</p></div>

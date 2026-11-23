@@ -75,7 +75,7 @@ function Coupons() {
       </Modal>
       <ul className="mt-10 grid gap-3">{list.length === 0 && <li className="text-charcoal/70">No coupons yet.</li>}
         {list.map((c) => (
-          <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 border border-stone/60 bg-white p-4">
+          <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 surface p-4">
             <div><p className="font-medium">{c.code} <span className="text-sm text-charcoal/70">{c.is_active ? "Active" : "Disabled"}</span></p>
               <p className="text-sm text-charcoal/70">{c.discount_type === "percent" ? `${c.value}% off` : `${rupees(c.value)} off`}{c.min_order_paise ? ` · min ${rupees(c.min_order_paise)}` : ""} · used {c.redeemed}{c.max_uses ? ` of ${c.max_uses}` : ""}{c.ends_at ? ` · ends ${new Date(c.ends_at).toLocaleDateString("en-IN")}` : ""}</p>
               <p className="text-sm text-charcoal/70">{[c.max_per_customer ? `${c.max_per_customer} per customer` : null, c.max_discount_paise ? `discount up to ${rupees(c.max_discount_paise)}` : null, c.product_ids ? `${c.product_ids.length} product${c.product_ids.length > 1 ? "s" : ""} only` : null, c.tiers ? `Society tier ${c.tiers.join(", ")} only` : null].filter(Boolean).join(" · ") || "No extra rules"}</p></div>

@@ -25,7 +25,7 @@ export function SocietyTrack() {
   useScrollProgress(outer, onP);
 
   const cards = TIERS.map(([n, d], i) => (
-    <li key={n} className="w-[78vw] max-w-sm shrink-0 border border-bronze/30 bg-ivory p-6 sm:w-80">
+    <li key={n} className="w-[78vw] max-w-sm shrink-0 surface-glass p-6 sm:w-80">
       <p className="font-serif text-5xl text-brass">{i + 1}</p>
       <h3 className="mt-6 text-2xl">{n}</h3>
       <p className="mt-3 text-sm text-charcoal/80">{d}</p>

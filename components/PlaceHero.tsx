@@ -51,11 +51,11 @@ export function PlaceHero() {
           </div>
           <div className="hero-in hero-in-3 mt-10 flex flex-wrap gap-4">
             <Link href="/launch" className="btn-light">{open ? "Reserve your place" : "See the launch"}</Link>
-            <Link href="/shop" className="inline-flex min-h-[48px] items-center border border-ivory/60 px-8 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link>
+            <Link href="/shop" className="inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link>
           </div>
         </div>
         {imagesOf(item?.images)[0]
-          ? <div data-parallax="0.12" className="hero-in hero-in-2 mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={imagesOf(item?.images)[0]} /></div>
+          ? <div data-parallax="0.12" className="hero-in hero-in-2 mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[1.75rem] shadow-2xl ring-1 ring-ivory/15"><Photo image={imagesOf(item?.images)[0]} /></div>
           : <Flacon tone={p.tone} label={p.name} className="hero-in hero-in-2" />}
       </div>
     </section>
