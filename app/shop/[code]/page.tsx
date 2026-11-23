@@ -6,6 +6,7 @@ import { notesList, useShop } from "@/lib/useShop";
 import { useCart } from "@/lib/cart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
+import { WishlistButton } from "@/components/WishlistButton";
 
 export default function Product() {
   const { code } = useParams<{ code: string }>();
@@ -43,6 +44,7 @@ export default function Product() {
             <div><label className="label" htmlFor="qty">Quantity</label><select id="qty" className="field w-24" value={qty} onChange={(e) => setQty(Number(e.target.value))}>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select></div>
             <button className="btn" disabled={!v.in_stock} onClick={() => { add({ sku: v.sku }, qty); setDone(true); }}>{done ? "Added to cart" : "Add to cart"}</button>
             <button className="btn-ghost" disabled={!v.in_stock} onClick={() => { add({ sku: v.sku }, qty); router.push("/cart"); }}>Buy now</button>
+            <WishlistButton code={code} />
           </div>
           <p className="mt-8 text-sm text-charcoal/70">See our <Link className="underline underline-offset-4" href="/legal/shipping">shipping</Link> and <Link className="underline underline-offset-4" href="/legal/returns">returns</Link> policies.</p>
         </div>
