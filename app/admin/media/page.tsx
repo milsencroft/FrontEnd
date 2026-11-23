@@ -5,6 +5,7 @@ import { SignedInOnly } from "@/components/Gate";
 import { Photo } from "@/components/ProductImage";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
+import { Modal } from "@/components/Modal";
 import { mediaError, mediaUrl } from "@/lib/media";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -14,7 +15,7 @@ const VEXT: Record<string, string> = { "video/mp4": "mp4", "video/webm": "webm" 
 function Media() {
   const { permissions } = useSession();
   const [d, setD] = useState<any>(null); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null);
-  const [mode, setMode] = useState<"image" | "video" | "link">("image"); const [poster, setPoster] = useState<File | null>(null); const [link, setLink] = useState(""); const [file, setFile] = useState<File | null>(null); const [alt, setAlt] = useState(""); const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<"image" | "video" | "link">("image"); const [poster, setPoster] = useState<File | null>(null); const [link, setLink] = useState(""); const [file, setFile] = useState<File | null>(null); const [alt, setAlt] = useState(""); const [busy, setBusy] = useState(false); const [adding, setAdding] = useState(false);
   const [alts, setAlts] = useState<Record<string, string>>({}); const [sel, setSel] = useState<Record<string, string[]>>({});
   const load = useCallback(async () => { const { data } = await supabase.rpc("admin_list_media"); setD(data); }, []);
   useEffect(() => { void load(); }, [load]);
@@ -28,7 +29,7 @@ function Media() {
     const bucket = supabase.storage.from("product-media");
     if (mode === "link") {
       const { error } = await supabase.rpc("admin_register_embed", { p_url: link, p_alt: alt, p_reason: reason });
-      setMsg(error ? mediaError(error.message) : "Link added."); if (!error) { setLink(""); setAlt(""); void load(); } return;
+      setMsg(error ? mediaError(error.message) : "Link added."); if (!error) { setLink(""); setAlt(""); setAdding(false); void load(); } return;
     }
     if (!file) return;
     const ext = (mode === "image" ? EXT : VEXT)[file.type];
@@ -49,7 +50,7 @@ function Media() {
       : await supabase.rpc("admin_register_video", { p_path: path, p_poster: posterPath, p_alt: alt, p_reason: reason });
     if (error) await bucket.remove([path, ...(posterPath ? [posterPath] : [])]);
     setBusy(false); setMsg(error ? mediaError(error.message) : "Added.");
-    if (!error) { setFile(null); setPoster(null); setAlt(""); (document.getElementById("file") as HTMLInputElement | null)?.setAttribute("value", ""); void load(); }
+    if (!error) { setAdding(false); setFile(null); setPoster(null); setAlt(""); (document.getElementById("file") as HTMLInputElement | null)?.setAttribute("value", ""); void load(); }
   }
   async function remove(m: any) {
     if (!confirm("Delete this image permanently?")) return;
@@ -62,20 +63,23 @@ function Media() {
 
   return (
     <section className="wrap py-12 grid gap-10">
-      <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Media library</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
+      <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Media library</h1><div className="flex items-center gap-4"><button className="btn" onClick={() => { setMsg(null); setAdding(true); }}>Add media</button><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div></div>
       <div className="max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}
 
-      <form onSubmit={upload} className="card grid max-w-xl gap-3" key={mode}>
-        <h2 className="text-2xl">Add media</h2>
+      <Modal open={adding} onClose={() => setAdding(false)} title="Add media">
+      <form onSubmit={upload} className="grid gap-3" key={mode}>
         <fieldset><legend className="label">Type</legend><div className="flex flex-wrap gap-3">{(["image", "video", "link"] as const).map((k) => (
           <label key={k} className={`flex min-h-[44px] cursor-pointer items-center border px-5 ${mode === k ? "border-charcoal bg-charcoal text-ivory" : "border-stone"}`}><input type="radio" name="mode" className="sr-only" checked={mode === k} onChange={() => setMode(k)} />{k === "image" ? "Image" : k === "video" ? "Short video" : "YouTube or Vimeo link"}</label>))}</div></fieldset>
         {mode !== "link" && <div><label className="label" htmlFor="file">{mode === "image" ? "Image (JPG, PNG, WebP or AVIF, up to 5 MB)" : "Video (MP4 or WebM, up to 50 MB; about 15 MB or less loads best)"}</label><input id="file" type="file" accept={mode === "image" ? "image/jpeg,image/png,image/webp,image/avif" : "video/mp4,video/webm"} className="field" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>}
         {mode === "video" && <div><label className="label" htmlFor="poster">Poster image shown before the video plays (optional)</label><input id="poster" type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="field" onChange={(e) => setPoster(e.target.files?.[0] ?? null)} /></div>}
         {mode === "link" && <div><label className="label" htmlFor="link">YouTube or Vimeo link</label><input id="link" className="field" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." /></div>}
+        <div><label className="label" htmlFor="mwhy">Reason (required, recorded in the audit log)</label><input id="mwhy" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
         <div><label className="label" htmlFor="alt">Description for screen readers</label><input id="alt" className="field" value={alt} onChange={(e) => setAlt(e.target.value)} placeholder={mode === "image" ? "Glass bottle on a pale stone ledge" : "Rain falling on a banana leaf"} /></div>
         <div><button className="btn" disabled={!ok || busy || (mode === "link" ? !link : !file)}>{busy ? "Uploading…" : mode === "link" ? "Add link" : "Upload"}</button></div>
+        {msg && <p role="alert" className="text-sm">{msg}</p>}
       </form>
+      </Modal>
 
       <div><h2 className="mb-4 text-2xl">Where media appears</h2>
         <ul className="grid max-w-2xl gap-3">{(d.slots as any[]).map((sl) => (
