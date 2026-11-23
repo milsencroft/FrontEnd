@@ -28,9 +28,20 @@ const headers = [
   { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
 ];
 
+// Private areas are kept out of search results at the HTTP level too, in addition to the page metadata and robots.txt.
+// Until NEXT_PUBLIC_SITE_URL names the real domain, the whole site is noindex so a preview address is never indexed.
+const siteConfigured = (() => { try { return /^https?:$/.test(new URL((process.env.NEXT_PUBLIC_SITE_URL ?? "").trim()).protocol); } catch { return false; } })();
+const noindex = [{ key: "X-Robots-Tag", value: "noindex, nofollow" }];
+const privateSources = ["/admin/:path*", "/account/:path*", "/cart", "/checkout/:path*", "/auth/:path*", "/access-denied"];
+
 /** @type {import('next').NextConfig} */
 export default {
   reactStrictMode: true,
   poweredByHeader: false,
-  async headers() { return [{ source: "/:path*", headers }]; },
+  async headers() {
+    return [
+      { source: "/:path*", headers: siteConfigured ? headers : [...headers, ...noindex] },
+      ...(siteConfigured ? privateSources.map((source) => ({ source, headers: noindex })) : []),
+    ];
+  },
 };
