@@ -15,5 +15,5 @@ Vercel Hobby is non-commercial: move to a paid plan or another host before takin
 
 ## Deploying to Cloudflare (free plan)
 - Build and deploy: `npm run cf:deploy` (needs `wrangler login` once, or CLOUDFLARE_API_TOKEN).
-- Set the public variables (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`) in the build environment; they are baked in at build time.
+- The public variables are in `.env.production` and are baked in at build time, so no dashboard variables are needed. The Razorpay key ID comes from the backend at checkout.
 - Add the custom domain in Cloudflare, Workers, milsen-croft-frontend, Settings, Domains.
