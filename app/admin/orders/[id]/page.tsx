@@ -9,6 +9,7 @@ import { refundOrder } from "@/lib/api";
 import { rupees } from "@/lib/money";
 import { shipMessage, trackingLink, whatsappLink, type Courier } from "@/lib/couriers";
 import { FULFIL_LABEL, NEXT_ACTIONS, PAYMENT_LABEL, TYPE_LABEL, orderError } from "@/lib/orders";
+import { HISTORY_KIND_LABEL, REFUND_LABEL, human, label } from "@/lib/labels";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function Packing({ id, onError }: { id: string; onError: (m: string) => void }) {
@@ -66,7 +67,7 @@ function Detail() {
         <div className="card"><h2 className="text-2xl">Items</h2><ul className="mt-3 text-sm">{d.items.map((i: any) => <li key={i.id} className="flex justify-between gap-4 border-b border-stone/30 py-1.5"><span>{i.name_snapshot} <span className="text-charcoal/60">{i.sku_snapshot}</span> × {i.quantity}</span><span>{rupees(i.line_total_paise)}</span></li>)}</ul>
           <dl className="mt-3 text-sm">{row("Subtotal", rupees(o.subtotal_paise))}{row("Discount", rupees(o.discount_paise))}{row("Shipping", rupees(o.shipping_paise))}{row("Tax", rupees(o.tax_paise))}{row("Total", <strong>{rupees(o.total_paise)}</strong>)}</dl></div>
         <div className="card"><h2 className="text-2xl">Payment</h2><dl className="mt-3 text-sm">{row("Status", PAYMENT_LABEL[o.payment_status])}{row("Gateway order", d.payment?.razorpay_order_id)}{row("Transaction", d.payment?.razorpay_payment_id)}{row("Confirmed at", d.payment?.status === "captured" ? new Date(d.payment.updated_at).toLocaleString("en-IN") : null)}{row("Failure", d.payment?.failure_reason)}
-          {d.refunds.map((r: any, i: number) => row(`Refund ${i + 1}`, `${rupees(r.amount_paise)} · ${r.status}`))}</dl>
+          {d.refunds.map((r: any, i: number) => row(`Refund ${i + 1}`, `${rupees(r.amount_paise)} · ${label(REFUND_LABEL, r.status)}`))}</dl>
           {can("payments.refund") && ["captured", "refund_pending"].includes(o.payment_status) && <button className="btn-ghost mt-4" onClick={async () => { const reason = window.prompt("Reason for full refund?"); if (!reason) return; try { await refundOrder(id, reason); setMsg("Refund started."); } catch { setMsg("Refund failed."); } void load(); }}>Refund in full</button>}</div>
       </div></div>
 
@@ -108,7 +109,7 @@ function Detail() {
       {o.payment_status === "captured" && o.fulfilment_status === "processing" && can("orders.manage") && <div className="mt-8 max-w-2xl"><Packing id={id} onError={setMsg} /></div>}
 
       <div className="cq mt-8"><div className="cq-grid grid grid-cols-1 gap-8">
-        <div className="card"><h2 className="text-2xl">Status history</h2><ol className="mt-3 text-sm">{d.history.map((h: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{new Date(h.at).toLocaleString("en-IN")} · {h.kind} · {h.from ?? "—"} → {h.to}{h.note ? ` · ${h.note}` : ""}</li>)}</ol></div>
+        <div className="card"><h2 className="text-2xl">Status history</h2><ol className="mt-3 text-sm">{d.history.map((h: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{new Date(h.at).toLocaleString("en-IN")} · {label(HISTORY_KIND_LABEL, h.kind)} · {h.from ? (PAYMENT_LABEL[h.from] ?? FULFIL_LABEL[h.from] ?? human(h.from)) : "—"} → {PAYMENT_LABEL[h.to] ?? FULFIL_LABEL[h.to] ?? human(h.to)}{h.note ? ` · ${h.note}` : ""}</li>)}</ol></div>
         <div className="card"><h2 className="text-2xl">Internal notes</h2><p className="text-sm text-charcoal/60">Never shown to customers.</p>
           <ul className="mt-3 text-sm">{d.notes.map((n: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{n.note}<br /><span className="text-charcoal/60">{n.by ?? "Staff"} · {new Date(n.at).toLocaleString("en-IN")}</span></li>)}</ul>
           {can("orders.manage") && <form className="mt-4 flex gap-2" onSubmit={async (e) => { e.preventDefault(); if (!note.trim()) return; const { error } = await supabase.rpc("admin_add_order_note", { p_order: id, p_note: note }); setMsg(error ? "Could not add the note." : "Note added."); setNote(""); void load(); }}>

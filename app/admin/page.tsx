@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
+import { LAUNCH_LABEL, ROLE_LABEL, errorText, human, label } from "@/lib/labels";
+import { rupees } from "@/lib/money";
 
 type Tab = "overview" | "launches" | "orders" | "catalogue" | "coupons" | "media" | "reports" | "notifications" | "newsletter" | "content" | "society" | "settings" | "staff";
 const LAUNCH_STATUS = ["draft", "pending_approval", "preorder_active", "paused", "closed", "post_launch_review", "published_in_shop", "completed", "postponed", "cancelled", "archived"];
 const ROLES = ["admin", "product_manager", "order_manager", "content_manager", "customer_support"];
 
-const msg = (e: { message: string } | null) => (e ? `Not done: ${e.message}` : "Done.");
+const msg = (e: { message: string } | null) => (e ? `Not done. ${errorText(e.message, "Please check the details and try again.")}` : "Done.");
 
 function Admin() {
   const { permissions } = useSession();
@@ -48,7 +50,8 @@ function Overview() {
   const [s, setS] = useState<Record<string, unknown> | null>(null);
   useEffect(() => { supabase.rpc("admin_summary").then(({ data }) => setS((data as Record<string, unknown>) ?? {})); }, []);
   if (!s) return <p>Loading…</p>;
-  return <dl className="cq"><div className="cq-grid grid grid-cols-1 gap-4">{Object.entries(s).map(([k, v]) => <div key={k} className="card"><dt className="label">{k.replace(/_/g, " ")}</dt><dd className="font-serif text-3xl">{typeof v === "object" ? JSON.stringify(v) : String(v)}</dd></div>)}</div></dl>;
+  const cards: [string, string][] = [["Paid orders", String(s.orders_paid ?? 0)], ["Sales so far", rupees(Number(s.revenue_paise ?? 0))], ["Orders to pack", String(s.to_pack ?? 0)], ["Refunds in progress", String(s.refunds_pending ?? 0)]];
+  return <dl className="cq"><div className="cq-grid grid grid-cols-1 gap-4">{cards.map(([k, v]) => <div key={k} className="card"><dt className="label">{k}</dt><dd className="font-serif text-3xl">{v}</dd></div>)}</div></dl>;
 }
 
 function Launches({ setNote }: { setNote: (s: string) => void }) {
@@ -64,7 +67,7 @@ function Launches({ setNote }: { setNote: (s: string) => void }) {
           <div><p className="font-serif text-xl">{l.name} <span className="text-sm">({l.code})</span></p><p className="text-sm">Capacity {l.capacity}</p></div>
           <div><label className="label" htmlFor={`s${l.id}`}>Status</label>
             <select id={`s${l.id}`} className="field" value={l.status} disabled={!reason.trim()} onChange={async (e) => { const { error } = await supabase.rpc("admin_set_launch_status", { p_launch: l.id, p_status: e.target.value, p_reason: reason }); setNote(msg(error)); void load(); }}>
-              {LAUNCH_STATUS.map((s) => <option key={s}>{s}</option>)}</select></div>
+              {LAUNCH_STATUS.map((s) => <option key={s} value={s}>{label(LAUNCH_LABEL, s)}</option>)}</select></div>
           <div><label className="label" htmlFor={`c${l.id}`}>Capacity</label>
             <input id={`c${l.id}`} className="field" type="number" min={1} defaultValue={l.capacity} disabled={!reason.trim()} onBlur={async (e) => { const n = Number(e.target.value); if (n === l.capacity) return; const { error } = await supabase.rpc("admin_set_launch_capacity", { p_launch: l.id, p_capacity: n, p_reason: reason }); setNote(msg(error)); void load(); }} /></div>
         </div>))}
@@ -101,12 +104,12 @@ function Staff({ setNote }: { setNote: (s: string) => void }) {
         <h2 className="text-2xl">Grant access</h2>
         <p className="text-sm text-charcoal/70">The person must have signed in with Google once. A Google account alone never gives admin access.</p>
         <input aria-label="Email" className="field" type="email" placeholder="email@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <select aria-label="Role" className="field" value={role} onChange={(e) => setRole(e.target.value)}>{ROLES.map((r) => <option key={r}>{r}</option>)}</select>
+        <select aria-label="Role" className="field" value={role} onChange={(e) => setRole(e.target.value)}>{ROLES.map((r) => <option key={r} value={r}>{label(ROLE_LABEL, r)}</option>)}</select>
         <input aria-label="Reason" className="field" placeholder="Reason" value={reason} onChange={(e) => setReason(e.target.value)} />
         <button className="btn" disabled={!email || !reason} onClick={async () => { const { error } = await supabase.rpc("admin_grant_staff", { p_email: email, p_role: role, p_reason: reason }); setNote(msg(error)); void load(); }}>Grant</button>
       </div>
       <ul className="grid gap-3">{rows.map((s) => (
-        <li key={s.customer_id} className="card flex flex-wrap items-center justify-between gap-3"><div><p>{s.full_name ?? s.email}</p><p className="text-sm">{s.email} · {s.role}{s.is_active ? "" : " (inactive)"}</p></div>
+        <li key={s.customer_id} className="card flex flex-wrap items-center justify-between gap-3"><div><p>{s.full_name ?? s.email}</p><p className="text-sm">{s.email} · {label(ROLE_LABEL, s.role)}{s.is_active ? "" : " (inactive)"}</p></div>
           <button className="btn-ghost" disabled={!reason} onClick={async () => { const { error } = await supabase.rpc("admin_revoke_staff", { p_customer: s.customer_id, p_reason: reason }); setNote(msg(error)); void load(); }}>Revoke</button></li>))}</ul>
     </div>
   );

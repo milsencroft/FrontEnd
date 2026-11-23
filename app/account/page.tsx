@@ -8,6 +8,8 @@ import Link from "next/link";
 import { useAddresses, useWishlist } from "@/lib/useSaved";
 import { useShop } from "@/lib/useShop";
 import { SocietyStatus } from "@/components/SocietyStatus";
+import { human } from "@/lib/labels";
+import { FULFIL_LABEL, PAYMENT_LABEL } from "@/lib/orders";
 
 interface Order { id: string; order_number: string; order_type: string; total_paise: number; payment_status: string; fulfilment_status: string; courier: string | null; tracking_number: string | null; tracking_url: string | null; estimated_delivery: string | null; created_at: string }
 interface Me { full_name: string | null; phone: string | null; whatsapp_consent: boolean }
@@ -102,7 +104,7 @@ function Account() {
           <ul className="grid gap-3">{orders.map((o) => (
             <li key={o.id} className="card flex flex-wrap items-center justify-between gap-3">
               <div><p className="font-medium">{o.order_number}</p><p className="text-sm text-charcoal/70">{new Date(o.created_at).toLocaleDateString("en-IN")} · {o.order_type === "launch_preorder" ? "Launch pre-order" : "Retail"}</p></div>
-              <div className="text-sm text-right"><p>{rupees(o.total_paise)}</p><p>Payment: {o.payment_status.replace(/_/g, " ")} · {o.fulfilment_status}</p>{o.tracking_number && <p>{o.courier}: {o.tracking_number}</p>}{o.tracking_url && /^https?:\/\//.test(o.tracking_url) && <p><a className="underline underline-offset-4" href={o.tracking_url} target="_blank" rel="noopener noreferrer">Track your parcel</a></p>}{o.estimated_delivery && <p>Estimated delivery: {new Date(o.estimated_delivery).toLocaleDateString("en-IN")}</p>}</div>
+              <div className="text-sm text-right"><p>{rupees(o.total_paise)}</p><p>{PAYMENT_LABEL[o.payment_status] ?? human(o.payment_status)} · {FULFIL_LABEL[o.fulfilment_status] ?? human(o.fulfilment_status)}</p>{o.tracking_number && <p>{o.courier}: {o.tracking_number}</p>}{o.tracking_url && /^https?:\/\//.test(o.tracking_url) && <p><a className="underline underline-offset-4" href={o.tracking_url} target="_blank" rel="noopener noreferrer">Track your parcel</a></p>}{o.estimated_delivery && <p>Estimated delivery: {new Date(o.estimated_delivery).toLocaleDateString("en-IN")}</p>}</div>
             </li>))}</ul>)}
       </div>
       <Wishlist />
