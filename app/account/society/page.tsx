@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -9,7 +10,7 @@ function Card() {
   const { session } = useSession();
   const [s, setS] = useState<MySociety | null | undefined>(undefined);
   useEffect(() => { void fetchMySociety().then(setS); }, []);
-  if (s === undefined) return <p className="wrap py-16">Loading…</p>;
+  if (s === undefined) return <Loader />;
   const m = s?.membership;
   if (!m) return <section className="wrap py-16"><h1 className="text-4xl">Society card</h1><p className="mt-4">You do not have an active membership. A confirmed launch pre-order qualifies you.</p><Link href="/society" className="btn mt-8">About the Society</Link></section>;
   const name = session?.user.user_metadata?.full_name ?? session?.user.email ?? "";

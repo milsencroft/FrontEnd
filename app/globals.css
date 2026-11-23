@@ -111,3 +111,22 @@ a, button { transition: opacity .2s, background-color .2s, color .2s; }
 .tone-kerala { background: linear-gradient(to top, rgb(23 37 29 / .88), rgb(36 56 45 / .4) 60%, rgb(23 37 29 / .5)); }
 .tone-japan { background: linear-gradient(to top, rgb(18 25 34 / .88), rgb(29 39 51 / .4) 60%, rgb(18 25 34 / .5)); }
 .band-soft { background-image: none; background-color: rgb(var(--c-ivory) / .8); }
+
+/* Loading and arrival */
+.splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; background: radial-gradient(700px circle at 50% 40%, #24382D, #16130F 70%); color: #F7F3EB; animation: splash-out .8s ease 1.7s forwards; }
+html[data-splash="done"] .splash { display: none; }
+.splash-logo { animation: logo-in 1.2s cubic-bezier(.2,.7,.2,1) both; filter: drop-shadow(0 0 24px rgb(192 158 98 / .35)); }
+.splash-line { display: block; height: 1px; width: 0; background: #C09E62; animation: line-grow 1.4s ease .2s forwards; }
+.splash-name { margin: 0; font-family: var(--font-serif, serif); letter-spacing: .38em; text-transform: uppercase; font-size: 12px; color: #C09E62; opacity: 0; animation: fade-up .9s ease .6s forwards; }
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+@keyframes logo-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes line-grow { to { width: 140px; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.loader-logo { animation: breathe 1.8s ease-in-out infinite; }
+.loader-line { display: block; height: 1px; width: 120px; background: linear-gradient(90deg, transparent, rgb(var(--c-bronze)), transparent); background-size: 200% 100%; animation: sweep 1.6s linear infinite; }
+@keyframes breathe { 0%, 100% { opacity: .55; transform: scale(.96); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.page-in { animation: page-in .55s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .splash { animation-duration: .01s; animation-delay: .4s; } .splash-logo, .splash-line, .splash-name, .loader-logo, .loader-line, .page-in { animation: none; opacity: 1; width: auto; } .splash-line { width: 140px; } }
+@media print { .splash { display: none; } }

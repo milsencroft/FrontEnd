@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -19,7 +20,7 @@ function Society() {
   const load = useCallback(async () => { const { data } = await supabase.rpc("admin_society_overview"); setO(data); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("society.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
-  if (!o) return <p className="wrap py-16">Loading…</p>;
+  if (!o) return <Loader />;
   const ok = !!reason.trim();
   async function run(p: PromiseLike<{ data: any; error: { message: string } | null }>, done: string) {
     const { error } = await p; setMsg(error ? societyError(error.message) : done); void load();

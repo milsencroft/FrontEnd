@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -30,7 +31,7 @@ export default function Product() {
   const variants = (rows ?? []).filter((r) => r.product_code === code);
   const [sku, setSku] = useState(""); const [qty, setQty] = useState(1); const [done, setDone] = useState(false);
   useEffect(() => { if (variants.length && !variants.find((v) => v.sku === sku)) setSku((variants.find((v) => v.in_stock) ?? variants[0]).sku); }, [rows]); // eslint-disable-line
-  if (rows === null) return <p className="wrap py-16">Loading…</p>;
+  if (rows === null) return <Loader />;
   const v = variants.find((x) => x.sku === sku);
   if (!v) return <section className="wrap py-20"><h1 className="text-4xl">Product not found</h1><p className="mt-4">This product is not in the shop right now. It may be part of a launch.</p><Link className="btn mt-8" href="/shop">Back to shop</Link></section>;
   const notes = notesList(v.notes);

@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -17,7 +18,7 @@ function Notifications() {
   const load = useCallback(async () => { const { data } = await supabase.rpc("admin_outbox_overview", { p_status: status || null, p_limit: 200 }); setD(data); }, [status]);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("notifications.view")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
-  if (!d) return <p className="wrap py-16">Loading…</p>;
+  if (!d) return <Loader />;
   const canManage = permissions.includes("notifications.manage");
   async function act(fn: "admin_outbox_retry" | "admin_outbox_cancel", id: string, done: string) {
     const { error } = await supabase.rpc(fn, { p_id: id, p_reason: reason }); setMsg(error ? ERR[error.message] ?? "Something went wrong." : done); void load();

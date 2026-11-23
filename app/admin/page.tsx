@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -49,7 +50,7 @@ function Admin() {
 function Overview() {
   const [s, setS] = useState<Record<string, unknown> | null>(null);
   useEffect(() => { supabase.rpc("admin_summary").then(({ data }) => setS((data as Record<string, unknown>) ?? {})); }, []);
-  if (!s) return <p>Loading…</p>;
+  if (!s) return <Loader />;
   const cards: [string, string][] = [["Paid orders", String(s.orders_paid ?? 0)], ["Sales so far", rupees(Number(s.revenue_paise ?? 0))], ["Orders to pack", String(s.to_pack ?? 0)], ["Refunds in progress", String(s.refunds_pending ?? 0)]];
   return <dl className="cq"><div className="cq-grid grid grid-cols-1 gap-4">{cards.map(([k, v]) => <div key={k} className="card"><dt className="label">{k}</dt><dd className="font-serif text-3xl">{v}</dd></div>)}</div></dl>;
 }
@@ -79,7 +80,7 @@ function Settings({ setNote }: { setNote: (s: string) => void }) {
   const [gst, setGst] = useState<{ enabled: boolean; mode: string; gstin: string | null; default_rate_bps: number; seller_state_code: string } | null>(null);
   const [reason, setReason] = useState("");
   useEffect(() => { supabase.from("store_settings").select("value").eq("key", "gst").maybeSingle().then(({ data }) => setGst(data?.value ?? null)); }, []);
-  if (!gst) return <p>Loading…</p>;
+  if (!gst) return <Loader />;
   const save = async (v: typeof gst) => { const { error } = await supabase.rpc("admin_update_setting", { p_key: "gst", p_value: v, p_reason: reason }); setNote(msg(error)); if (!error) setGst(v); };
   return (
     <div className="card grid max-w-xl gap-4">
