@@ -17,7 +17,7 @@ export function Header() {
   }, []);
   const nav = "text-[11px] uppercase tracking-[0.18em] min-h-[44px] inline-flex items-center hover:text-sage";
   return (
-    <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/60 bg-ivory/90 backdrop-blur transition-transform duration-300 ${hide ? "-translate-y-full" : ""}`}>
+    <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/60 bg-ivory/95 transition-transform duration-300 ${hide ? "-translate-y-full" : ""}`}>
       <div className="wrap flex flex-wrap items-center justify-between gap-x-6">
         <Link href="/" className="font-serif text-2xl min-h-[44px] inline-flex items-center">Milsen &amp; Croft</Link>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-x-5 lg:gap-x-6">
