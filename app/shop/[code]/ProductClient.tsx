@@ -15,7 +15,7 @@ function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fa
   if (images.length === 0) return <>{fallback}</>;
   return (
     <div>
-      <div className="aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={images[Math.min(i, images.length - 1)]} priority={i === 0} /></div>
+      <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-stone/20"><Photo image={images[Math.min(i, images.length - 1)]} priority={i === 0} /></div>
       {images.length > 1 && <div className="mt-3 flex gap-3">{images.map((im, n) => (
         <button key={im.path} type="button" aria-label={`Show image ${n + 1}`} aria-pressed={n === i} onClick={() => setI(n)} className={`h-16 w-16 overflow-hidden border-2 ${n === i ? "border-charcoal" : "border-transparent opacity-60"}`}><Photo image={im} /></button>))}</div>}
     </div>

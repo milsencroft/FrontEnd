@@ -11,7 +11,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
   }, [open]);
   return (
     <dialog ref={ref} onClose={onClose} onClick={(e) => { if (e.target === ref.current) onClose(); }} aria-labelledby="modal-title"
-      className="m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto border border-stone/60 bg-ivory p-0 text-charcoal backdrop:bg-charcoal/50">
+      className="m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] overflow-y-auto surface-flat p-0 text-charcoal backdrop:bg-charcoal/50">
       {open && (
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">

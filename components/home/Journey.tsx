@@ -39,7 +39,7 @@ export function Journey() {
           <div key={x.name} className={`${i === 0 ? "bg-kerala/75" : "bg-japan/75"} py-20`}>
             <div className="wrap grid items-center gap-10 md:grid-cols-2">
               <div><p className="text-sm text-ivory/80">{x.place}</p><h2 className="mt-2 text-6xl">{x.name}</h2><p className="mt-4 text-lg text-ivory/85">{x.line}</p></div>
-              {photo(x.place) ? <div className="mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={photo(x.place)!} /></div> : <Flacon tone={x.tone} label={x.name} />}
+              {photo(x.place) ? <div className="mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[1.75rem] shadow-2xl ring-1 ring-ivory/15"><Photo image={photo(x.place)!} /></div> : <Flacon tone={x.tone} label={x.name} />}
             </div>
           </div>
         ))}
@@ -66,7 +66,7 @@ export function Journey() {
             <div className="relative order-1 mx-auto h-[38svh] w-full max-w-[300px] md:order-2 md:h-[56svh]">
               {PLACES.map((x, i) => (
                 <div key={x.name} ref={i === 0 ? kf : jf} className="absolute inset-0 flex items-center justify-center" style={{ opacity: i === 0 ? 1 : 0 }}>
-                  {photo(x.place) ? <div className="aspect-[4/5] h-full max-h-full overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={photo(x.place)!} /></div> : <Flacon tone={x.tone} label={x.name} interactive={false} className="h-full w-full [&>div]:h-full [&_svg]:h-full" />}
+                  {photo(x.place) ? <div className="aspect-[4/5] h-full max-h-full overflow-hidden rounded-[1.75rem] shadow-2xl ring-1 ring-ivory/15"><Photo image={photo(x.place)!} /></div> : <Flacon tone={x.tone} label={x.name} interactive={false} className="h-full w-full [&>div]:h-full [&_svg]:h-full" />}
                 </div>
               ))}
             </div>
