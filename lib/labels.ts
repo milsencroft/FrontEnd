@@ -23,6 +23,7 @@ export const label = (map: Record<string, string>, v: unknown) => map[String(v)]
 
 /** Messages for backend error codes that have no screen-specific wording. */
 const ERROR_TEXT: Record<string, string> = {
+  customer_not_found: "No account with that email yet. Ask them to sign in with Google once on the site, then try again.", cannot_revoke_self: "You cannot remove your own access.", last_super_admin: "At least one Super Admin must remain.",
   reason_required: "Please add a reason.", forbidden: "You do not have permission to do this.", not_found: "That item was not found.", invalid_input: "Please check the details and try again.",
   rate_limited: "Too many attempts. Please wait a moment and try again.", invalid_email: "Enter a valid email address.", unauthorized: "Please sign in again.",
   invalid_range: "Choose a start date before the end date.", limit_reached: "You have reached the limit.",
