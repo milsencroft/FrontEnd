@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
 import { refundOrder } from "@/lib/api";
 import { rupees } from "@/lib/money";
+import { shipMessage, trackingLink, whatsappLink, type Courier } from "@/lib/couriers";
 import { FULFIL_LABEL, NEXT_ACTIONS, PAYMENT_LABEL, TYPE_LABEL, orderError } from "@/lib/orders";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -29,19 +30,26 @@ function Detail() {
   const { id } = useParams<{ id: string }>();
   const { permissions } = useSession();
   const can = (p: string) => permissions.includes(p);
+  const [couriers, setCouriers] = useState<Courier[]>([]); const [updates, setUpdates] = useState<any[]>([]); const [text, setText] = useState<string | null>(null);
   const [d, setD] = useState<any>(null); const [msg, setMsg] = useState<string | null>(null);
   const [t, setT] = useState({ courier: "", tracking: "", url: "", eta: "", note: "" }); const [note, setNote] = useState("");
   const load = useCallback(async () => {
     const { data, error } = await supabase.rpc("admin_order_detail", { p_order: id });
     if (error) return setMsg(error.message === "not_found" ? "Order not found." : "Could not load this order."); setD(data);
   }, [id]);
-  useEffect(() => { void load(); }, [load]);
+  const loadUpdates = useCallback(async () => { const { data } = await supabase.rpc("admin_order_updates", { p_order: id }); setUpdates((data as any[]) ?? []); }, [id]);
+  useEffect(() => { void load(); void loadUpdates(); void Promise.resolve(supabase.rpc("admin_list_couriers")).then(({ data }) => setCouriers((data as Courier[]) ?? [])); }, [load, loadUpdates]);
   if (!d) return <p className="wrap py-16">{msg ?? "Loading…"}</p>;
   const o = d.order, c = d.customer, a = o.shipping_address ?? {};
+  const courierName = t.courier || o.courier; const trackingNo = t.tracking || o.tracking_number;
+  const autoUrl = trackingLink(couriers, courierName, trackingNo);
+  const shownLink: string | null = t.url || o.tracking_url || autoUrl;
+  const message = text ?? shipMessage({ name: c.name, order: o.order_number, courier: o.courier, tracking: o.tracking_number, link: o.tracking_url ?? trackingLink(couriers, o.courier, o.tracking_number), eta: o.estimated_delivery });
+  const wa = c.whatsapp_consent ? whatsappLink(c.phone ?? a.phone, message) : null;
   const actions = o.payment_status === "captured" ? NEXT_ACTIONS[o.fulfilment_status] ?? [] : [];
 
   async function act(to: string) {
-    const { error } = await supabase.rpc("admin_set_fulfilment", { p_order: id, p_status: to, p_courier: t.courier || null, p_tracking: t.tracking || null, p_tracking_url: t.url || null, p_estimated_delivery: t.eta || null, p_note: t.note || null });
+    const { error } = await supabase.rpc("admin_set_fulfilment", { p_order: id, p_status: to, p_courier: t.courier || null, p_tracking: t.tracking || null, p_tracking_url: t.url || autoUrl || null, p_estimated_delivery: t.eta || null, p_note: t.note || null });
     setMsg(error ? orderError(error.message) : "Status updated."); if (!error) setT({ ...t, note: "" }); void load();
   }
   const row = (k: string, v: any) => <div className="flex justify-between gap-4 border-b border-stone/30 py-1.5"><dt className="text-charcoal/60">{k}</dt><dd className="text-right">{v ?? "—"}</dd></div>;
@@ -64,11 +72,12 @@ function Detail() {
 
       {can("orders.manage") && (
         <div className="card mt-8 grid gap-4">
-          <h2 className="text-2xl">Fulfilment</h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-3"><h2 className="text-2xl">Fulfilment</h2><Link href="/admin/couriers" className="text-sm underline underline-offset-4">Couriers</Link></div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div><label className="label" htmlFor="co">Courier</label><input id="co" className="field" placeholder={o.courier ?? ""} value={t.courier} onChange={(e) => setT({ ...t, courier: e.target.value })} /></div>
+            <div><label className="label" htmlFor="co">Courier</label><input id="co" list="courier-list" className="field" placeholder={o.courier ?? ""} value={t.courier} onChange={(e) => setT({ ...t, courier: e.target.value })} /></div>
             <div><label className="label" htmlFor="tn">Tracking number</label><input id="tn" className="field" placeholder={o.tracking_number ?? ""} value={t.tracking} onChange={(e) => setT({ ...t, tracking: e.target.value })} /></div>
-            <div><label className="label" htmlFor="tu">Tracking URL</label><input id="tu" className="field" placeholder={o.tracking_url ?? ""} value={t.url} onChange={(e) => setT({ ...t, url: e.target.value })} /></div>
+            <div><label className="label" htmlFor="tu">Tracking URL</label><input id="tu" className="field" placeholder={autoUrl ?? o.tracking_url ?? "Filled in from the courier, if saved"} value={t.url} onChange={(e) => setT({ ...t, url: e.target.value })} /></div>
+            <datalist id="courier-list">{couriers.filter((x) => x.is_active).map((x) => <option key={x.name} value={x.name} />)}</datalist>
             <div><label className="label" htmlFor="te">Estimated delivery</label><input id="te" type="date" className="field" value={t.eta} onChange={(e) => setT({ ...t, eta: e.target.value })} /></div>
           </div>
           <div><label className="label" htmlFor="tr">Reason or note (optional)</label><input id="tr" className="field" value={t.note} onChange={(e) => setT({ ...t, note: e.target.value })} /></div>
@@ -78,6 +87,22 @@ function Detail() {
             {actions.length === 0 && o.payment_status === "captured" && <p className="text-sm text-charcoal/70">No further actions from this status.</p>}
           </div>
           <p className="text-sm text-charcoal/70">Shipped: {o.shipped_at ? new Date(o.shipped_at).toLocaleDateString("en-IN") : "—"} · Courier: {o.courier ?? "—"} · Tracking: {o.tracking_number ?? "—"} · Estimated delivery: {o.estimated_delivery ?? "—"}</p>
+        </div>)}
+
+      {can("orders.manage") && o.tracking_number && (
+        <div className="card mt-8 grid max-w-3xl gap-3">
+          <h2 className="text-2xl">Send tracking update</h2>
+          <p className="text-sm text-charcoal/70">Courier: {o.courier ?? "—"} · Tracking: {o.tracking_number}{shownLink ? <> · <a className="underline underline-offset-4" href={shownLink} target="_blank" rel="noopener noreferrer">Open tracking page</a></> : " · No tracking link saved for this courier"}</p>
+          <label className="label" htmlFor="msg">Message</label>
+          <textarea id="msg" className="field" rows={4} value={message} onChange={(e) => setText(e.target.value)} />
+          <div className="flex flex-wrap gap-3">
+            {wa ? <a className="btn" href={wa} target="_blank" rel="noopener noreferrer" onClick={() => { void supabase.rpc("admin_log_order_update", { p_order: id, p_channel: "whatsapp" }).then(loadUpdates); }}>Open WhatsApp with this message</a>
+              : <button className="btn" disabled>Open WhatsApp with this message</button>}
+            <button className="btn-ghost" onClick={async () => { try { await navigator.clipboard.writeText(message); setMsg("Message copied."); await supabase.rpc("admin_log_order_update", { p_order: id, p_channel: "copy" }); void loadUpdates(); } catch { setMsg("Could not copy. Select the message and copy it."); } }}>Copy message</button>
+          </div>
+          {!wa && <p className="text-sm text-charcoal/70">{c.whatsapp_consent ? "This customer has no usable phone number." : "This customer has not agreed to WhatsApp updates. Copy the message and use another channel."}</p>}
+          <p className="text-sm text-charcoal/60">Opening WhatsApp only prepares the message. Nothing is marked as delivered.</p>
+          {updates.length > 0 && <ul className="text-sm text-charcoal/70">{updates.map((u, i) => <li key={i}>{new Date(u.at).toLocaleString("en-IN")} · {u.channel === "whatsapp" ? "WhatsApp opened" : "Message copied"} · {u.by ?? "Staff"}</li>)}</ul>}
         </div>)}
 
       {o.payment_status === "captured" && o.fulfilment_status === "processing" && can("orders.manage") && <div className="mt-8 max-w-2xl"><Packing id={id} onError={setMsg} /></div>}
