@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: SITE_NAME, description: TAGLINE },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, colorScheme: "light dark", themeColor: [{ media: "(prefers-color-scheme: light)", color: "#F7F3EB" }, { media: "(prefers-color-scheme: dark)", color: "#12100D" }] };
-const THEME_SCRIPT = `try{var t=localStorage.getItem("mc_theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}try{if(sessionStorage.getItem("mc_splash"))document.documentElement.setAttribute("data-splash","done");else sessionStorage.setItem("mc_splash","1")}catch(e){}`;
+const THEME_SCRIPT = `try{var t=localStorage.getItem("mc_theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
