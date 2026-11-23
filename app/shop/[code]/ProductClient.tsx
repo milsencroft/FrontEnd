@@ -17,7 +17,7 @@ function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fa
     <div>
       <div className="aspect-[4/5] overflow-hidden rounded-2xl bg-stone/20"><Photo image={images[Math.min(i, images.length - 1)]} priority={i === 0} /></div>
       {images.length > 1 && <div className="mt-3 flex gap-3">{images.map((im, n) => (
-        <button key={im.path} type="button" aria-label={`Show image ${n + 1}`} aria-pressed={n === i} onClick={() => setI(n)} className={`h-16 w-16 overflow-hidden border-2 ${n === i ? "border-charcoal" : "border-transparent opacity-60"}`}><Photo image={im} /></button>))}</div>}
+        <button key={im.path} type="button" aria-label={`Show image ${n + 1}`} aria-pressed={n === i} onClick={() => setI(n)} className={`h-16 w-16 overflow-hidden rounded-xl ring-2 transition ${n === i ? "ring-brass" : "ring-transparent opacity-60 hover:opacity-100"}`}><Photo image={im} /></button>))}</div>}
     </div>
   );
 }
@@ -47,7 +47,7 @@ export function ProductClient({ code, initialRows }: { code: string; initialRows
           {notes.length > 0 && <p className="mt-4"><span className="text-charcoal/70">Notes: </span>{notes.join(", ")}</p>}
           <fieldset className="mt-8"><legend className="label">Size</legend>
             <div className="flex flex-wrap gap-3">{variants.map((x) => (
-              <label key={x.sku} className={`flex min-h-[48px] cursor-pointer items-center border px-5 ${x.sku === sku ? "border-charcoal bg-charcoal text-ivory" : "border-stone"} ${x.in_stock ? "" : "opacity-40"}`}>
+              <label key={x.sku} className={`flex min-h-[48px] cursor-pointer items-center rounded-full border px-6 transition-colors ${x.sku === sku ? "border-charcoal bg-charcoal text-ivory" : "border-charcoal/30 hover:border-charcoal"} ${x.in_stock ? "" : "opacity-40"}`}>
                 <input type="radio" name="size" className="sr-only" checked={x.sku === sku} onChange={() => setSku(x.sku)} disabled={!x.in_stock} />{x.size_ml} ml · {rupees(x.price_paise)}</label>))}</div>
           </fieldset>
           <p className="mt-6 text-2xl">{rupees(v.price_paise)}{v.compare_at_paise ? <span className="ml-3 text-base text-charcoal/70 line-through">{rupees(v.compare_at_paise)}</span> : null}</p>

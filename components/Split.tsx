@@ -6,7 +6,7 @@ export function Split({ text, as: Tag = "h2", className = "", delay = 0 }: { tex
   return (
     <Tag className={`rv-off ${className}`} aria-label={text}>
       {words.map((w, i) => (
-        <span key={i} aria-hidden className="split-w"><span style={{ "--d": `${delay + i * 70}ms` } as CSSProperties}>{w}</span>{i < words.length - 1 ? " " : ""}</span>
+        <span key={i} aria-hidden><span className="split-w"><span style={{ "--d": `${delay + i * 70}ms` } as CSSProperties}>{w}</span></span>{i < words.length - 1 ? " " : ""}</span>
       ))}
     </Tag>
   );

@@ -32,8 +32,10 @@ export function ScrollVideo() {
     let raf = 0, cur = 0, still = false;
     try { still = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { /* ignore */ }
     const v = video.current;
+    // Home and launch open on the bare film; every other page keeps a calm veil so text always reads clearly.
+    const floor = path === "/" || path.startsWith("/launch") ? 0 : 0.8;
     const tick = () => {
-      if (veil.current) veil.current.style.opacity = String(Math.min(0.9, Math.max(0, (scrollY / innerHeight - 0.35) * 0.9)));
+      if (veil.current) veil.current.style.opacity = String(Math.min(0.92, Math.max(floor, (scrollY / innerHeight - 0.35) * 0.9)));
       if (v && !still && v.readyState >= 2 && Number.isFinite(v.duration) && v.duration > 0) {
         // Scrolling down moves the film forward; scrolling up moves it back. The files have a full frame every frame, so seeking is instant.
         const p = Math.min(1, Math.max(0, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
@@ -47,7 +49,7 @@ export function ScrollVideo() {
     if (v) v.pause();
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [s]);
+  }, [s, path]);
 
   if (!slot || !s || s.kind === "embed" || !s.path) return null;
   return (
