@@ -102,7 +102,7 @@ function Media() {
       {canAssign && <div><h2 className="mb-4 text-2xl">Product images</h2>
         <p className="mb-3 max-w-2xl text-sm text-charcoal/70">Tick the images each product shows. The first one is the main image.</p>
         <ul className="grid gap-4">{(d.products as any[]).map((p) => (
-          <li key={p.code} className="card grid gap-3"><p className="font-medium">{p.name} <span className="text-sm text-charcoal/60">{p.code}</span></p>
+          <li key={p.code} className="card grid gap-3"><p className="font-medium">{p.name} <span className="text-sm text-charcoal/70">{p.code}</span></p>
             {(d.media as any[]).filter((m) => m.kind === "image").length === 0 ? <p className="text-sm text-charcoal/70">Add images to the library first.</p> :
               <div className="flex flex-wrap gap-3">{(d.media as any[]).filter((m) => m.kind === "image").map((m) => { const on = current(p).includes(m.path); return (
                 <label key={m.id} className={`block h-24 w-24 cursor-pointer overflow-hidden border-2 ${on ? "border-charcoal" : "border-transparent opacity-60"}`}>

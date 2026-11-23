@@ -70,7 +70,7 @@ export function CheckoutPanel({ start, onCancel, onPaid }: { start: (a: Address)
         <button className="btn" disabled={phase === "paying"}>{phase === "paying" ? "Opening payment…" : "Continue to payment"}</button>
         {onCancel && <button type="button" className="btn-ghost" onClick={onCancel}>Cancel</button>}
       </div>
-      <p className="text-xs text-charcoal/60">The final amount is calculated securely by our server.</p>
+      <p className="text-xs text-charcoal/70">The final amount is calculated securely by our server.</p>
     </form>
   );
 }

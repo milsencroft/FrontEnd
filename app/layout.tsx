@@ -13,7 +13,7 @@ import { DEFAULT_DESCRIPTION, SITE_CONFIGURED, SITE_NAME, SITE_URL, TAGLINE } fr
 import { NOINDEX } from "@/lib/seo/metadata";
 import { env } from "@/lib/env";
 
-const FONTS = "https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500&display=swap";
+const FONTS = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@400;500&display=swap";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -49,11 +49,11 @@ function Orders() {
       <p className="mt-6 text-sm text-charcoal/70" aria-live="polite">{total} order{total === 1 ? "" : "s"}</p>
       {/* Wide: table. Narrow or folded: cards. Chosen by the container width, not the device. */}
       <div className="mt-4 hidden orders-table"><table className="w-full text-left text-sm">
-        <thead><tr className="border-b border-stone/60 text-charcoal/60">{["Order", "Date", "Customer", "Type", "Items", "Total", "Payment", "Status", "Courier", "Tracking", ""].map((h) => <th key={h} className="py-2 pr-3 font-normal">{h}</th>)}</tr></thead>
+        <thead><tr className="border-b border-stone/60 text-charcoal/70">{["Order", "Date", "Customer", "Type", "Items", "Total", "Payment", "Status", "Courier", "Tracking", ""].map((h) => <th key={h} className="py-2 pr-3 font-normal">{h}</th>)}</tr></thead>
         <tbody>{rows.map((r) => (
           <tr key={r.id} className="border-b border-stone/30 align-top">
             <td className="py-3 pr-3 font-medium">{r.order_number}</td><td className="pr-3">{new Date(r.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</td>
-            <td className="pr-3">{r.customer_name}<br /><span className="text-charcoal/60">{r.phone}</span></td><td className="pr-3">{TYPE_LABEL[r.order_type]}</td><td className="pr-3 max-w-[14rem]">{r.items}</td>
+            <td className="pr-3">{r.customer_name}<br /><span className="text-charcoal/70">{r.phone}</span></td><td className="pr-3">{TYPE_LABEL[r.order_type]}</td><td className="pr-3 max-w-[14rem]">{r.items}</td>
             <td className="pr-3">{rupees(r.total_paise)}</td><td className="pr-3">{PAYMENT_LABEL[r.payment_status]}</td><td className="pr-3">{FULFIL_LABEL[r.fulfilment_status]}</td>
             <td className="pr-3">{r.courier}</td><td className="pr-3">{r.tracking_number}</td><td><Link className="underline underline-offset-4" href={`/admin/orders/${r.id}`}>View</Link></td>
           </tr>))}</tbody></table></div>

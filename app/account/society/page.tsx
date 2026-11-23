@@ -25,7 +25,7 @@ function Card() {
         <p className="mt-2 text-xs text-stone">Member since {new Date(m.joined_at).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</p>
       </article>
       <article aria-label="Certificate of membership" className="mt-12 max-w-3xl border border-bronze p-10 text-center sm:p-16 print:break-before-page">
-        <p className="text-sm text-bronze">Milsen &amp; Croft Society</p>
+        <p className="text-sm text-brass">Milsen &amp; Croft Society</p>
         <h1 className="mt-6 text-4xl sm:text-5xl">Certificate of Membership</h1>
         <p className="mt-8">This certifies that</p>
         <p className="mt-2 font-serif text-3xl">{name}</p>

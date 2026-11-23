@@ -35,7 +35,7 @@ export function Header() {
     return () => { document.body.style.overflow = prev; removeEventListener("keydown", key); };
   }, [open]);
 
-  const link = "text-[11px] uppercase tracking-[0.2em] min-h-[44px] inline-flex items-center whitespace-nowrap transition-colors hover:text-sage";
+  const link = "text-xs font-medium uppercase tracking-[0.2em] min-h-[44px] inline-flex items-center whitespace-nowrap transition-colors hover:text-sage";
   const cart = `Cart${count > 0 ? ` (${count})` : ""}`;
   return (
     <>
@@ -47,7 +47,7 @@ export function Header() {
             </button>
             <nav aria-label="Main" className="hidden items-center gap-6 lg:flex xl:gap-8">{LEFT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
           </div>
-          <Link href="/" className="inline-flex min-h-[44px] items-center gap-3 font-serif text-2xl" aria-label="Milsen & Croft, home">
+          <Link href="/" className="inline-flex min-h-[44px] items-center gap-3 font-serif text-2xl whitespace-nowrap" aria-label="Milsen & Croft, home">
             <img src="/logo.png" alt="" width={40} height={40} className="h-10 w-10" /><span className="hidden sm:inline">Milsen &amp; Croft</span>
           </Link>
           <div className="flex items-center justify-end gap-6 xl:gap-8">
@@ -63,10 +63,10 @@ export function Header() {
         <div className="wrap relative flex min-h-full flex-col py-5">
           <div className="flex h-16 items-center justify-between">
             <span className="inline-flex items-center gap-3 font-serif text-xl"><img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" />Milsen &amp; Croft</span>
-            <button ref={closeBtn} type="button" onClick={() => { setOpen(false); opener.current?.focus(); }} className="min-h-[44px] px-2 text-[11px] uppercase tracking-[0.2em]">Close</button>
+            <button ref={closeBtn} type="button" onClick={() => { setOpen(false); opener.current?.focus(); }} className="min-h-[44px] px-2 text-xs font-medium uppercase tracking-[0.2em]">Close</button>
           </div>
           <nav aria-label="Menu" className="mt-8 grid gap-1">
-            {ALL.map(([h, l], i) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ animationDelay: `${120 + i * 50}ms` }} className="menu-link font-serif text-4xl leading-tight hover:text-bronze sm:text-5xl">{l}</Link>)}
+            {ALL.map(([h, l], i) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ animationDelay: `${120 + i * 50}ms` }} className="menu-link font-serif text-4xl leading-tight hover:text-brass sm:text-5xl">{l}</Link>)}
           </nav>
           <div className="mt-auto flex flex-wrap items-center gap-x-8 border-t border-stone/40 pt-6">
             <Link href="/cart" onClick={() => setOpen(false)} className={link}>{cart}</Link>

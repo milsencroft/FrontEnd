@@ -39,7 +39,7 @@ function Catalogue() {
       <div className="mt-12 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Regions</h2><button className="btn" onClick={() => { setMsg(null); setR({ code: "", name: "", country: "", description: "", story: "" }); setDlg("region"); }}>Add region</button></div>
       <ul className="mt-4 grid gap-3">{cat.regions.map((x: any) => (
         <li key={x.code} className="flex flex-wrap items-center justify-between gap-3 border border-stone/60 bg-white p-4">
-          <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/60">{x.code} · {x.country}</span></p></div>
+          <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/70">{x.code} · {x.country}</span></p></div>
           <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`rs${x.code}`}>Status of {x.name}</label>
             <select id={`rs${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_region_status", { p_region: x.id, p_status: e.target.value, p_reason: reason })}>{REGION_STATUS.map((s) => <option key={s} value={s}>{label(PAGE_LABEL, s)}</option>)}</select>
             <button className="btn-ghost" onClick={() => { setMsg(null); setR({ code: x.code, name: x.name, country: x.country, description: x.description ?? "", story: x.story ?? "" }); setDlg("region"); }}>Edit</button></div>
@@ -60,7 +60,7 @@ function Catalogue() {
       <ul className="mt-4 grid gap-3">{cat.products.map((x: any) => (
         <li key={x.code} className="border border-stone/60 bg-white p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/60">{x.code} · {x.region_code} · {x.family}</span></p>
+            <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/70">{x.code} · {x.region_code} · {x.family}</span></p>
               <p className="text-sm text-charcoal/70">{x.variants.map((v: any) => `${v.size_ml} ml ${rupees(v.price_paise)} (${v.sku})`).join(" · ") || "No sizes yet"}</p></div>
             <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`ps${x.code}`}>Status of {x.name}</label>
               <select id={`ps${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_product_status", { p_product: x.id, p_status: e.target.value, p_reason: reason })}>{PRODUCT_STATUS.map((s) => <option key={s} value={s}>{label(PRODUCT_LABEL, s)}</option>)}</select>

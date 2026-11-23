@@ -22,7 +22,7 @@ export function TierList() {
     <ol className="mt-14 grid gap-0 border-t border-stone/60">
       {tiers.map(([name, benefit], i) => (
         <li key={name} className="grid gap-2 border-b border-stone/60 py-8 sm:grid-cols-[6rem_1fr_2fr] sm:items-baseline">
-          <span className="font-serif text-4xl text-bronze">{i + 1}</span>
+          <span className="font-serif text-4xl text-brass">{i + 1}</span>
           <h2 className="text-3xl">{name}</h2>
           <p className="text-charcoal/80">{benefit}</p>
         </li>
