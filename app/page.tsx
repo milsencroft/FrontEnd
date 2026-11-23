@@ -1,3 +1,8 @@
+import type { Metadata } from "next";
+import { JsonLd } from "@/components/JsonLd";
+import { organizationLd, websiteLd } from "@/lib/seo/jsonld";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { SITE_NAME, TAGLINE } from "@/lib/site";
 import { PlaceHero } from "@/components/PlaceHero";
 import { LaunchBand } from "@/components/LaunchBand";
 import Link from "next/link";
@@ -5,9 +10,15 @@ import { Journey } from "@/components/home/Journey";
 import { WordReveal } from "@/components/home/WordReveal";
 import { SocietyTrack } from "@/components/home/SocietyTrack";
 
+export const metadata: Metadata = pageMetadata({
+  title: `${SITE_NAME} | ${TAGLINE}`, absoluteTitle: true, path: "/",
+  description: "An independent fragrance house in Kerala, India. Each fragrance begins with a place and is made in a limited run. Our first two: Mazha, from Kerala, and Seiran, from Japan.",
+});
+
 export default function Home() {
   return (
     <>
+      <JsonLd data={[organizationLd(), websiteLd()]} />
       <PlaceHero />
       <WordReveal text="Two places. Two fragrances. Made in small numbers." />
       <Journey />

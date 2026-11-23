@@ -1,5 +1,9 @@
+import { pageMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/PageHero";
-export const metadata = { title: "Contact · Milsen & Croft" };
+export const metadata = pageMetadata({
+  title: "Contact", path: "/contact",
+  description: "Write to Milsen & Croft, an independent fragrance house in Kerala, India. We read every message.",
+});
 export default function Contact() {
   return (
     <>

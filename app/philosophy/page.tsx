@@ -1,6 +1,10 @@
+import { pageMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/PageHero";
 
-export const metadata = { title: "Our Philosophy · Milsen & Croft" };
+export const metadata = pageMetadata({
+  title: "Our Philosophy", path: "/philosophy",
+  description: "Milsen & Croft explores the character and atmosphere of extraordinary places and gives each one a fragrance. Our first collection pairs Kerala and Japan.",
+});
 export default function Philosophy() {
   return (
     <>

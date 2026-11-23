@@ -1,7 +1,11 @@
+import { pageMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/PageHero";
 import { TierList } from "@/components/TierList";
 
-export const metadata = { title: "The Society · Milsen & Croft" };
+export const metadata = pageMetadata({
+  title: "The Society", path: "/society",
+  description: "The Milsen & Croft Society: each regional launch opens a limited number of places, and a confirmed pre-order qualifies a new customer for one membership.",
+});
 export default function Society() {
   return (
     <>
