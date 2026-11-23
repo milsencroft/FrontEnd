@@ -196,3 +196,20 @@ header nav a:hover, footer a:hover { background-size: 100% 1px; }
 .rv-clip.rv-in { clip-path: inset(0); }
 @media (prefers-reduced-motion: reduce) { .rv-clip { clip-path: none; } }
 @media print { [data-tilt], .btn, .btn-light, .btn-ghost { transform: none !important; } .split-w > span { transform: none; animation: none; } }
+
+/* Page change: a noir curtain rises, then lifts away once the next page has arrived */
+.nav-curtain { position: fixed; inset: 0; z-index: 95; display: flex; align-items: center; justify-content: center; background: radial-gradient(700px circle at 50% 45%, #24382D, #16130F 70%); pointer-events: none; }
+.nav-curtain img { opacity: .9; }
+.nav-curtain-in { transform-origin: bottom; animation: curtain-in .38s cubic-bezier(.7,0,.3,1) forwards; }
+.nav-curtain-out { transform-origin: top; animation: curtain-out .55s cubic-bezier(.7,0,.3,1) forwards; }
+@keyframes curtain-in { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes curtain-out { from { transform: scaleY(1); } to { transform: scaleY(0); } }
+@media (prefers-reduced-motion: reduce) { .nav-curtain { display: none; } }
+@media print { .nav-curtain, .cursor-ring { display: none; } }
+
+/* Cursor ring */
+.cursor-ring { position: fixed; left: 0; top: 0; z-index: 120; width: 34px; height: 34px; border: 1px solid rgb(var(--c-bronze)); border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity .25s, width .25s, height .25s, background-color .25s, border-color .25s; mix-blend-mode: normal; }
+.cursor-ring[data-on="1"] { opacity: .85; }
+.cursor-ring[data-hot="1"] { width: 58px; height: 58px; background-color: rgb(var(--c-bronze) / .12); }
+.cursor-ring[data-field="1"] { opacity: 0; }
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) { .cursor-ring { display: none; } }
