@@ -50,7 +50,7 @@ export function PlaceHero() {
             <p className="mt-4 text-ivory/80">50 ml{item ? ` · ${rupees(item.launch_price_paise)} launch price` : ""}</p>
           </div>
           <div className="hero-in hero-in-3 mt-10 flex flex-wrap gap-4">
-            <Link href="/launch" className="btn-light">{open ? "Reserve your slot" : "See the launch"}</Link>
+            <Link href="/launch" className="btn-light">{open ? "Reserve your place" : "See the launch"}</Link>
             <Link href="/shop" className="inline-flex min-h-[48px] items-center border border-ivory/60 px-8 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link>
           </div>
         </div>

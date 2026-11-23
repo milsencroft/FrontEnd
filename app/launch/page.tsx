@@ -34,7 +34,7 @@ export default function LaunchPage() {
   useEffect(() => { void load(); const t = setInterval(load, 10000); return () => clearInterval(t); }, [load]);
   useEffect(() => {
     if (!holdUntil) return;
-    const t = setInterval(() => { const s = Math.max(0, Math.floor((holdUntil.getTime() - Date.now()) / 1000)); setLeft(s); if (s === 0) { setHoldUntil(null); setPick(null); setErr("Your slot hold expired. You can try again if slots remain."); void load(); } }, 1000);
+    const t = setInterval(() => { const s = Math.max(0, Math.floor((holdUntil.getTime() - Date.now()) / 1000)); setLeft(s); if (s === 0) { setHoldUntil(null); setPick(null); setErr("Your hold on a place has expired. You can try again if places remain."); void load(); } }, 1000);
     return () => clearInterval(t);
   }, [holdUntil, load]);
 
@@ -43,9 +43,9 @@ export default function LaunchPage() {
     const { data, error } = await db.rpc("my_reserve_launch_slot", { p_code: code });
     setBusy(false);
     const r = ((data as { r_result: string; r_expires_at: string }[]) ?? [])[0];
-    if (error || !r) return setErr("Could not reserve a slot. Please try again.");
+    if (error || !r) return setErr("Could not reserve a place. Please try again.");
     if (r.r_result === "reserved" && r.r_expires_at) { setPick(sku); const d = new Date(r.r_expires_at); setHoldUntil(d); setLeft(Math.max(0, Math.floor((d.getTime() - Date.now()) / 1000))); void load(); return; }
-    const text: Record<string, string> = { full: "Fully Allocated", closed: "Fully Allocated", existing: "You already hold a slot for this launch.", not_found: "This launch is not open." };
+    const text: Record<string, string> = { full: "Fully Allocated", closed: "Fully Allocated", existing: "You already hold a place in this launch.", not_found: "This launch is not open." };
     setErr(text[r.r_result] ?? "This launch is not available right now."); void load();
   }
 
@@ -67,13 +67,13 @@ export default function LaunchPage() {
     <section className="wrap py-16 cq">
       <div className="mt-8 border-y border-stone/60 py-6" aria-live="polite">
         <p className="font-serif text-3xl">{st.allocated} / {st.capacity} allocated, {st.remaining} remaining</p>
-        {st.held > 0 && <p className="mt-1 text-sm text-charcoal/70">{st.held} slot{st.held > 1 ? "s are" : " is"} temporarily held by customers mid-payment and may become available.</p>}
+        {st.held > 0 && <p className="mt-1 text-sm text-charcoal/70">{st.held} {st.held > 1 ? "places are" : "place is"} temporarily held by customers mid-payment and may become available.</p>}
         <div className="mt-4 h-2 bg-stone/40" role="progressbar" aria-valuemin={0} aria-valuemax={st.capacity} aria-valuenow={st.allocated}><div className="h-2 bg-sage" style={{ width: `${Math.min(100, (st.allocated / st.capacity) * 100)}%` }} /></div>
       </div>
       {(full || st.status === "closed") && <p className="mt-8 text-2xl font-serif">Fully Allocated</p>}
       {!open && !full && st.status !== "closed" && <p className="mt-8 text-charcoal/70">{STATUS_TEXT[st.status] ?? "This launch is not open right now."}</p>}
       {err && <p role="alert" className="mt-6 text-danger">{err}</p>}
-      {holdUntil && <p className="mt-6 text-lg" role="timer">Your slot is held for {mins}:{secs}</p>}
+      {holdUntil && <p className="mt-6 text-lg" role="timer">Your place is held for {mins}:{secs}</p>}
 
       {open && !full && !pick && (
         <div className="cq-grid mt-10 grid grid-cols-1 gap-6">
@@ -89,7 +89,7 @@ export default function LaunchPage() {
               <p className="mt-4 text-xl">{rupees(i.launch_price_paise)} <span className="text-sm text-charcoal/70 line-through">{rupees(i.regular_price_paise)}</span></p>
               <div className="hinge-safe mt-4">
                 {!session ? <button className="btn" onClick={() => signInWithGoogle()}>Sign in to reserve</button>
-                  : <button className="btn" disabled={busy || !i.in_stock} onClick={() => reserve(i.sku)}>{i.in_stock ? "Reserve my slot" : "Out of stock"}</button>}
+                  : <button className="btn" disabled={busy || !i.in_stock} onClick={() => reserve(i.sku)}>{i.in_stock ? "Reserve my place" : "Out of stock"}</button>}
               </div>
             </article>
           ))}

@@ -68,7 +68,7 @@ function Catalogue() {
           </div></li>))}</ul>
       <Modal open={dlg === "product"} onClose={() => setDlg(null)} title="Add or edit a product"><form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); void run("admin_save_product", { p_code: p.code, p_name: p.name, p_region_code: p.region, p_family: p.family, p_story: p.story || null, p_notes: p.notes.split(",").map((s) => s.trim()).filter(Boolean), p_seo_title: null, p_seo_description: null, p_reason: reason }); }}>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div><label className="label" htmlFor="pc">Code (MC-KOR-001)</label><input id="pc" className="field" required pattern="MC-[A-Z]{3}-[0-9]{3}" value={p.code} onChange={(e) => setP({ ...p, code: e.target.value.toUpperCase() })} /></div>
+          <div><label className="label" htmlFor="pc">Code (e.g. MC-KER-001)</label><input id="pc" className="field" required pattern="MC-[A-Z]{3}-[0-9]{3}" value={p.code} onChange={(e) => setP({ ...p, code: e.target.value.toUpperCase() })} /></div>
           <div><label className="label" htmlFor="pn">Name</label><input id="pn" className="field" required value={p.name} onChange={(e) => setP({ ...p, name: e.target.value })} /></div>
           <div><label className="label" htmlFor="pr">Region</label><select id="pr" className="field" required value={p.region} onChange={(e) => setP({ ...p, region: e.target.value })}><option value="">Choose</option>{cat.regions.map((x: any) => <option key={x.code} value={x.code}>{x.name}</option>)}</select></div>
           <div><label className="label" htmlFor="pf">Fragrance family</label><input id="pf" className="field" required value={p.family} onChange={(e) => setP({ ...p, family: e.target.value })} /></div></div>
@@ -93,7 +93,7 @@ function Catalogue() {
       </form></Modal>
       <Modal open={dlg === "lines"} onClose={() => setDlg(null)} title="Launch sizes and prices"><form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); const items = lv.lines.split("\n").map((s) => s.trim()).filter(Boolean).map((s) => { const [sku, rupee] = s.split(/[\s,]+/); return { sku, launch_price_paise: Math.round(Number(rupee) * 100) }; }); void run("admin_set_launch_variants", { p_code: lv.code, p_items: items, p_reason: reason }); }}>
         <div><label className="label" htmlFor="lvc">Launch code (draft only)</label><input id="lvc" className="field max-w-xs" required value={lv.code} onChange={(e) => setLv({ ...lv, code: e.target.value.toUpperCase() })} /></div>
-        <div><label className="label" htmlFor="lvl">One per line: SKU, price in rupees</label><textarea id="lvl" className="field py-2 font-mono text-sm" rows={4} required value={lv.lines} onChange={(e) => setLv({ ...lv, lines: e.target.value })} placeholder="MC-KOR-001-50ML, 999" /></div>
+        <div><label className="label" htmlFor="lvl">One per line: SKU, price in rupees</label><textarea id="lvl" className="field py-2 font-mono text-sm" rows={4} required value={lv.lines} onChange={(e) => setLv({ ...lv, lines: e.target.value })} placeholder="MC-KER-001-50ML, 999" /></div>
         <div><label className="label" htmlFor="cwhy">Reason (required, recorded in the audit log)</label><input id="cwhy" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
         {msg && <p role="alert" className="text-sm">{msg}</p>}
         <div><button className="btn" disabled={need}>Replace launch items</button></div>

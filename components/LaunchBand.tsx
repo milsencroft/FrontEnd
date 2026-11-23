@@ -23,7 +23,7 @@ export function LaunchBand() {
           <h2 className="text-4xl sm:text-5xl">{state.name}</h2>
           <p className="mt-4 text-ivory/80" aria-live="polite">{full ? "Fully allocated." : <><CountUp value={state.remaining} /> of {state.capacity} places remain.</>}{state.held > 0 && !full ? ` ${state.held} held by people paying now.` : ""}</p>
         </div>
-        <Link href="/launch" className="btn-light">{state.status === "preorder_active" && !full ? "Reserve your slot" : "View launch"}</Link>
+        <Link href="/launch" className="btn-light">{state.status === "preorder_active" && !full ? "Reserve your place" : "View launch"}</Link>
       </div>
     </section>
   );
