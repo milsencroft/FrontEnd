@@ -3,12 +3,15 @@
 
 /* Design tokens (the only place hex values live). Space-separated RGB for Tailwind alpha support. */
 :root {
-  --c-ivory: 242 238 229;    /* #F2EEE5 */
-  --c-charcoal: 36 37 31;    /* #24251F */
-  --c-sage: 104 115 93;      /* #68735D */
-  --c-bronze: 155 128 96;    /* #9B8060 */
-  --c-stone: 183 169 149;    /* #B7A995 */
+  --c-ivory: 247 243 235;    /* #F7F3EB  Parchment: the page */
+  --c-bone: 234 227 213;     /* #EAE3D5  Bone: quiet alternate sections */
+  --c-charcoal: 22 19 15;    /* #16130F  Noir: warm ink for type and dark sections */
+  --c-sage: 58 75 62;        /* #3A4B3E  Vetiver: links, hover, quiet accents */
+  --c-bronze: 146 113 60;    /* #92713C  Brass: hairlines and small details, never large fills */
+  --c-stone: 189 177 156;    /* #BDB19C  Stone: borders and soft fills */
   --c-white: 255 255 255;    /* #FFFFFF */
+  --c-kerala: 36 56 45;      /* #24382D  Kerala: deep monsoon forest */
+  --c-japan: 29 39 51;       /* #1D2733  Japan: indigo ink */
   --c-danger: 140 54 44;
   --font-serif: "Bodoni Moda", "Didot", Georgia, serif;
   --font-sans: "Jost", "Futura", system-ui, sans-serif;
