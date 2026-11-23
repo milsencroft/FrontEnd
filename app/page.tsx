@@ -13,7 +13,7 @@ export default function Home() {
       <Journey />
       <LaunchBand />
       <SocietyTrack />
-      <section className="dark-surface luxe luxe-kerala relative isolate overflow-hidden text-ivory"><div aria-hidden className="grain" /><div className="wrap py-24 text-center sm:py-32"><span aria-hidden className="mx-auto mb-8 block h-px w-16 bg-bronze" />
+      <section className="dark-surface relative isolate overflow-hidden text-ivory"><div aria-hidden className="absolute inset-0 -z-[1] tone-kerala" /><div aria-hidden className="grain" /><div className="wrap py-24 text-center sm:py-32"><span aria-hidden className="mx-auto mb-8 block h-px w-16 bg-bronze" />
         <h2 className="mx-auto max-w-3xl text-4xl sm:text-6xl">Milsen &amp; Croft is a fragrance house in Kerala.</h2>
         <p className="mx-auto mt-6 text-lg text-ivory/80">Each release begins with a place and is made in a limited run.</p>
         <Link href="/shop" className="btn-light mt-10">Shop the collection</Link>

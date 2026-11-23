@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { MediaBackdrop } from "./MediaSlot";
 import { Flacon, type Tone } from "./Flacon";
 import { useLaunch } from "@/lib/useLaunch";
 import { rupees } from "@/lib/money";
@@ -29,8 +28,7 @@ export function PlaceHero() {
   };
 
   return (
-    <section ref={box} onPointerMove={light} aria-label="Kerala and Japan" className={`dark-surface relative isolate overflow-hidden text-ivory transition-colors duration-700 ${p.bg}`}>
-      <MediaBackdrop slot="home.hero" />
+    <section ref={box} onPointerMove={light} aria-label="Kerala and Japan" className={`dark-surface relative isolate overflow-hidden text-ivory transition-colors duration-700 ${p.bg}/55`}>
       <div aria-hidden className="absolute inset-0 -z-[1] bg-gradient-to-t from-black/80 via-black/50 to-black/55" />
       <div aria-hidden className="grain" />
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(520px circle at var(--x, 70%) var(--y, 30%), rgb(var(--c-ivory) / 0.16), transparent 60%)" }} />
