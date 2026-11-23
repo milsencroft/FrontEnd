@@ -1,9 +1,8 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { notesList, useShop } from "@/lib/useShop";
+import { notesList, useShop, type ShopRow } from "@/lib/useShop";
 import { AddToCart } from "@/components/AddToCart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
@@ -16,28 +15,28 @@ function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fa
   if (images.length === 0) return <>{fallback}</>;
   return (
     <div>
-      <div className="aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={images[Math.min(i, images.length - 1)]} /></div>
+      <div className="aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={images[Math.min(i, images.length - 1)]} priority={i === 0} /></div>
       {images.length > 1 && <div className="mt-3 flex gap-3">{images.map((im, n) => (
         <button key={im.path} type="button" aria-label={`Show image ${n + 1}`} aria-pressed={n === i} onClick={() => setI(n)} className={`h-16 w-16 overflow-hidden border-2 ${n === i ? "border-charcoal" : "border-transparent opacity-60"}`}><Photo image={im} /></button>))}</div>}
     </div>
   );
 }
 
-export default function Product() {
-  const { code } = useParams<{ code: string }>();
-  const { rows } = useShop();
+export function ProductClient({ code, initialRows }: { code: string; initialRows?: ShopRow[] }) {
+  const { rows } = useShop({ rows: initialRows });
   const variants = (rows ?? []).filter((r) => r.product_code === code);
-  const [sku, setSku] = useState(""); 
-  useEffect(() => { if (variants.length && !variants.find((v) => v.sku === sku)) setSku((variants.find((v) => v.in_stock) ?? variants[0]).sku); }, [rows]); // eslint-disable-line
+  const firstSku = () => (variants.find((v) => v.in_stock) ?? variants[0])?.sku ?? "";
+  const [sku, setSku] = useState(firstSku);
+  useEffect(() => { if (variants.length && !variants.find((v) => v.sku === sku)) setSku(firstSku()); }, [rows]); // eslint-disable-line
   if (rows === null) return <Loader />;
-  const v = variants.find((x) => x.sku === sku);
+  const v = variants.find((x) => x.sku === sku) ?? variants[0];
   if (!v) return <section className="wrap py-20"><h1 className="text-4xl">Product not found</h1><p className="mt-4">This product is not in the shop right now. It may be part of a launch.</p><Link className="btn mt-8" href="/shop">Back to shop</Link></section>;
   const notes = notesList(v.notes);
   const related = [...new Map((rows ?? []).filter((r) => r.product_code !== code).map((r) => [r.product_code, r])).values()].slice(0, 3);
 
   return (
     <section className="wrap py-16">
-      <Link href="/shop" className="text-sm underline underline-offset-4">Shop</Link>
+      <nav aria-label="Breadcrumb" className="text-sm"><ol className="flex flex-wrap items-center gap-2"><li><Link href="/" className="underline underline-offset-4">Home</Link></li><li aria-hidden>/</li><li><Link href="/shop" className="underline underline-offset-4">Shop</Link></li><li aria-hidden>/</li><li aria-current="page">{v.product_name}</li></ol></nav>
       <div className="mt-8 grid gap-12 md:grid-cols-2">
         <div className="md:sticky md:top-24 md:self-start"><Gallery images={imagesOf(v.images)} fallback={<Flacon tone={v.region_name === "Japan" ? "bronze" : "sage"} label={v.product_name.split(" ")[0]} />} /></div>
         <div>

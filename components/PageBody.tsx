@@ -6,8 +6,9 @@ import { db } from "@/lib/api";
 export type PageRow = { slug: string; kind: string; title: string; summary: string | null; body?: string; published_at: string | null };
 
 /** Published page text from the database. Body is plain text shown as paragraphs, never as HTML. */
-export function PageBody({ slug, kind, fallbackTitle }: { slug: string; kind: string; fallbackTitle?: string }) {
-  const [page, setPage] = useState<PageRow | null | undefined>(undefined);
+export function PageBody({ slug, kind, fallbackTitle, initial }: { slug: string; kind: string; fallbackTitle?: string; initial?: PageRow | null }) {
+  // `initial` comes from the server so the text is in the first HTML; undefined means load it in the browser.
+  const [page, setPage] = useState<PageRow | null | undefined>(initial);
   useEffect(() => {
     let live = true;
     db.rpc("public_page", { p_slug: slug }).then(({ data }) => { if (live) setPage(data && (data as PageRow).kind === kind ? (data as PageRow) : null); });

@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { useMemo, useState } from "react";
-import { useShop } from "@/lib/useShop";
+import { useShop, type ShopBundle, type ShopRow } from "@/lib/useShop";
 import { AddToCart } from "@/components/AddToCart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
@@ -12,8 +12,8 @@ import { imagesOf } from "@/lib/media";
 
 const tone = (region: string) => (region === "Japan" ? "bronze" : "sage");
 
-export default function Shop() {
-  const { rows, bundles } = useShop();
+export function ShopClient({ initialRows, initialBundles }: { initialRows?: ShopRow[]; initialBundles?: ShopBundle[] }) {
+  const { rows, bundles } = useShop({ rows: initialRows, bundles: initialBundles });
   const [q, setQ] = useState(""); const [region, setRegion] = useState(""); const [family, setFamily] = useState("");
   const [inStock, setInStock] = useState(false); const [sort, setSort] = useState("featured");
 
@@ -51,7 +51,7 @@ export default function Shop() {
             <p className="mt-3">From {rupees(p.price_paise)}</p>
             <div className="mt-4 flex flex-wrap gap-3">
               <AddToCart id={p.sku} line={{ sku: p.sku }} max={p.max_qty} compact />
-              <Link className="btn-ghost self-end" href={`/shop/${p.product_code}`}>Details</Link>
+              <Link className="btn-ghost self-end" href={`/shop/${p.product_code}`} aria-label={`Details: ${p.product_name}`}>Details</Link>
             </div>
           </article>
         ))}
