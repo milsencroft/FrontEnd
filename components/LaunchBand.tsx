@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { CountUp } from "@/components/CountUp";
 import { useLaunch } from "@/lib/useLaunch";
 
 /** Live allocation, drawn as a ring. The numbers come from the backend. */
@@ -20,7 +21,7 @@ export function LaunchBand() {
         </svg>
         <div>
           <h2 className="text-4xl sm:text-5xl">{state.name}</h2>
-          <p className="mt-4 text-ivory/80" aria-live="polite">{full ? "Fully allocated." : `${state.remaining} of ${state.capacity} places remain.`}{state.held > 0 && !full ? ` ${state.held} held by people paying now.` : ""}</p>
+          <p className="mt-4 text-ivory/80" aria-live="polite">{full ? "Fully allocated." : <><CountUp value={state.remaining} /> of {state.capacity} places remain.</>}{state.held > 0 && !full ? ` ${state.held} held by people paying now.` : ""}</p>
         </div>
         <Link href="/launch" className="btn-light">{state.status === "preorder_active" && !full ? "Reserve your slot" : "View launch"}</Link>
       </div>
