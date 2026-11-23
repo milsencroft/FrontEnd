@@ -29,7 +29,10 @@ export function PlaceHero() {
   };
 
   return (
-    <section ref={box} onPointerMove={light} aria-label="Kerala and Japan" className={`dark-surface relative overflow-hidden text-ivory transition-colors duration-700 ${p.bg}`}>
+    <section ref={box} onPointerMove={light} aria-label="Kerala and Japan" className={`dark-surface relative isolate overflow-hidden text-ivory transition-colors duration-700 ${p.bg}`}>
+      <MediaBackdrop slot="home.hero" />
+      <div aria-hidden className="absolute inset-0 -z-[1] bg-gradient-to-t from-black/70 via-black/20 to-black/40" />
+      <div aria-hidden className="grain" />
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(520px circle at var(--x, 70%) var(--y, 30%), rgb(var(--c-ivory) / 0.16), transparent 60%)" }} />
       <div className="wrap relative grid min-h-[640px] items-center gap-10 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
         <div>
