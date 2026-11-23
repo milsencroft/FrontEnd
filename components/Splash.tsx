@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-/** Opening moment on the first visit of a session. Pure CSS: it fades itself out, so it can never get stuck. */
+/** Opening moment on every full page load. Pure CSS: it fades itself out, so it can never get stuck. */
 export function Splash() {
   return (
     <div aria-hidden className="splash">
