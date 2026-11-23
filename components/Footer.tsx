@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { NewsletterForm } from "./NewsletterForm";
 export function Footer() {
   const l = "min-h-[44px] inline-flex items-center hover:text-sage";
   return (
     <footer className="mt-24 border-t border-stone/60 py-10 text-xs text-charcoal/70">
+      <div className="wrap mb-8"><NewsletterForm /></div>
       <div className="wrap flex flex-wrap items-center justify-between gap-4">
         <p>© Milsen &amp; Croft · Kerala, India</p>
         <nav aria-label="Legal" className="flex flex-wrap gap-x-6">
