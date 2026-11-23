@@ -5,6 +5,8 @@ import { useShop } from "@/lib/useShop";
 import { useCart } from "@/lib/cart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
+import { Photo } from "@/components/ProductImage";
+import { imagesOf } from "@/lib/media";
 
 const tone = (region: string) => (region === "Japan" ? "bronze" : "sage");
 
@@ -40,7 +42,7 @@ export default function Shop() {
       <div className="cq mt-12"><div className="cq-grid grid grid-cols-1 gap-8">
         {products.map((p) => (
           <article key={p.product_code} className="border border-stone/60 bg-white p-6">
-            <Link href={`/shop/${p.product_code}`} aria-label={p.product_name}><Flacon tone={tone(p.region_name)} label={p.product_name.split(" ")[0]} interactive={false} /></Link>
+            <Link href={`/shop/${p.product_code}`} aria-label={p.product_name}>{imagesOf(p.images)[0] ? <div className="aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={imagesOf(p.images)[0]} /></div> : <Flacon tone={tone(p.region_name)} label={p.product_name.split(" ")[0]} interactive={false} />}</Link>
             <p className="mt-4 text-sm text-bronze">{p.region_name}</p>
             <h2 className="mt-1 text-3xl"><Link href={`/shop/${p.product_code}`}>{p.product_name}</Link></h2>
             <p className="text-sm text-charcoal/70">{p.family}</p>
