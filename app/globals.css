@@ -49,3 +49,8 @@ a, button { transition: opacity .2s, background-color .2s, color .2s; }
 /* Admin order list: cards when the container is narrow or folded, table when there is room. */
 .orders-table { display: none; } .orders-cards { display: grid; }
 @container (min-width: 960px) { .orders-table { display: block; } .orders-cards { display: none; } }
+
+@media print {
+  header, footer, .no-print { display: none !important; }
+  body { background: #fff; }
+}

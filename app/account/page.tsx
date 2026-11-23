@@ -7,9 +7,9 @@ import { rupees } from "@/lib/money";
 import Link from "next/link";
 import { useAddresses, useWishlist } from "@/lib/useSaved";
 import { useShop } from "@/lib/useShop";
+import { SocietyStatus } from "@/components/SocietyStatus";
 
 interface Order { id: string; order_number: string; order_type: string; total_paise: number; payment_status: string; fulfilment_status: string; courier: string | null; tracking_number: string | null; created_at: string }
-interface Member { membership_number: string; tier: number; status: string }
 interface Me { full_name: string | null; phone: string | null; whatsapp_consent: boolean }
 
 const BLANK = { label: "Home", recipient: "", phone: "", line1: "", line2: "", city: "", state: "Kerala", pincode: "", is_default: false };
@@ -77,13 +77,11 @@ function Wishlist() {
 function Account() {
   const { session } = useSession();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [member, setMember] = useState<Member | null>(null);
   const [me, setMe] = useState<Me>({ full_name: "", phone: "", whatsapp_consent: false });
   const [saved, setSaved] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.from("orders").select("id,order_number,order_type,total_paise,payment_status,fulfilment_status,courier,tracking_number,created_at").order("created_at", { ascending: false }).then(({ data }) => setOrders((data as Order[]) ?? []));
-    supabase.from("society_memberships").select("membership_number,tier,status").eq("status", "active").maybeSingle().then(({ data }) => setMember((data as Member) ?? null));
     supabase.from("customers").select("full_name,phone,whatsapp_consent").maybeSingle().then(({ data }) => data && setMe(data as Me));
   }, []);
 
@@ -97,7 +95,7 @@ function Account() {
     <section className="wrap py-16 grid gap-10">
       <h1 className="text-4xl">Your account</h1>
       <p className="text-sm text-charcoal/70">{session?.user.email}</p>
-      {member && <div className="card"><p className="text-xs uppercase tracking-[0.18em] text-bronze">Society member</p><p className="mt-1 font-serif text-2xl">{member.membership_number}</p><p className="text-sm">Tier {member.tier}</p></div>}
+      <SocietyStatus />
       <div>
         <h2 className="text-2xl mb-4">Orders</h2>
         {orders.length === 0 ? <p className="text-charcoal/70">No orders yet.</p> : (
