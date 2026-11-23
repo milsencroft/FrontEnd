@@ -5,7 +5,7 @@ import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
 
-type Tab = "overview" | "launches" | "orders" | "catalogue" | "coupons" | "media" | "reports" | "notifications" | "newsletter" | "society" | "settings" | "staff";
+type Tab = "overview" | "launches" | "orders" | "catalogue" | "coupons" | "media" | "reports" | "notifications" | "newsletter" | "content" | "society" | "settings" | "staff";
 const LAUNCH_STATUS = ["draft", "pending_approval", "preorder_active", "paused", "closed", "post_launch_review", "published_in_shop", "completed", "postponed", "cancelled", "archived"];
 const ROLES = ["admin", "product_manager", "order_manager", "content_manager", "customer_support"];
 
@@ -16,7 +16,7 @@ function Admin() {
   const can = (p: string) => permissions.includes(p);
   const [tab, setTab] = useState<Tab>("overview");
   const [note, setNote] = useState<string | null>(null);
-  const tabs: [Tab, string, boolean][] = [["overview", "Overview", can("orders.view")], ["launches", "Launches", can("launches.manage")], ["orders", "Orders", can("orders.view")], ["catalogue", "Catalogue", can("catalog.manage")], ["coupons", "Coupons", can("coupons.manage")], ["media", "Media", can("media.manage")], ["reports", "Reports", can("payments.view")], ["notifications", "Notifications", can("notifications.view")], ["newsletter", "Newsletter", can("newsletter.manage")], ["society", "Society", can("society.manage")], ["settings", "Settings", can("settings.manage")], ["staff", "Staff", can("staff.manage")]];
+  const tabs: [Tab, string, boolean][] = [["overview", "Overview", can("orders.view")], ["launches", "Launches", can("launches.manage")], ["orders", "Orders", can("orders.view")], ["catalogue", "Catalogue", can("catalog.manage")], ["coupons", "Coupons", can("coupons.manage")], ["media", "Media", can("media.manage")], ["reports", "Reports", can("payments.view")], ["notifications", "Notifications", can("notifications.view")], ["newsletter", "Newsletter", can("newsletter.manage")], ["content", "Content", can("content.manage")], ["society", "Society", can("society.manage")], ["settings", "Settings", can("settings.manage")], ["staff", "Staff", can("staff.manage")]];
   if (permissions.length === 0) return <div className="wrap py-16"><h1 className="text-3xl">No admin access</h1><p className="mt-2">Your Google account is not a staff account.</p></div>;
   return (
     <section className="wrap py-10">
@@ -33,6 +33,7 @@ function Admin() {
         {tab === "coupons" && <div><Link href="/admin/coupons" className="btn">Open coupon management</Link></div>}
         {tab === "media" && <div><Link href="/admin/media" className="btn">Open media library</Link></div>}
         {tab === "reports" && <div><Link href="/admin/reports" className="btn">Open reports</Link></div>}
+        {tab === "content" && <div><Link href="/admin/content" className="btn">Open content editor</Link></div>}
         {tab === "newsletter" && <div><Link href="/admin/newsletter" className="btn">Open newsletter list</Link></div>}
         {tab === "notifications" && <div><Link href="/admin/notifications" className="btn">Open notifications</Link></div>}
         {tab === "society" && <div><Link href="/admin/society" className="btn">Open Society management</Link></div>}
