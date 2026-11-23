@@ -7,7 +7,6 @@ import { rupees } from "@/lib/money";
 import { checkoutLaunch } from "@/lib/api";
 import { CheckoutPanel } from "@/components/CheckoutPanel";
 import { Flacon } from "@/components/Flacon";
-import { MediaBackdrop } from "@/components/MediaSlot";
 import { PageHero } from "@/components/PageHero";
 
 interface State { code: string; name: string; status: string; capacity: number; allocated: number; held: number; remaining: number }
@@ -92,9 +91,8 @@ export default function LaunchPage() {
       )}
       {pick && holdUntil && <div className="mt-10"><CheckoutPanel start={(a) => checkoutLaunch(code, pick, a)} onCancel={() => { setPick(null); setHoldUntil(null); }} /></div>}
     </section>
-    <section className="dark-surface luxe luxe-kerala relative isolate flex min-h-[60vh] items-center overflow-hidden text-ivory">
-      <MediaBackdrop slot="launch.story" />
-      <div aria-hidden className="luxe-veil" /><div aria-hidden className="grain" />
+    <section className="dark-surface relative isolate flex min-h-[60vh] items-center overflow-hidden text-ivory">
+      <div aria-hidden className="absolute inset-0 -z-[1] tone-kerala" /><div aria-hidden className="grain" />
       <div className="wrap relative py-24 text-center">
         <span aria-hidden className="mx-auto mb-8 block h-px w-16 bg-bronze" />
         <p className="mx-auto max-w-3xl font-serif text-4xl sm:text-6xl">Kerala and Japan. Two places, two fragrances.</p>

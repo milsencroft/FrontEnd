@@ -44,7 +44,7 @@
 /* Sections that are dark in both themes (hero, journey, launch band) keep light-on-dark text. */
 .dark-surface { --c-ivory: 247 243 235; --c-charcoal: 22 19 15; --c-white: 255 255 255; --c-stone: 189 177 156; --c-bronze: 192 158 98; color-scheme: dark; }
 html { background: rgb(var(--c-ivory)); color: rgb(var(--c-charcoal)); font-family: var(--font-sans); }
-body { min-height: 100vh; overflow-x: hidden; background: rgb(var(--c-ivory)); color: rgb(var(--c-charcoal)); transition: background-color .3s, color .3s; }
+body { min-height: 100vh; overflow-x: hidden; background: transparent; color: rgb(var(--c-charcoal)); transition: background-color .3s, color .3s; }
 h1, h2, h3 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.015em; line-height: 1.05; }
 body { font-weight: 300; font-size: 1.0625rem; line-height: 1.65; }
 p { max-width: 62ch; }
@@ -104,3 +104,10 @@ a, button { transition: opacity .2s, background-color .2s, color .2s; }
 .band-soft { background-image: radial-gradient(700px circle at 10% 0%, rgb(146 113 60 / .10), transparent 60%), linear-gradient(180deg, rgb(var(--c-bone)) 0%, rgb(var(--c-ivory)) 100%); }
 @keyframes slow-zoom { from { transform: scale(1); } to { transform: scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .media-backdrop { animation: none; } }
+
+/* Page heroes are transparent so the fixed film shows; a tinted veil keeps the headline readable */
+.luxe-hero { background: transparent !important; background-image: none !important; }
+.tone-noir { background: linear-gradient(to top, rgb(14 12 9 / .85), rgb(14 12 9 / .35) 60%, rgb(14 12 9 / .5)); }
+.tone-kerala { background: linear-gradient(to top, rgb(23 37 29 / .88), rgb(36 56 45 / .4) 60%, rgb(23 37 29 / .5)); }
+.tone-japan { background: linear-gradient(to top, rgb(18 25 34 / .88), rgb(29 39 51 / .4) 60%, rgb(18 25 34 / .5)); }
+.band-soft { background-image: none; background-color: rgb(var(--c-ivory) / .72); backdrop-filter: blur(6px); }
