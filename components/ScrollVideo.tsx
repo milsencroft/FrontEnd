@@ -18,7 +18,7 @@ function slotFor(path: string): string | null {
   return "society.banner";
 }
 
-/** One fixed film behind the whole page. It plays while you scroll and rests when you stop. */
+/** One fixed film behind the whole page. Scrolling down plays it forward, scrolling up plays it backward. */
 export function ScrollVideo() {
   const path = usePathname();
   const slot = slotFor(path);
@@ -29,22 +29,23 @@ export function ScrollVideo() {
   useEffect(() => { setS(null); if (slot) void loadSlots().then((all) => setS(all[slot] ?? null)); }, [slot]);
 
   useEffect(() => {
-    let still = false, idle: ReturnType<typeof setTimeout> | undefined, lastY = scrollY, lastT = performance.now();
+    let raf = 0, cur = 0, still = false;
     try { still = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { /* ignore */ }
     const v = video.current;
-    const onScroll = () => {
+    const tick = () => {
       if (veil.current) veil.current.style.opacity = String(Math.min(0.9, Math.max(0, (scrollY / innerHeight - 0.35) * 0.9)));
-      if (!v || still) return;
-      // The film plays smoothly while you scroll, faster when you scroll faster, and rests when you stop.
-      const now = performance.now(), speed = Math.abs(scrollY - lastY) / Math.max(1, now - lastT);
-      lastY = scrollY; lastT = now;
-      v.playbackRate = Math.min(2, Math.max(0.6, 0.6 + speed * 0.8));
-      if (v.paused) void v.play().catch(() => {});
-      clearTimeout(idle); idle = setTimeout(() => v.pause(), 220);
+      if (v && !still && v.readyState >= 2 && Number.isFinite(v.duration) && v.duration > 0) {
+        // Scrolling down moves the film forward; scrolling up moves it back. The files have a full frame every frame, so seeking is instant.
+        const p = Math.min(1, Math.max(0, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
+        const target = p * (v.duration - 0.05);
+        cur += (target - cur) * 0.18;
+        if (Math.abs(cur - v.currentTime) > 0.01) v.currentTime = cur;
+      }
+      raf = requestAnimationFrame(tick);
     };
-    onScroll();
-    addEventListener("scroll", onScroll, { passive: true });
-    return () => { removeEventListener("scroll", onScroll); clearTimeout(idle); };
+    if (v) v.pause();
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [s]);
 
   if (!slot || !s || s.kind === "embed" || !s.path) return null;
@@ -53,7 +54,7 @@ export function ScrollVideo() {
       {s.kind === "image"
         // eslint-disable-next-line @next/next/no-img-element
         ? <img src={mediaUrl(s.path)} alt="" className="h-full w-full object-cover" />
-        : <video ref={video} key={s.path} src={mediaUrl(s.path)} poster={s.poster ? mediaUrl(s.poster) : undefined} className="h-full w-full object-cover" muted loop playsInline preload="auto" />}
+        : <video ref={video} key={s.path} src={mediaUrl(s.path)} poster={s.poster ? mediaUrl(s.poster) : undefined} className="h-full w-full object-cover" muted playsInline preload="auto" />}
       <div ref={veil} className="absolute inset-0 bg-ivory opacity-0" />
     </div>
   );
