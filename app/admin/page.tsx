@@ -95,7 +95,7 @@ function Settings({ setNote }: { setNote: (s: string) => void }) {
 
 function Staff({ setNote }: { setNote: (s: string) => void }) {
   const [rows, setRows] = useState<{ customer_id: string; email: string; full_name: string | null; role: string; is_active: boolean }[]>([]);
-  const [email, setEmail] = useState(""); const [role, setRole] = useState(ROLES[0]); const [reason, setReason] = useState("");
+  const [email, setEmail] = useState(""); const [role, setRole] = useState(ROLES[0]); const [reason, setReason] = useState(""); const [result, setResult] = useState<string | null>(null);
   const load = useCallback(() => supabase.rpc("admin_list_staff").then(({ data }) => setRows(data ?? [])), []);
   useEffect(() => { void load(); }, [load]);
   return (
@@ -106,7 +106,8 @@ function Staff({ setNote }: { setNote: (s: string) => void }) {
         <input aria-label="Email" className="field" type="email" placeholder="email@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} />
         <select aria-label="Role" className="field" value={role} onChange={(e) => setRole(e.target.value)}>{ROLES.map((r) => <option key={r} value={r}>{label(ROLE_LABEL, r)}</option>)}</select>
         <input aria-label="Reason" className="field" placeholder="Reason" value={reason} onChange={(e) => setReason(e.target.value)} />
-        <button className="btn" disabled={!email || !reason} onClick={async () => { const { error } = await supabase.rpc("admin_grant_staff", { p_email: email, p_role: role, p_reason: reason }); setNote(msg(error)); void load(); }}>Grant</button>
+        <button className="btn" disabled={!email || !reason} onClick={async () => { const { error } = await supabase.rpc("admin_grant_staff", { p_email: email.trim(), p_role: role, p_reason: reason }); const m = msg(error); setNote(m); setResult(m); if (!error) { setEmail(""); setReason(""); } void load(); }}>Grant</button>
+        {result && <p role="status" className="text-sm">{result}</p>}
       </div>
       <ul className="grid gap-3">{rows.map((s) => (
         <li key={s.customer_id} className="card flex flex-wrap items-center justify-between gap-3"><div><p>{s.full_name ?? s.email}</p><p className="text-sm">{s.email} · {label(ROLE_LABEL, s.role)}{s.is_active ? "" : " (inactive)"}</p></div>
