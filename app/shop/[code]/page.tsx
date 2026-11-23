@@ -6,7 +6,21 @@ import { notesList, useShop } from "@/lib/useShop";
 import { useCart } from "@/lib/cart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
+import { Photo } from "@/components/ProductImage";
+import { imagesOf } from "@/lib/media";
 import { WishlistButton } from "@/components/WishlistButton";
+
+function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fallback: React.ReactNode }) {
+  const [i, setI] = useState(0);
+  if (images.length === 0) return <>{fallback}</>;
+  return (
+    <div>
+      <div className="aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={images[Math.min(i, images.length - 1)]} /></div>
+      {images.length > 1 && <div className="mt-3 flex gap-3">{images.map((im, n) => (
+        <button key={im.path} type="button" aria-label={`Show image ${n + 1}`} aria-pressed={n === i} onClick={() => setI(n)} className={`h-16 w-16 overflow-hidden border-2 ${n === i ? "border-charcoal" : "border-transparent opacity-60"}`}><Photo image={im} /></button>))}</div>}
+    </div>
+  );
+}
 
 export default function Product() {
   const { code } = useParams<{ code: string }>();
@@ -26,7 +40,7 @@ export default function Product() {
     <section className="wrap py-16">
       <Link href="/shop" className="text-sm underline underline-offset-4">Shop</Link>
       <div className="mt-8 grid gap-12 md:grid-cols-2">
-        <Flacon tone={v.region_name === "Japan" ? "bronze" : "sage"} label={v.product_name.split(" ")[0]} />
+        <Gallery images={imagesOf(v.images)} fallback={<Flacon tone={v.region_name === "Japan" ? "bronze" : "sage"} label={v.product_name.split(" ")[0]} />} />
         <div>
           <p className="text-sm text-bronze">{v.region_name} · {v.family}</p>
           <h1 className="mt-2 text-5xl sm:text-6xl">{v.product_name}</h1>
