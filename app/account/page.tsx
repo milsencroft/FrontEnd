@@ -9,6 +9,7 @@ import { useAddresses, useWishlist } from "@/lib/useSaved";
 import { useShop } from "@/lib/useShop";
 import { SocietyStatus } from "@/components/SocietyStatus";
 import { human } from "@/lib/labels";
+import { Modal } from "@/components/Modal";
 import { FULFIL_LABEL, PAYMENT_LABEL } from "@/lib/orders";
 
 interface Order { id: string; order_number: string; order_type: string; total_paise: number; payment_status: string; fulfilment_status: string; courier: string | null; tracking_number: string | null; tracking_url: string | null; estimated_delivery: string | null; created_at: string }
@@ -38,8 +39,9 @@ function Addresses() {
             <button className="btn-ghost" onClick={async () => { await supabase.rpc("my_delete_address", { p_id: a.id }); void reload(); }}>Remove</button>
           </div>
         </li>))}</ul>
-      {!open ? <button className="btn-ghost mt-4" onClick={() => setOpen(true)}>Add an address</button> : (
-        <form onSubmit={add} className="card mt-4 grid max-w-xl gap-3">
+      <button className="btn-ghost mt-4" onClick={() => { setMsg(null); setOpen(true); }}>Add an address</button>
+      <Modal open={open} onClose={() => setOpen(false)} title="Add an address">
+        <form onSubmit={add} className="grid gap-3">
           <div><label className="label" htmlFor="al">Label</label><input id="al" className="field" value={f.label} onChange={set("label")} /></div>
           <div><label className="label" htmlFor="ar">Recipient</label><input id="ar" className="field" required value={f.recipient} onChange={set("recipient")} /></div>
           <div><label className="label" htmlFor="ap">Mobile</label><input id="ap" className="field" required inputMode="numeric" value={f.phone} onChange={set("phone")} /></div>
@@ -53,7 +55,8 @@ function Addresses() {
           <label className="flex min-h-[44px] items-center gap-3 text-sm"><input type="checkbox" className="h-5 w-5" checked={f.is_default} onChange={set("is_default")} />Use as my default address</label>
           {msg && <p role="alert" className="text-sm text-danger">{msg}</p>}
           <div className="flex gap-3"><button className="btn">Save address</button><button type="button" className="btn-ghost" onClick={() => setOpen(false)}>Cancel</button></div>
-        </form>)}
+        </form>
+      </Modal>
     </div>
   );
 }
