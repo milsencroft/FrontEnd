@@ -82,11 +82,11 @@ export default function LaunchPage() {
               {imagesOf(i.images)[0]
                 ? <div className="mb-4 aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={imagesOf(i.images)[0]} /></div>
                 : <Flacon tone={i.region_name === "Japan" ? "bronze" : "sage"} label={i.product_name.split(" ")[0]} className="mb-4" />}
-              <p className="text-sm text-bronze">{i.region_name}</p>
+              <p className="text-sm text-brass">{i.region_name}</p>
               <h2 className="mt-1 text-3xl">{i.product_name}</h2>
               <p className="text-sm text-charcoal/70">{i.family} · {i.size_ml} ml</p>
               {i.story && <p className="mt-3 text-sm">{i.story}</p>}
-              <p className="mt-4 text-xl">{rupees(i.launch_price_paise)} <span className="text-sm text-charcoal/50 line-through">{rupees(i.regular_price_paise)}</span></p>
+              <p className="mt-4 text-xl">{rupees(i.launch_price_paise)} <span className="text-sm text-charcoal/70 line-through">{rupees(i.regular_price_paise)}</span></p>
               <div className="hinge-safe mt-4">
                 {!session ? <button className="btn" onClick={() => signInWithGoogle()}>Sign in to reserve</button>
                   : <button className="btn" disabled={busy || !i.in_stock} onClick={() => reserve(i.sku)}>{i.in_stock ? "Reserve my slot" : "Out of stock"}</button>}

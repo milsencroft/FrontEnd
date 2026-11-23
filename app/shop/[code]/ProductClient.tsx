@@ -40,17 +40,17 @@ export function ProductClient({ code, initialRows }: { code: string; initialRows
       <div className="mt-8 grid gap-12 md:grid-cols-2">
         <div className="md:sticky md:top-24 md:self-start"><Gallery images={imagesOf(v.images)} fallback={<Flacon tone={v.region_name === "Japan" ? "bronze" : "sage"} label={v.product_name.split(" ")[0]} />} /></div>
         <div>
-          <p className="text-sm text-bronze">{v.region_name} · {v.family}</p>
+          <p className="text-sm text-brass">{v.region_name} · {v.family}</p>
           <h1 className="mt-2 text-5xl sm:text-6xl">{v.product_name}</h1>
-          <p className="mt-2 text-sm text-charcoal/60">{v.product_code}</p>
+          <p className="mt-2 text-sm text-charcoal/70">{v.product_code}</p>
           {v.story && <p className="mt-6">{v.story}</p>}
-          {notes.length > 0 && <p className="mt-4"><span className="text-charcoal/60">Notes: </span>{notes.join(", ")}</p>}
+          {notes.length > 0 && <p className="mt-4"><span className="text-charcoal/70">Notes: </span>{notes.join(", ")}</p>}
           <fieldset className="mt-8"><legend className="label">Size</legend>
             <div className="flex flex-wrap gap-3">{variants.map((x) => (
               <label key={x.sku} className={`flex min-h-[48px] cursor-pointer items-center border px-5 ${x.sku === sku ? "border-charcoal bg-charcoal text-ivory" : "border-stone"} ${x.in_stock ? "" : "opacity-40"}`}>
                 <input type="radio" name="size" className="sr-only" checked={x.sku === sku} onChange={() => setSku(x.sku)} disabled={!x.in_stock} />{x.size_ml} ml · {rupees(x.price_paise)}</label>))}</div>
           </fieldset>
-          <p className="mt-6 text-2xl">{rupees(v.price_paise)}{v.compare_at_paise ? <span className="ml-3 text-base text-charcoal/50 line-through">{rupees(v.compare_at_paise)}</span> : null}</p>
+          <p className="mt-6 text-2xl">{rupees(v.price_paise)}{v.compare_at_paise ? <span className="ml-3 text-base text-charcoal/70 line-through">{rupees(v.compare_at_paise)}</span> : null}</p>
           <p className="mt-1 text-sm">{v.in_stock ? "In stock" : "Out of stock"}</p>
           <div className="mt-6 flex flex-wrap items-end gap-4">
             <AddToCart key={v.sku} id={`d-${v.sku}`} line={{ sku: v.sku }} max={v.max_qty} />
