@@ -107,6 +107,7 @@ function Staff({ setNote }: { setNote: (s: string) => void }) {
         <select aria-label="Role" className="field" value={role} onChange={(e) => setRole(e.target.value)}>{ROLES.map((r) => <option key={r} value={r}>{label(ROLE_LABEL, r)}</option>)}</select>
         <input aria-label="Reason" className="field" placeholder="Reason" value={reason} onChange={(e) => setReason(e.target.value)} />
         <button className="btn" disabled={!email || !reason} onClick={async () => { const { error } = await supabase.rpc("admin_grant_staff", { p_email: email.trim(), p_role: role, p_reason: reason }); const m = msg(error); setNote(m); setResult(m); if (!error) { setEmail(""); setReason(""); } void load(); }}>Grant</button>
+        {(!email || !reason) && <p className="text-sm text-charcoal/70">Fill in both the email and the reason to turn on the Grant button.</p>}
         {result && <p role="status" className="text-sm">{result}</p>}
       </div>
       <ul className="grid gap-3">{rows.map((s) => (
