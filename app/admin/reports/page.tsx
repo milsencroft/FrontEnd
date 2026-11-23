@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -50,7 +51,7 @@ function Reports() {
         {([["7", "Last 7 days"], ["30", "Last 30 days"], ["month", "This month"], ["year", "This year"]] as [Preset, string][]).map(([p, l]) => <button key={p} className="btn-ghost" onClick={() => setRange(presetRange(p))}>{l}</button>)}
       </div>
       {err && <p role="alert" className="text-danger">{err}</p>}
-      {!r && !err && <p>Loading…</p>}
+      {!r && !err && <Loader />}
       {r && <>
         <p className="max-w-2xl text-sm text-charcoal/70">Counts paid orders only, by India date. Refunds are taken off in the period they were made. All amounts include tax.</p>
         <dl className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">

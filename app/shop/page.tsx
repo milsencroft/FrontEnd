@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { useMemo, useState } from "react";
@@ -39,7 +40,7 @@ export default function Shop() {
         <div><label className="label" htmlFor="so">Sort</label><select id="so" className={sel} value={sort} onChange={(e) => setSort(e.target.value)}><option value="featured">Featured</option><option value="low">Price, low to high</option><option value="high">Price, high to low</option></select></div>
         <label className="flex min-h-[44px] items-center gap-2 text-sm"><input type="checkbox" className="h-5 w-5" checked={inStock} onChange={(e) => setInStock(e.target.checked)} />In stock only</label>
       </form>
-      {rows === null && <p className="mt-10">Loading…</p>}
+      {rows === null && <Loader />}
       {rows && products.length === 0 && bundles.length === 0 && <p className="mt-10 text-charcoal/70">{rows.length === 0 ? <>The first fragrances are in our launch. <Link className="underline underline-offset-4" href="/launch">See the launch</Link>.</> : "No products match these filters."}</p>}
       <div className="cq mt-12"><div className="cq-grid grid grid-cols-1 gap-8">
         {products.map((p) => (

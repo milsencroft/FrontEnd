@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -40,7 +41,7 @@ function Detail() {
   }, [id]);
   const loadUpdates = useCallback(async () => { const { data } = await supabase.rpc("admin_order_updates", { p_order: id }); setUpdates((data as any[]) ?? []); }, [id]);
   useEffect(() => { void load(); void loadUpdates(); void Promise.resolve(supabase.rpc("admin_list_couriers")).then(({ data }) => setCouriers((data as Courier[]) ?? [])); }, [load, loadUpdates]);
-  if (!d) return <p className="wrap py-16">{msg ?? "Loading…"}</p>;
+  if (!d) return <Loader />;
   const o = d.order, c = d.customer, a = o.shipping_address ?? {};
   const courierName = t.courier || o.courier; const trackingNo = t.tracking || o.tracking_number;
   const autoUrl = trackingLink(couriers, courierName, trackingNo);

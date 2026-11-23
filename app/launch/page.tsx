@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import { useCallback, useEffect, useState } from "react";
 import { supabase, signInWithGoogle } from "@/lib/supabase";
 import { env } from "@/lib/env";
@@ -47,7 +48,7 @@ export default function LaunchPage() {
     setErr(text[r.r_result] ?? "This launch is not available right now."); void load();
   }
 
-  if (st === undefined) return <p className="wrap py-16">Loading…</p>;
+  if (st === undefined) return <Loader />;
   if (st === null || st.status === "draft") return <section className="wrap py-16"><h1 className="text-4xl">Launch</h1><p className="mt-6 text-charcoal/70">Our first launch opens soon.</p></section>;
   const open = st.status === "preorder_active";
   const STATUS_TEXT: Record<string, string> = {
