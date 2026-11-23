@@ -98,7 +98,7 @@ a, button { transition: opacity .2s, background-color .2s, color .2s; }
 .luxe-kerala { background-image: radial-gradient(900px circle at 85% 10%, rgb(146 113 60 / .18), transparent 55%), linear-gradient(160deg, #2c4638 0%, #24382D 55%, #17251d 100%); }
 .luxe-japan { background-image: radial-gradient(900px circle at 85% 10%, rgb(189 177 156 / .14), transparent 55%), linear-gradient(160deg, #26364a 0%, #1D2733 55%, #121922 100%); }
 .media-backdrop { position: absolute; inset: 0; z-index: -2; height: 100%; width: 100%; object-fit: cover; animation: slow-zoom 24s ease-in-out infinite alternate; }
-.luxe-veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(14 12 9 / .78), rgb(14 12 9 / .25) 55%, rgb(14 12 9 / .45)); }
+.luxe-veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(14 12 9 / .82), rgb(14 12 9 / .45) 55%, rgb(14 12 9 / .55)); }
 .grain { position: absolute; inset: 0; z-index: -1; opacity: .09; mix-blend-mode: overlay; pointer-events: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
 .band { position: relative; isolation: isolate; overflow: hidden; }
 .band-soft { background-image: radial-gradient(700px circle at 10% 0%, rgb(146 113 60 / .10), transparent 60%), linear-gradient(180deg, rgb(var(--c-bone)) 0%, rgb(var(--c-ivory)) 100%); }
