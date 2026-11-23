@@ -43,7 +43,7 @@ export function ShopClient({ initialRows, initialBundles }: { initialRows?: Shop
       {rows && products.length === 0 && bundles.length === 0 && <p className="mt-10 text-charcoal/70">{rows.length === 0 ? <>The first fragrances are in our launch. <Link className="underline underline-offset-4" href="/launch">See the launch</Link>.</> : "No products match these filters."}</p>}
       <div className="cq mt-12"><div className="cq-grid grid grid-cols-1 gap-8">
         {products.map((p) => (
-          <article key={p.product_code} className="border border-stone/60 bg-white p-6">
+          <article key={p.product_code} data-tilt className="border border-stone/60 bg-white p-6">
             <Link href={`/shop/${p.product_code}`} aria-label={p.product_name}>{imagesOf(p.images)[0] ? <div className="aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={imagesOf(p.images)[0]} /></div> : <Flacon tone={tone(p.region_name)} label={p.product_name.split(" ")[0]} interactive={false} />}</Link>
             <p className="mt-4 text-sm text-brass">{p.region_name}</p>
             <h2 className="mt-1 text-3xl"><Link href={`/shop/${p.product_code}`}>{p.product_name}</Link></h2>
@@ -56,7 +56,7 @@ export function ShopClient({ initialRows, initialBundles }: { initialRows?: Shop
           </article>
         ))}
         {bundles.map((b) => (
-          <article key={b.code} className="border border-stone/60 bg-white p-6">
+          <article key={b.code} data-tilt className="border border-stone/60 bg-white p-6">
             <p className="text-sm text-brass">Set</p>
             <h2 className="mt-1 text-3xl">{b.name}</h2>
             {b.description && <p className="mt-2 text-charcoal/80">{b.description}</p>}

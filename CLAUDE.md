@@ -9,7 +9,7 @@ The backend repo owns the database, business rules and secrets. This repo never 
 - Colours (revised Nov 2026): Parchment #F7F3EB, Bone #EAE3D5, Noir #16130F, Vetiver #3A4B3E, Brass #92713C (hairlines and small details only), Stone #BDB19C, White #FFFFFF.
   Each place has its own colour: Kerala #24382D (monsoon forest), Japan #1D2733 (indigo ink).
 - Elegant serif headings, clean sans-serif body, restrained uppercase navigation,
-  generous whitespace, subtle transitions, minimal animation.
+  generous whitespace and refined, purposeful motion (word reveals, magnetic buttons, tilt cards, parallax, marquee). Always honour prefers-reduced-motion.
 - Avoid generic perfume-store templates, heavy gold effects and clutter. Brass is a thin accent, never a large fill.
 - Define colours and type as design tokens once; never hard-code hex values in components.
 

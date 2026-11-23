@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
 import { NavProgress } from "@/components/NavProgress";
 import { Splash } from "@/components/Splash";
 import { ScrollVideo } from "@/components/ScrollVideo";
+import { Motion } from "@/components/Motion";
 import { ScrollEffects } from "@/components/ScrollEffects";
 import { DEFAULT_DESCRIPTION, SITE_CONFIGURED, SITE_NAME, SITE_URL, TAGLINE } from "@/lib/site";
 import { NOINDEX } from "@/lib/seo/metadata";
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       {env.supabaseUrl && <link rel="preconnect" href={env.supabaseUrl} crossOrigin="" />}
       <link rel="stylesheet" href={FONTS} />
-    </head><body><Splash /><NavProgress /><ScrollEffects /><ScrollVideo />
+    </head><body><Splash /><NavProgress /><ScrollEffects /><Motion /><ScrollVideo />
       <SessionProvider><CartProvider><Header /><main>{children}</main><Footer /></CartProvider></SessionProvider>
     </body></html>
   );

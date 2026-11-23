@@ -5,6 +5,7 @@ import { Photo } from "./ProductImage";
 import { imagesOf } from "@/lib/media";
 import { Flacon, type Tone } from "./Flacon";
 import { useLaunch } from "@/lib/useLaunch";
+import { Split } from "./Split";
 import { rupees } from "@/lib/money";
 
 const PLACES = [
@@ -36,7 +37,7 @@ export function PlaceHero() {
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(520px circle at var(--x, 70%) var(--y, 30%), rgb(var(--c-ivory) / 0.16), transparent 60%)" }} />
       <div className="wrap relative grid min-h-[640px] items-center gap-10 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:py-24">
         <div>
-          <h1 className="hero-in text-5xl sm:text-6xl lg:text-[5.5rem]">A sense of place. A lasting impression.</h1>
+          <Split as="h1" delay={150} className="text-5xl sm:text-6xl lg:text-[5.5rem]" text="A sense of place. A lasting impression." />
           <div role="tablist" aria-label="Choose a place" onKeyDown={onKey} className="hero-in hero-in-2 mt-10 flex gap-8">
             {PLACES.map((x, n) => (
               <button key={x.id} role="tab" aria-selected={n === i} tabIndex={n === i ? 0 : -1} onClick={() => setI(n)}
@@ -54,7 +55,7 @@ export function PlaceHero() {
           </div>
         </div>
         {imagesOf(item?.images)[0]
-          ? <div className="hero-in hero-in-2 mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={imagesOf(item?.images)[0]} /></div>
+          ? <div data-parallax="0.12" className="hero-in hero-in-2 mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={imagesOf(item?.images)[0]} /></div>
           : <Flacon tone={p.tone} label={p.name} className="hero-in hero-in-2" />}
       </div>
     </section>
