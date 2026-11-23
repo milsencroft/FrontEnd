@@ -1,12 +1,14 @@
 import { PlaceHero } from "@/components/PlaceHero";
 import { LaunchBand } from "@/components/LaunchBand";
 import Link from "next/link";
+import { MediaSlot } from "@/components/MediaSlot";
 
 export default function Home() {
   return (
     <>
       <PlaceHero />
       <LaunchBand />
+      <div className="wrap"><MediaSlot slot="home.hero" /></div>
       <section className="wrap py-24 sm:py-32">
         <h2 className="max-w-3xl text-4xl sm:text-5xl">Two places. Two fragrances. Made in small numbers.</h2>
         <p className="mt-6 text-lg text-charcoal/80">Milsen &amp; Croft is a fragrance house in Kerala. Each release begins with a place and is made in a limited run.</p>

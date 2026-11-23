@@ -7,6 +7,7 @@ import { rupees } from "@/lib/money";
 import { checkoutLaunch } from "@/lib/api";
 import { CheckoutPanel } from "@/components/CheckoutPanel";
 import { Flacon } from "@/components/Flacon";
+import { MediaSlot } from "@/components/MediaSlot";
 
 interface State { code: string; name: string; status: string; capacity: number; allocated: number; held: number; remaining: number }
 interface Item { sku: string; product_name: string; family: string; region_name: string; story: string | null; size_ml: number; launch_price_paise: number; regular_price_paise: number; in_stock: boolean }
@@ -54,6 +55,7 @@ export default function LaunchPage() {
     <section className="wrap py-16 cq">
       <p className="text-sm text-bronze">Pre-order launch</p>
       <h1 className="mt-2 text-5xl sm:text-7xl">{st.name}</h1>
+      <MediaSlot slot="launch.hero" className="mt-8" />
       <div className="mt-8 border-y border-stone/60 py-6" aria-live="polite">
         <p className="font-serif text-3xl">{st.allocated} / {st.capacity} allocated, {st.remaining} remaining</p>
         {st.held > 0 && <p className="mt-1 text-sm text-charcoal/70">{st.held} slot{st.held > 1 ? "s are" : " is"} temporarily held by customers mid-payment and may become available.</p>}
@@ -61,6 +63,7 @@ export default function LaunchPage() {
       </div>
       {(full || st.status === "closed") && <p className="mt-8 text-2xl font-serif">Fully Allocated</p>}
       {!open && !full && st.status !== "closed" && <p className="mt-8 text-charcoal/70">This launch is currently {st.status.replace(/_/g, " ")}.</p>}
+      <MediaSlot slot="launch.story" className="mt-10" />
       {err && <p role="alert" className="mt-6 text-danger">{err}</p>}
       {holdUntil && <p className="mt-6 text-lg" role="timer">Your slot is held for {mins}:{secs}</p>}
 
