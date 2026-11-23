@@ -6,6 +6,7 @@ import { useSession } from "@/lib/session";
 import { useCart } from "@/lib/cart";
 import { signInWithGoogle, signOut } from "@/lib/supabase";
 
+/* eslint-disable @next/next/no-img-element */
 export function Header() {
   const { session, loading, permissions } = useSession();
   const { count } = useCart();
@@ -19,7 +20,7 @@ export function Header() {
   return (
     <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/60 bg-ivory/95 transition-transform duration-300 ${hide ? "-translate-y-full" : ""}`}>
       <div className="wrap flex flex-wrap items-center justify-between gap-x-6">
-        <Link href="/" className="font-serif text-2xl min-h-[44px] inline-flex items-center">Milsen &amp; Croft</Link>
+        <Link href="/" className="inline-flex min-h-[44px] items-center gap-3 font-serif text-2xl" aria-label="Milsen & Croft, home"><img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" />Milsen &amp; Croft</Link>
         <nav aria-label="Main" className="flex flex-wrap items-center gap-x-5 lg:gap-x-6">
           {[["/collections", "Collections"], ["/shop", "Shop"], ["/launch", "Launch"], ["/society", "The Society"], ["/philosophy", "Our Philosophy"], ["/journal", "Journal"], ["/contact", "Contact"]].map(([h, l]) => <Link key={h} className={nav} href={h}>{l}</Link>)}
           <Link className={nav} href="/cart">Cart{count > 0 ? ` (${count})` : ""}</Link>
