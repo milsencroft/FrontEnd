@@ -22,7 +22,7 @@ export function PageBody({ slug, kind, fallbackTitle, initial }: { slug: string;
   return (
     <article className="wrap max-w-2xl py-16">
       <h1 className="text-4xl sm:text-5xl">{page.title}</h1>
-      {page.published_at && kind === "journal" && <p className="mt-3 text-sm text-charcoal/60">{new Date(page.published_at).toLocaleDateString("en-IN", { dateStyle: "long" })}</p>}
+      {page.published_at && kind === "journal" && <p className="mt-3 text-sm text-charcoal/70">{new Date(page.published_at).toLocaleDateString("en-IN", { dateStyle: "long" })}</p>}
       <div className="mt-8 grid gap-4 leading-relaxed text-charcoal/90">{(page.body ?? "").split(/\n{2,}/).map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}</div>
     </article>
   );

@@ -50,7 +50,7 @@ function Society() {
         <p className="mb-3 max-w-2xl text-sm text-charcoal/70">After a launch has closed, process it once. Members who did not take part get a missed launch; two in a row move them down a tier, or end membership at Tier 1. Cancelled or postponed launches never count.</p>
         {(o.launches as any[]).length === 0 && <p className="text-charcoal/70">No finished Society launches yet.</p>}
         <ul className="grid gap-3">{(o.launches as any[]).map((l) => (
-          <li key={l.id} className="card flex flex-wrap items-center justify-between gap-3"><p>{l.code}: {l.name} <span className="text-sm text-charcoal/60">({label(LAUNCH_LABEL, l.status)})</span></p>
+          <li key={l.id} className="card flex flex-wrap items-center justify-between gap-3"><p>{l.code}: {l.name} <span className="text-sm text-charcoal/70">({label(LAUNCH_LABEL, l.status)})</span></p>
             {l.processed ? <span className="text-sm">Processed</span> : <button className="btn" disabled={!ok} onClick={() => { if (confirm(`Process results for ${l.code}? This cannot be repeated.`)) void run(db.rpc("admin_process_launch_cycle", { p_launch: l.id, p_reason: reason }), `Launch ${l.code} processed.`); }}>Process results</button>}</li>))}</ul>
       </div>
 
@@ -58,7 +58,7 @@ function Society() {
         {(o.waiting as any[]).length === 0 && <p className="text-charcoal/70">Nobody is waiting.</p>}
         <ul className="grid gap-3">{(o.waiting as any[]).map((w) => (
           <li key={`${w.customer_id}-${w.tier}`} className="card flex flex-wrap items-center justify-between gap-3">
-            <p>{w.name ?? w.email} <span className="text-sm text-charcoal/60">{w.tier === 1 ? "Tier 1 re-entry list" : `Tier ${w.tier} queue`} since {date(w.since)}</span></p>
+            <p>{w.name ?? w.email} <span className="text-sm text-charcoal/70">{w.tier === 1 ? "Tier 1 re-entry list" : `Tier ${w.tier} queue`} since {date(w.since)}</span></p>
             {w.tier === 1 && lastLaunch && <button className="btn-ghost" disabled={!ok} onClick={() => run(db.rpc("admin_admit_reentry", { p_customer: w.customer_id, p_launch: lastLaunch.id, p_reason: reason }), "Admitted.")}>Admit to Tier 1</button>}
           </li>))}</ul>
       </div>
@@ -68,7 +68,7 @@ function Society() {
           <button className="btn-ghost self-end" onClick={() => download("society-members.csv", toCsv(members.map((m) => ({ number: m.number, tier: m.tier, status: m.status, name: m.name, email: m.email, missed: m.missed, joined: m.joined_at }))))}>Export CSV</button></div></div>
         <ul className="grid gap-3">{members.map((m) => (
           <li key={m.id} className="card flex flex-wrap items-center justify-between gap-3">
-            <div><p className="font-medium">{m.number} <span className="text-sm text-charcoal/60">Tier {m.tier} · {label(MEMBERSHIP_LABEL, m.status)}{m.missed ? ` · missed ${m.missed}` : ""}</span></p>
+            <div><p className="font-medium">{m.number} <span className="text-sm text-charcoal/70">Tier {m.tier} · {label(MEMBERSHIP_LABEL, m.status)}{m.missed ? ` · missed ${m.missed}` : ""}</span></p>
               <p className="text-sm text-charcoal/70">{m.name ?? ""} {m.email}</p><p className="text-sm text-charcoal/70">Card sent: {date(m.card_dispatched_at)} · Package sent: {date(m.package_dispatched_at)}</p></div>
             {m.status === "active" && <div className="flex gap-2">
               <button className="btn-ghost" disabled={!ok || !!m.card_dispatched_at} onClick={() => run(db.rpc("admin_society_dispatch", { p_membership: m.id, p_item: "card", p_reason: reason }), "Marked card as sent.")}>Card sent</button>

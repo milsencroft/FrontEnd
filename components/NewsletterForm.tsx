@@ -24,7 +24,7 @@ export function NewsletterForm() {
         <input id="nl-email" type="email" required autoComplete="email" className="field flex-1" value={email} onChange={(e) => setEmail(e.target.value)} />
         <button className="btn" disabled={busy}>Subscribe</button>
       </div>
-      <p className="text-xs text-charcoal/60">By subscribing you agree to receive occasional news from Milsen &amp; Croft. You can unsubscribe at any time.</p>
+      <p className="text-xs text-charcoal/70">By subscribing you agree to receive occasional news from Milsen &amp; Croft. You can unsubscribe at any time.</p>
       {msg && <p role="alert" className="text-sm">{msg}</p>}
     </form>
   );

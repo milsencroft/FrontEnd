@@ -74,7 +74,7 @@ function Wishlist() {
             <Link href={`/shop/${r.product_code}`}><p className="font-serif text-xl">{r.product_name}</p><p className="text-sm text-charcoal/70">{r.region_name} · from {rupees(r.price_paise)}</p></Link>
             <button className="btn-ghost" onClick={() => void toggle(r.product_code)}>Remove</button>
           </li>))}</ul>)}
-      {codes.length > items.length && <p className="mt-3 text-sm text-charcoal/60">Some saved items are not in the shop right now.</p>}
+      {codes.length > items.length && <p className="mt-3 text-sm text-charcoal/70">Some saved items are not in the shop right now.</p>}
     </div>
   );
 }

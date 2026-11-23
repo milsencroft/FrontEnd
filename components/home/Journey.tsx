@@ -38,7 +38,7 @@ export function Journey() {
         {PLACES.map((x, i) => (
           <div key={x.name} className={`${i === 0 ? "bg-kerala/75" : "bg-japan/75"} py-20`}>
             <div className="wrap grid items-center gap-10 md:grid-cols-2">
-              <div><p className="text-sm text-ivory/70">{x.place}</p><h2 className="mt-2 text-6xl">{x.name}</h2><p className="mt-4 text-lg text-ivory/85">{x.line}</p></div>
+              <div><p className="text-sm text-ivory/80">{x.place}</p><h2 className="mt-2 text-6xl">{x.name}</h2><p className="mt-4 text-lg text-ivory/85">{x.line}</p></div>
               {photo(x.place) ? <div className="mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={photo(x.place)!} /></div> : <Flacon tone={x.tone} label={x.name} />}
             </div>
           </div>
@@ -56,7 +56,7 @@ export function Journey() {
             <div className="relative order-2 min-h-[210px] md:order-1">
               {PLACES.map((x, i) => (
                 <div key={x.name} ref={i === 0 ? k : j} className="absolute inset-0 flex flex-col justify-center" style={{ opacity: i === 0 ? 1 : 0 }}>
-                  <p className="text-sm text-ivory/70">{x.place}</p>
+                  <p className="text-sm text-ivory/80">{x.place}</p>
                   <h2 className="mt-2 text-6xl sm:text-8xl">{x.name}</h2>
                   <p className="mt-4 max-w-md text-lg text-ivory/85">{x.line}</p>
                   <div className="mt-6"><Link href="/shop" className="btn-light">Shop {x.name}</Link></div>
@@ -71,7 +71,7 @@ export function Journey() {
               ))}
             </div>
           </div>
-          <div aria-hidden className="flex items-center gap-4 text-sm text-ivory/70">
+          <div aria-hidden className="flex items-center gap-4 text-sm text-ivory/80">
             <span>Kerala</span>
             <div className="h-px flex-1 bg-ivory/25"><div ref={bar} className="h-px origin-left bg-ivory" style={{ transform: "scaleX(0)" }} /></div>
             <span>Japan</span>

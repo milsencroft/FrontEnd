@@ -40,7 +40,7 @@ export function PlaceHero() {
           <div role="tablist" aria-label="Choose a place" onKeyDown={onKey} className="hero-in hero-in-2 mt-10 flex gap-8">
             {PLACES.map((x, n) => (
               <button key={x.id} role="tab" aria-selected={n === i} tabIndex={n === i ? 0 : -1} onClick={() => setI(n)}
-                className={`min-h-[44px] border-b pb-1 font-serif text-2xl ${n === i ? "border-ivory" : "border-transparent text-ivory/60 hover:text-ivory"}`}>{x.tab}</button>
+                className={`min-h-[44px] border-b pb-1 font-serif text-2xl ${n === i ? "border-ivory" : "border-transparent text-ivory/80 hover:text-ivory"}`}>{x.tab}</button>
             ))}
           </div>
           <div key={p.id} role="tabpanel" className="hero-in hero-in-3 mt-6 max-w-md" aria-live="polite">
@@ -50,7 +50,7 @@ export function PlaceHero() {
           </div>
           <div className="hero-in hero-in-3 mt-10 flex flex-wrap gap-4">
             <Link href="/launch" className="btn-light">{open ? "Reserve your slot" : "See the launch"}</Link>
-            <Link href="/shop" className="inline-flex min-h-[48px] items-center border border-ivory/60 px-8 text-xs uppercase tracking-[0.22em] hover:bg-ivory hover:text-charcoal">Shop</Link>
+            <Link href="/shop" className="inline-flex min-h-[48px] items-center border border-ivory/60 px-8 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link>
           </div>
         </div>
         {imagesOf(item?.images)[0]
