@@ -7,10 +7,12 @@ import { rupees } from "@/lib/money";
 import { checkoutLaunch } from "@/lib/api";
 import { CheckoutPanel } from "@/components/CheckoutPanel";
 import { Flacon } from "@/components/Flacon";
+import { Photo } from "@/components/ProductImage";
+import { imagesOf } from "@/lib/media";
 import { PageHero } from "@/components/PageHero";
 
 interface State { code: string; name: string; status: string; capacity: number; allocated: number; held: number; remaining: number }
-interface Item { sku: string; product_name: string; family: string; region_name: string; story: string | null; size_ml: number; launch_price_paise: number; regular_price_paise: number; in_stock: boolean }
+interface Item { sku: string; product_name: string; family: string; region_name: string; story: string | null; size_ml: number; launch_price_paise: number; regular_price_paise: number; in_stock: boolean; images?: unknown }
 
 export default function LaunchPage() {
   const { session } = useSession();
@@ -75,7 +77,9 @@ export default function LaunchPage() {
         <div className="cq-grid mt-10 grid grid-cols-1 gap-6">
           {items.map((i) => (
             <article key={i.sku} className="border border-stone/60 bg-white p-6">
-              <Flacon tone={i.region_name === "Japan" ? "bronze" : "sage"} label={i.product_name.split(" ")[0]} className="mb-4" />
+              {imagesOf(i.images)[0]
+                ? <div className="mb-4 aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={imagesOf(i.images)[0]} /></div>
+                : <Flacon tone={i.region_name === "Japan" ? "bronze" : "sage"} label={i.product_name.split(" ")[0]} className="mb-4" />}
               <p className="text-sm text-bronze">{i.region_name}</p>
               <h2 className="mt-1 text-3xl">{i.product_name}</h2>
               <p className="text-sm text-charcoal/70">{i.family} · {i.size_ml} ml</p>
