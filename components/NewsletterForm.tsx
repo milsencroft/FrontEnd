@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 
 const ERR: Record<string, string> = {
   invalid_email: "Enter a valid email address.",
@@ -11,7 +11,7 @@ export function NewsletterForm() {
   const [email, setEmail] = useState(""); const [busy, setBusy] = useState(false); const [msg, setMsg] = useState<string | null>(null); const [done, setDone] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setMsg(null);
-    const { error } = await supabase.rpc("newsletter_subscribe", { p_email: email, p_source: "footer" });
+    const { error } = await db.rpc("newsletter_subscribe", { p_email: email, p_source: "footer" });
     setBusy(false);
     if (error) { setMsg(ERR[error.message] ?? "Could not subscribe. Please try again."); return; }
     setDone(true); setEmail("");

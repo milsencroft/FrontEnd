@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { CHANNEL_LABEL, human, label } from "@/lib/labels";
 
@@ -15,13 +15,13 @@ const ERR: Record<string, string> = { reason_required: "A reason is required.", 
 function Notifications() {
   const { permissions } = useSession();
   const [d, setD] = useState<any>(null); const [status, setStatus] = useState<string>(""); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null);
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_outbox_overview", { p_status: status || null, p_limit: 200 }); setD(data); }, [status]);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_outbox_overview", { p_status: status || null, p_limit: 200 }); setD(data); }, [status]);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("notifications.view")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   if (!d) return <Loader />;
   const canManage = permissions.includes("notifications.manage");
   async function act(fn: "admin_outbox_retry" | "admin_outbox_cancel", id: string, done: string) {
-    const { error } = await supabase.rpc(fn, { p_id: id, p_reason: reason }); setMsg(error ? ERR[error.message] ?? "Something went wrong." : done); void load();
+    const { error } = await db.rpc(fn, { p_id: id, p_reason: reason }); setMsg(error ? ERR[error.message] ?? "Something went wrong." : done); void load();
   }
   return (
     <section className="wrap py-12 grid gap-8">

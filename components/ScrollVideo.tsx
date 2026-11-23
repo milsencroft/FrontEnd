@@ -1,12 +1,12 @@
 "use client";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { mediaUrl } from "@/lib/media";
 
 interface Slot { kind: "image" | "video" | "embed"; path: string | null; poster: string | null; alt: string }
 let cache: Promise<Record<string, Slot>> | null = null;
-const loadSlots = () => (cache ??= Promise.resolve(supabase.rpc("public_media_slots")).then(({ data }) => (data as Record<string, Slot>) ?? {}).catch((): Record<string, Slot> => ({})));
+const loadSlots = () => (cache ??= Promise.resolve(db.rpc("public_media_slots")).then(({ data }) => (data as Record<string, Slot>) ?? {}).catch((): Record<string, Slot> => ({})));
 
 /** Which film sits behind which page. Every public page gets one. */
 function slotFor(path: string): string | null {

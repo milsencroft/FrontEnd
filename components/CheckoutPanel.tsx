@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSession } from "@/lib/session";
 import { errorText, type Address, type CheckoutResult } from "@/lib/api";
 import { openCheckout } from "@/lib/razorpay";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useAddresses } from "@/lib/useSaved";
 
 const STATES: [string, string][] = [["32", "Kerala"], ["29", "Karnataka"], ["33", "Tamil Nadu"], ["27", "Maharashtra"], ["07", "Delhi"], ["36", "Telangana"], ["19", "West Bengal"], ["24", "Gujarat"], ["09", "Uttar Pradesh"], ["08", "Rajasthan"]];
@@ -23,8 +23,7 @@ export function CheckoutPanel({ start, onCancel, onPaid }: { start: (a: Address)
   async function pollOrder(orderId: string) {
     setPhase("confirming");
     for (let i = 0; i < 30; i++) {
-      const { data } = await supabase.from("orders").select("payment_status").eq("id", orderId).maybeSingle();
-      const s = data?.payment_status;
+      const { data: s } = await db.rpc("my_order_status", { p_order: orderId });
       if (s === "captured") { onPaid?.(); return setPhase("paid"); }
       if (s === "refund_pending" || s === "refunded") { setMsg("We could not complete this order and your payment is being refunded."); return setPhase("failed"); }
       await new Promise((r) => setTimeout(r, 2000));

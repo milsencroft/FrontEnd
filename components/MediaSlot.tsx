@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { mediaUrl } from "@/lib/media";
 
 interface Slot { kind: "image" | "video" | "embed"; path: string | null; poster: string | null; embed: string | null; alt: string }
 type Slots = Record<string, Slot>;
 let cache: Promise<Slots> | null = null;
-const loadSlots = () => (cache ??= Promise.resolve(supabase.rpc("public_media_slots")).then(({ data }) => (data as Slots) ?? {}).catch((): Slots => ({})));
+const loadSlots = () => (cache ??= Promise.resolve(db.rpc("public_media_slots")).then(({ data }) => (data as Slots) ?? {}).catch((): Slots => ({})));
 
 function useSlot(slot: string) {
   const [s, setS] = useState<Slot | null>(null);

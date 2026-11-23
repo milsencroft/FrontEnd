@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import type { PageRow } from "@/components/PageBody";
 
 export default function Journal() {
   const [list, setList] = useState<PageRow[] | null>(null);
-  useEffect(() => { supabase.rpc("public_pages", { p_kind: "journal" }).then(({ data }) => setList((data as PageRow[]) ?? [])); }, []);
+  useEffect(() => { db.rpc("public_pages", { p_kind: "journal" }).then(({ data }) => setList((data as PageRow[]) ?? [])); }, []);
   return (
     <>
     <PageHero title="Journal" tone="kerala" />

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import Link from "next/link";
@@ -23,7 +23,7 @@ function Addresses() {
   const set = (k: keyof typeof BLANK) => (e: { target: { value: string; type?: string; checked?: boolean } }) => setF({ ...f, [k]: e.target.type === "checkbox" ? !!e.target.checked : e.target.value });
   async function add(e: React.FormEvent) {
     e.preventDefault();
-    const { error } = await supabase.rpc("my_save_address", { p_id: null, p_label: f.label, p_recipient: f.recipient, p_phone: f.phone, p_line1: f.line1, p_line2: f.line2, p_city: f.city, p_state: f.state, p_pincode: f.pincode, p_default: f.is_default });
+    const { error } = await db.rpc("my_save_address", { p_id: null, p_label: f.label, p_recipient: f.recipient, p_phone: f.phone, p_line1: f.line1, p_line2: f.line2, p_city: f.city, p_state: f.state, p_pincode: f.pincode, p_default: f.is_default });
     if (error) return setMsg(error.message === "limit_reached" ? "You can save up to 10 addresses." : "Please check the address details.");
     setF(BLANK); setOpen(false); setMsg(null); void reload();
   }
@@ -35,8 +35,8 @@ function Addresses() {
         <li key={a.id} className="card flex flex-wrap items-start justify-between gap-3">
           <div className="text-sm"><p className="font-medium">{a.label}{a.is_default ? " (default)" : ""}</p><p>{a.recipient} · {a.phone}</p><p>{a.line1}{a.line2 ? `, ${a.line2}` : ""}, {a.city}, {a.state} {a.pincode}</p></div>
           <div className="flex gap-2">
-            {!a.is_default && <button className="btn-ghost" onClick={async () => { await supabase.rpc("my_save_address", { p_id: a.id, p_label: a.label, p_recipient: a.recipient, p_phone: a.phone, p_line1: a.line1, p_line2: a.line2, p_city: a.city, p_state: a.state, p_pincode: a.pincode, p_default: true }); void reload(); }}>Make default</button>}
-            <button className="btn-ghost" onClick={async () => { await supabase.rpc("my_delete_address", { p_id: a.id }); void reload(); }}>Remove</button>
+            {!a.is_default && <button className="btn-ghost" onClick={async () => { await db.rpc("my_save_address", { p_id: a.id, p_label: a.label, p_recipient: a.recipient, p_phone: a.phone, p_line1: a.line1, p_line2: a.line2, p_city: a.city, p_state: a.state, p_pincode: a.pincode, p_default: true }); void reload(); }}>Make default</button>}
+            <button className="btn-ghost" onClick={async () => { await db.rpc("my_delete_address", { p_id: a.id }); void reload(); }}>Remove</button>
           </div>
         </li>))}</ul>
       <button className="btn-ghost mt-4" onClick={() => { setMsg(null); setOpen(true); }}>Add an address</button>
@@ -86,13 +86,13 @@ function Account() {
   const [saved, setSaved] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.from("orders").select("id,order_number,order_type,total_paise,payment_status,fulfilment_status,courier,tracking_number,tracking_url,estimated_delivery,created_at").order("created_at", { ascending: false }).then(({ data }) => setOrders((data as Order[]) ?? []));
-    supabase.from("customers").select("full_name,phone,whatsapp_consent").maybeSingle().then(({ data }) => data && setMe(data as Me));
+    db.rpc("my_orders").then(({ data }) => setOrders((data as Order[]) ?? []));
+    db.rpc("my_profile").then(({ data }) => { const r = (data as Me[] | null)?.[0]; if (r) setMe(r); });
   }, []);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const { error } = await supabase.rpc("update_my_profile", { p_name: me.full_name ?? "", p_phone: me.phone ?? "", p_whatsapp: me.whatsapp_consent });
+    const { error } = await db.rpc("update_my_profile", { p_name: me.full_name ?? "", p_phone: me.phone ?? "", p_whatsapp: me.whatsapp_consent });
     setSaved(error ? "Could not save. Please check your details." : "Saved.");
   }
 
