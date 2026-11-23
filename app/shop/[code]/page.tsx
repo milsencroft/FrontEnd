@@ -40,7 +40,7 @@ export default function Product() {
     <section className="wrap py-16">
       <Link href="/shop" className="text-sm underline underline-offset-4">Shop</Link>
       <div className="mt-8 grid gap-12 md:grid-cols-2">
-        <Gallery images={imagesOf(v.images)} fallback={<Flacon tone={v.region_name === "Japan" ? "bronze" : "sage"} label={v.product_name.split(" ")[0]} />} />
+        <div className="md:sticky md:top-24 md:self-start"><Gallery images={imagesOf(v.images)} fallback={<Flacon tone={v.region_name === "Japan" ? "bronze" : "sage"} label={v.product_name.split(" ")[0]} />} /></div>
         <div>
           <p className="text-sm text-bronze">{v.region_name} · {v.family}</p>
           <h1 className="mt-2 text-5xl sm:text-6xl">{v.product_name}</h1>
