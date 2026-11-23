@@ -31,7 +31,7 @@ export function Journey() {
     return (
       <section aria-label="Kerala and Japan" className="dark-surface text-ivory">
         {PLACES.map((x, i) => (
-          <div key={x.name} className={`${i === 0 ? "bg-kerala" : "bg-japan"} py-20`}>
+          <div key={x.name} className={`${i === 0 ? "bg-kerala/75" : "bg-japan/75"} py-20`}>
             <div className="wrap grid items-center gap-10 md:grid-cols-2">
               <div><p className="text-sm text-ivory/70">{x.place}</p><h2 className="mt-2 text-6xl">{x.name}</h2><p className="mt-4 text-lg text-ivory/85">{x.line}</p></div>
               <Flacon tone={x.tone} label={x.name} />
@@ -43,9 +43,9 @@ export function Journey() {
   }
 
   return (
-    <section ref={outer} aria-label="Kerala and Japan" className="dark-surface relative h-[320svh] bg-kerala text-ivory">
+    <section ref={outer} aria-label="Kerala and Japan" className="dark-surface relative h-[320svh] bg-kerala/75 text-ivory">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
-        <div ref={bg2} aria-hidden className="absolute inset-0 bg-japan" style={{ opacity: 0 }} />
+        <div ref={bg2} aria-hidden className="absolute inset-0 bg-japan/75" style={{ opacity: 0 }} />
         <div className="wrap relative grid h-full grid-rows-[1fr_auto] pt-28 pb-10">
           <div className="grid items-center gap-6 md:grid-cols-[1.1fr_0.9fr]">
             <div className="relative order-2 min-h-[210px] md:order-1">
