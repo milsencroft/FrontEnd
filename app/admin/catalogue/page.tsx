@@ -5,6 +5,7 @@ import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
+import { PAGE_LABEL, PRODUCT_LABEL, label } from "@/lib/labels";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const REGION_STATUS = ["draft", "published", "archived"];
@@ -37,7 +38,7 @@ function Catalogue() {
         <li key={x.code} className="flex flex-wrap items-center justify-between gap-3 border border-stone/60 bg-white p-4">
           <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/60">{x.code} · {x.country}</span></p></div>
           <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`rs${x.code}`}>Status of {x.name}</label>
-            <select id={`rs${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_region_status", { p_region: x.id, p_status: e.target.value, p_reason: reason })}>{REGION_STATUS.map((s) => <option key={s}>{s}</option>)}</select>
+            <select id={`rs${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_region_status", { p_region: x.id, p_status: e.target.value, p_reason: reason })}>{REGION_STATUS.map((s) => <option key={s} value={s}>{label(PAGE_LABEL, s)}</option>)}</select>
             <button className="btn-ghost" onClick={() => setR({ code: x.code, name: x.name, country: x.country, description: x.description ?? "", story: x.story ?? "" })}>Edit</button></div>
         </li>))}</ul>
       <form className="card mt-4 grid gap-3 max-w-2xl" onSubmit={(e) => { e.preventDefault(); void run("admin_save_region", { p_code: r.code, p_name: r.name, p_country: r.country, p_description: r.description || null, p_story: r.story || null, p_cover_image_url: null, p_seo_title: null, p_seo_description: null, p_reason: reason }); }}>
@@ -58,7 +59,7 @@ function Catalogue() {
             <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/60">{x.code} · {x.region_code} · {x.family}</span></p>
               <p className="text-sm text-charcoal/70">{x.variants.map((v: any) => `${v.size_ml} ml ${rupees(v.price_paise)} (${v.sku})`).join(" · ") || "No sizes yet"}</p></div>
             <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`ps${x.code}`}>Status of {x.name}</label>
-              <select id={`ps${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_product_status", { p_product: x.id, p_status: e.target.value, p_reason: reason })}>{PRODUCT_STATUS.map((s) => <option key={s}>{s}</option>)}</select>
+              <select id={`ps${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_product_status", { p_product: x.id, p_status: e.target.value, p_reason: reason })}>{PRODUCT_STATUS.map((s) => <option key={s} value={s}>{label(PRODUCT_LABEL, s)}</option>)}</select>
               <button className="btn-ghost" onClick={() => setP({ code: x.code, name: x.name, region: x.region_code, family: x.family, story: x.story ?? "", notes: Array.isArray(x.notes) ? x.notes.join(", ") : "" })}>Edit</button></div>
           </div></li>))}</ul>
       <form className="card mt-4 grid gap-3 max-w-2xl" onSubmit={(e) => { e.preventDefault(); void run("admin_save_product", { p_code: p.code, p_name: p.name, p_region_code: p.region, p_family: p.family, p_story: p.story || null, p_notes: p.notes.split(",").map((s) => s.trim()).filter(Boolean), p_seo_title: null, p_seo_description: null, p_reason: reason }); }}>
