@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase } from "./supabase";
+import { db } from "./api";
 import { env } from "./env";
 
 export interface LaunchState { name: string; status: string; capacity: number; allocated: number; held: number; remaining: number }
@@ -13,7 +13,7 @@ export function useLaunch(poll = 15000) {
   useEffect(() => {
     let live = true;
     const load = async () => {
-      const [s, c] = await Promise.all([supabase.rpc("public_launch_state", { p_code: env.currentLaunch }), supabase.rpc("launch_catalogue", { p_code: env.currentLaunch })]);
+      const [s, c] = await Promise.all([db.rpc("public_launch_state", { p_code: env.currentLaunch }), db.rpc("launch_catalogue", { p_code: env.currentLaunch })]);
       if (!live) return;
       setState(((s.data as LaunchState[]) ?? [])[0] ?? null); setItems((c.data as LaunchItem[]) ?? []);
     };

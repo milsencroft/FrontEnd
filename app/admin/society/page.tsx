@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { societyError } from "@/lib/society";
 import { toCsv } from "@/lib/orders";
@@ -17,7 +17,7 @@ function Society() {
   const { permissions } = useSession();
   const [o, setO] = useState<any>(null); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null);
   const [q, setQ] = useState(""); const [benefits, setBenefits] = useState<Record<number, string>>({});
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_society_overview"); setO(data); }, []);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_society_overview"); setO(data); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("society.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   if (!o) return <Loader />;
@@ -40,10 +40,10 @@ function Society() {
             <div className="flex flex-wrap items-baseline justify-between gap-2"><p className="font-serif text-2xl">{t.tier}. {t.name}</p><p className="text-sm">{t.active} / {t.cap} active · {t.queue} waiting</p></div>
             <label className="label" htmlFor={`b${t.tier}`}>Benefits</label>
             <textarea id={`b${t.tier}`} className="field" rows={2} value={benefits[t.tier] ?? t.benefits} onChange={(e) => setBenefits({ ...benefits, [t.tier]: e.target.value })} />
-            <div><button className="btn-ghost" disabled={!ok} onClick={() => run(supabase.rpc("admin_set_tier_benefits", { p_tier: t.tier, p_benefits: benefits[t.tier] ?? t.benefits, p_reason: reason }), "Benefits saved.")}>Save benefits</button></div>
+            <div><button className="btn-ghost" disabled={!ok} onClick={() => run(db.rpc("admin_set_tier_benefits", { p_tier: t.tier, p_benefits: benefits[t.tier] ?? t.benefits, p_reason: reason }), "Benefits saved.")}>Save benefits</button></div>
           </li>))}</ul>
         <p className="mt-3 text-sm text-charcoal/70">Tier names and caps are edited under Settings.</p>
-        <button className="btn-ghost mt-3" disabled={!ok} onClick={() => run(supabase.rpc("admin_run_society_queues", { p_reason: reason }), "Queues checked.")}>Fill open places from queues</button>
+        <button className="btn-ghost mt-3" disabled={!ok} onClick={() => run(db.rpc("admin_run_society_queues", { p_reason: reason }), "Queues checked.")}>Fill open places from queues</button>
       </div>
 
       <div><h2 className="text-2xl mb-4">Launch results</h2>
@@ -51,7 +51,7 @@ function Society() {
         {(o.launches as any[]).length === 0 && <p className="text-charcoal/70">No finished Society launches yet.</p>}
         <ul className="grid gap-3">{(o.launches as any[]).map((l) => (
           <li key={l.id} className="card flex flex-wrap items-center justify-between gap-3"><p>{l.code}: {l.name} <span className="text-sm text-charcoal/60">({label(LAUNCH_LABEL, l.status)})</span></p>
-            {l.processed ? <span className="text-sm">Processed</span> : <button className="btn" disabled={!ok} onClick={() => { if (confirm(`Process results for ${l.code}? This cannot be repeated.`)) void run(supabase.rpc("admin_process_launch_cycle", { p_launch: l.id, p_reason: reason }), `Launch ${l.code} processed.`); }}>Process results</button>}</li>))}</ul>
+            {l.processed ? <span className="text-sm">Processed</span> : <button className="btn" disabled={!ok} onClick={() => { if (confirm(`Process results for ${l.code}? This cannot be repeated.`)) void run(db.rpc("admin_process_launch_cycle", { p_launch: l.id, p_reason: reason }), `Launch ${l.code} processed.`); }}>Process results</button>}</li>))}</ul>
       </div>
 
       <div><h2 className="text-2xl mb-4">Waiting lists</h2>
@@ -59,7 +59,7 @@ function Society() {
         <ul className="grid gap-3">{(o.waiting as any[]).map((w) => (
           <li key={`${w.customer_id}-${w.tier}`} className="card flex flex-wrap items-center justify-between gap-3">
             <p>{w.name ?? w.email} <span className="text-sm text-charcoal/60">{w.tier === 1 ? "Tier 1 re-entry list" : `Tier ${w.tier} queue`} since {date(w.since)}</span></p>
-            {w.tier === 1 && lastLaunch && <button className="btn-ghost" disabled={!ok} onClick={() => run(supabase.rpc("admin_admit_reentry", { p_customer: w.customer_id, p_launch: lastLaunch.id, p_reason: reason }), "Admitted.")}>Admit to Tier 1</button>}
+            {w.tier === 1 && lastLaunch && <button className="btn-ghost" disabled={!ok} onClick={() => run(db.rpc("admin_admit_reentry", { p_customer: w.customer_id, p_launch: lastLaunch.id, p_reason: reason }), "Admitted.")}>Admit to Tier 1</button>}
           </li>))}</ul>
       </div>
 
@@ -71,8 +71,8 @@ function Society() {
             <div><p className="font-medium">{m.number} <span className="text-sm text-charcoal/60">Tier {m.tier} · {label(MEMBERSHIP_LABEL, m.status)}{m.missed ? ` · missed ${m.missed}` : ""}</span></p>
               <p className="text-sm text-charcoal/70">{m.name ?? ""} {m.email}</p><p className="text-sm text-charcoal/70">Card sent: {date(m.card_dispatched_at)} · Package sent: {date(m.package_dispatched_at)}</p></div>
             {m.status === "active" && <div className="flex gap-2">
-              <button className="btn-ghost" disabled={!ok || !!m.card_dispatched_at} onClick={() => run(supabase.rpc("admin_society_dispatch", { p_membership: m.id, p_item: "card", p_reason: reason }), "Marked card as sent.")}>Card sent</button>
-              <button className="btn-ghost" disabled={!ok || !!m.package_dispatched_at} onClick={() => run(supabase.rpc("admin_society_dispatch", { p_membership: m.id, p_item: "package", p_reason: reason }), "Marked package as sent.")}>Package sent</button></div>}
+              <button className="btn-ghost" disabled={!ok || !!m.card_dispatched_at} onClick={() => run(db.rpc("admin_society_dispatch", { p_membership: m.id, p_item: "card", p_reason: reason }), "Marked card as sent.")}>Card sent</button>
+              <button className="btn-ghost" disabled={!ok || !!m.package_dispatched_at} onClick={() => run(db.rpc("admin_society_dispatch", { p_membership: m.id, p_item: "package", p_reason: reason }), "Marked package as sent.")}>Package sent</button></div>}
           </li>))}</ul>
       </div>
     </section>

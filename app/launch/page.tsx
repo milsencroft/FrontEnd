@@ -1,7 +1,8 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { useCallback, useEffect, useState } from "react";
-import { supabase, signInWithGoogle } from "@/lib/supabase";
+import { signInWithGoogle } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { env } from "@/lib/env";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
@@ -27,7 +28,7 @@ export default function LaunchPage() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const [s, c] = await Promise.all([supabase.rpc("public_launch_state", { p_code: code }), supabase.rpc("launch_catalogue", { p_code: code })]);
+    const [s, c] = await Promise.all([db.rpc("public_launch_state", { p_code: code }), db.rpc("launch_catalogue", { p_code: code })]);
     setSt(((s.data as State[]) ?? [])[0] ?? null); setItems((c.data as Item[]) ?? []);
   }, [code]);
   useEffect(() => { void load(); const t = setInterval(load, 10000); return () => clearInterval(t); }, [load]);
@@ -39,7 +40,7 @@ export default function LaunchPage() {
 
   async function reserve(sku: string) {
     setErr(null); setBusy(true);
-    const { data, error } = await supabase.rpc("my_reserve_launch_slot", { p_code: code });
+    const { data, error } = await db.rpc("my_reserve_launch_slot", { p_code: code });
     setBusy(false);
     const r = ((data as { r_result: string; r_expires_at: string }[]) ?? [])[0];
     if (error || !r) return setErr("Could not reserve a slot. Please try again.");

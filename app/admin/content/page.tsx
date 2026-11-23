@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { Modal } from "@/components/Modal";
 import { PAGE_LABEL, label } from "@/lib/labels";
@@ -14,16 +14,16 @@ const empty = { slug: "", kind: "journal", title: "", summary: "", body: "" };
 function Editor() {
   const { permissions } = useSession();
   const [list, setList] = useState<Row[]>([]); const [f, setF] = useState(empty); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null); const [open, setOpen] = useState(false);
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_list_pages"); setList((data as Row[]) ?? []); }, []);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_list_pages"); setList((data as Row[]) ?? []); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("content.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    const { error } = await supabase.rpc("admin_save_page", { p_slug: f.slug, p_kind: f.kind, p_title: f.title, p_summary: f.summary, p_body: f.body, p_reason: reason });
+    const { error } = await db.rpc("admin_save_page", { p_slug: f.slug, p_kind: f.kind, p_title: f.title, p_summary: f.summary, p_body: f.body, p_reason: reason });
     setMsg(error ? ERR[error.message] ?? "Could not save." : "Saved as a draft until you publish it."); if (!error) { setOpen(false); void load(); }
   }
   async function setStatus(slug: string, status: string) {
-    const { error } = await supabase.rpc("admin_set_page_status", { p_slug: slug, p_status: status, p_reason: reason });
+    const { error } = await db.rpc("admin_set_page_status", { p_slug: slug, p_status: status, p_reason: reason });
     setMsg(error ? ERR[error.message] ?? "Could not change status." : `Now ${status}.`); if (!error) void load();
   }
   const path = (r: Row) => (r.kind === "journal" ? `/journal/${r.slug}` : `/legal/${r.slug}`);

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 
 const FALLBACK: [string, string][] = [
   ["Origin Circle", "Numbered card, certificate, collector package and Society access."],
@@ -14,7 +14,7 @@ const FALLBACK: [string, string][] = [
 export function TierList() {
   const [tiers, setTiers] = useState<[string, string][]>(FALLBACK);
   useEffect(() => {
-    supabase.from("society_tiers").select("tier,name,benefits").order("tier").then(({ data }) => {
+    db.rpc("public_society_tiers").then(({ data }) => {
       if (data && data.length) setTiers(data.map((t: { name: string; benefits: string }, i: number) => [t.name, t.benefits || FALLBACK[i]?.[1] || ""]));
     });
   }, []);

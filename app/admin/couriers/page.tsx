@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import type { Courier } from "@/lib/couriers";
 import { Modal } from "@/components/Modal";
@@ -13,12 +13,12 @@ function Couriers() {
   const { permissions } = useSession();
   const [list, setList] = useState<Courier[]>([]); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null);
   const [f, setF] = useState({ name: "", tpl: "" }); const [open, setOpen] = useState(false);
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_list_couriers"); setList((data as Courier[]) ?? []); }, []);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_list_couriers"); setList((data as Courier[]) ?? []); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("orders.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   const canEdit = permissions.includes("settings.manage");
   async function save(c: Courier) {
-    const { error } = await supabase.rpc("admin_save_courier", { p_name: c.name, p_url_template: c.url_template, p_active: c.is_active, p_reason: reason });
+    const { error } = await db.rpc("admin_save_courier", { p_name: c.name, p_url_template: c.url_template, p_active: c.is_active, p_reason: reason });
     setMsg(error ? ERR[error.message] ?? "Could not save." : "Saved."); if (!error) { setF({ name: "", tpl: "" }); setOpen(false); void load(); }
   }
   return (

@@ -51,7 +51,7 @@ export default function Shop() {
             <p className="text-sm text-charcoal/70">{p.family}</p>
             <p className="mt-3">From {rupees(p.price_paise)}</p>
             <div className="mt-4 flex flex-wrap gap-3">
-              {p.in_stock ? <button className="btn" onClick={() => { add({ sku: p.sku }); setAdded(p.sku); }}>{added === p.sku ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}
+              {p.in_stock ? <button className="btn" onClick={async () => { if (await add({ sku: p.sku })) setAdded(p.sku); }}>{added === p.sku ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}
               <Link className="btn-ghost" href={`/shop/${p.product_code}`}>Details</Link>
             </div>
           </article>
@@ -62,7 +62,7 @@ export default function Shop() {
             <h2 className="mt-1 text-3xl">{b.name}</h2>
             {b.description && <p className="mt-2 text-charcoal/80">{b.description}</p>}
             <p className="mt-3">{rupees(b.price_paise)}</p>
-            <div className="mt-4">{b.in_stock ? <button className="btn" onClick={() => { add({ bundle: b.code }); setAdded(b.code); }}>{added === b.code ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}</div>
+            <div className="mt-4">{b.in_stock ? <button className="btn" onClick={async () => { if (await add({ bundle: b.code })) setAdded(b.code); }}>{added === b.code ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}</div>
           </article>
         ))}
       </div></div>
