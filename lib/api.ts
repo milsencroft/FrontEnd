@@ -38,8 +38,8 @@ export async function rpc(fn: string, args: Record<string, unknown> = {}): Promi
 export const db = { rpc };
 
 // ---- Cart (stored and decided by the backend) ----
-export interface CartLineView { sku: string | null; bundle: string | null; qty: number; name: string | null; unit_paise: number | null; ok: boolean }
-export interface CartView { lines: CartLineView[]; count: number; subtotal_paise: number }
+export interface CartLineView { sku: string | null; bundle: string | null; qty: number; name: string | null; unit_paise: number | null; max_qty: number; ok: boolean }
+export interface CartView { lines: CartLineView[]; count: number; subtotal_paise: number; capped?: boolean }
 export type LineRef = { sku?: string; bundle?: string };
 export const cartApi = {
   get: () => request<CartView>("GET", "/cart", undefined, { guest: true }),
@@ -72,7 +72,7 @@ export const refundOrder = (orderId: string, reason: string) => post<{ ok: true 
 
 export const ERROR_TEXT: Record<string, string> = {
   unauthorized: "Please sign in again.", empty_cart: "Your cart is empty.", cart_full: "Your cart is full. Remove something first.", invalid_item: "That item is not available.", closed: "This launch is fully allocated.", no_reservation: "Your slot hold has expired. Please start again.",
-  launch_only: "This product is available only on its launch page.", out_of_stock: "Sorry, that item just went out of stock.",
+  launch_only: "This product is available only on its launch page.", out_of_stock: "Sorry, that item is out of stock.",
   invalid_address: "Please check your address.", invalid_coupon: "That coupon is not valid.", invalid_items: "Something in your cart is no longer available.", invalid_request: "Please check the details you entered.",
   payment_unavailable: "Payments are temporarily unavailable. Please try again shortly.", payments_not_configured: "Payments are not switched on yet.",
 };

@@ -10,7 +10,7 @@ import { rupees } from "@/lib/money";
 import { CheckoutPanel } from "@/components/CheckoutPanel";
 
 export default function Cart() {
-  const { cart, loading, setQty, remove, clear, error } = useCart();
+  const { cart, loading, setQty, remove, clear, error, notice } = useCart();
   const { session } = useSession();
   const [coupon, setCoupon] = useState(""); const [paying, setPaying] = useState(false);
   const lines = cart.lines;
@@ -29,12 +29,13 @@ export default function Cart() {
             <div><p className="font-serif text-2xl">{l.name ?? "Item no longer available"}</p>{l.unit_paise != null && <p className="text-sm text-charcoal/70">{rupees(l.unit_paise)} each{l.ok ? "" : " · out of stock"}</p>}</div>
             <div className="flex items-center gap-3">
               <label className="sr-only" htmlFor={`q${key}`}>Quantity</label>
-              <select id={`q${key}`} className="field w-20" value={l.qty} onChange={(e) => void setQty(ref(l), Number(e.target.value))}>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select>
+              <select id={`q${key}`} className="field w-20" value={l.qty} onChange={(e) => void setQty(ref(l), Number(e.target.value))}>{Array.from({ length: Math.max(l.qty, Math.min(5, l.max_qty)) }, (_, i) => i + 1).map((n) => <option key={n}>{n}</option>)}</select>
               <button className="min-h-[44px] px-2 text-sm underline underline-offset-4" onClick={() => void remove(ref(l))}>Remove</button>
             </div>
           </li>); })}
       </ul>
       {error && <p role="alert" className="mt-4 text-danger">{error}</p>}
+      {notice && <p role="status" className="mt-4 text-sm">{notice}</p>}
       <p className="mt-4 text-sm text-charcoal/70">Discounts, shipping, tax and the final total are calculated securely when you continue to payment.</p>
       {!paying && (
         <div className="mt-8 flex flex-wrap items-end gap-4">
