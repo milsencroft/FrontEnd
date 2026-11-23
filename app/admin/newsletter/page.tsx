@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
+import { SOURCE_LABEL, label } from "@/lib/labels";
 
 type Sub = { id: string; email: string; source: string; consented_at: string; confirmed_at: string | null; unsubscribed_at: string | null };
 const ERR: Record<string, string> = { reason_required: "A reason is required.", not_found: "Already unsubscribed.", forbidden: "You do not have permission for this." };
@@ -35,7 +36,7 @@ function List() {
         <button className="btn-ghost" onClick={exportCsv} disabled={active.length === 0}>Download subscribers (CSV)</button></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}
       <ul className="grid gap-3">{list.length === 0 && <li className="text-charcoal/70">No subscribers yet.</li>}
-        {list.map((s) => <li key={s.id} className="card flex flex-wrap items-center justify-between gap-3"><div><p className="break-all font-medium">{s.email}</p><p className="text-sm text-charcoal/70">{new Date(s.consented_at).toLocaleDateString("en-IN")} · {s.source}{s.unsubscribed_at ? " · unsubscribed" : ""}</p></div>
+        {list.map((s) => <li key={s.id} className="card flex flex-wrap items-center justify-between gap-3"><div><p className="break-all font-medium">{s.email}</p><p className="text-sm text-charcoal/70">{new Date(s.consented_at).toLocaleDateString("en-IN")} · {label(SOURCE_LABEL, s.source)}{s.unsubscribed_at ? " · unsubscribed" : ""}</p></div>
           {!s.unsubscribed_at && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => unsub(s.id)}>Unsubscribe</button>}</li>)}</ul>
     </section>
   );

@@ -7,6 +7,7 @@ import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import { toCsv, FULFIL_LABEL, TYPE_LABEL } from "@/lib/orders";
 import { fillDays, presetRange, type Preset } from "@/lib/reports";
+import { LAUNCH_LABEL, label } from "@/lib/labels";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const download = (name: string, rows: Record<string, unknown>[]) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([toCsv(rows)], { type: "text/csv" })); a.download = name; a.click(); URL.revokeObjectURL(a.href); };
@@ -73,7 +74,7 @@ function Reports() {
         <div className="cq"><div className="cq-grid grid grid-cols-1 gap-10">
           <div><h2 className="mb-3 text-2xl">Orders right now</h2><p className="mb-2 text-sm text-charcoal/70">Paid orders by status, all time.</p>
             <Table head={["Status", "Orders"]} rows={Object.entries(r.fulfilment).map(([k, v]) => [FULFIL_LABEL[k] ?? k, v as number])} /></div>
-          <div><h2 className="mb-3 text-2xl">Launch places</h2><Table head={["Launch", "Status", "Allocated"]} rows={r.launches.map((l: any) => [`${l.name} (${l.code})`, l.status.replace(/_/g, " "), `${l.allocated} / ${l.capacity}`])} /></div>
+          <div><h2 className="mb-3 text-2xl">Launch places</h2><Table head={["Launch", "Status", "Allocated"]} rows={r.launches.map((l: any) => [`${l.name} (${l.code})`, label(LAUNCH_LABEL, l.status), `${l.allocated} / ${l.capacity}`])} /></div>
           <div><h2 className="mb-3 text-2xl">Society</h2><Table head={["Tier", "Active", "Cap"]} rows={r.society.map((t: any) => [`${t.tier}. ${t.name}`, t.active, t.cap])} /></div>
         </div></div>
       </>}

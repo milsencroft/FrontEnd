@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
+import { PAGE_LABEL, label } from "@/lib/labels";
 
 type Row = { slug: string; kind: string; title: string; summary: string | null; body: string; status: string; updated_at: string };
 const ERR: Record<string, string> = { reason_required: "A reason is required.", invalid_input: "Check the address (lowercase letters, numbers, dashes), title and length.", not_found: "Page not found.", forbidden: "You do not have permission for this." };
@@ -33,7 +34,7 @@ function Editor() {
       {msg && <p role="status" className="text-sm">{msg}</p>}
       <ul className="grid max-w-3xl gap-3">{list.length === 0 && <li className="text-charcoal/70">No pages yet.</li>}
         {list.map((r) => <li key={r.slug} className="card flex flex-wrap items-center justify-between gap-3">
-          <div><p className="font-medium">{r.title}</p><p className="text-sm text-charcoal/70">{path(r)} · {r.status}</p></div>
+          <div><p className="font-medium">{r.title}</p><p className="text-sm text-charcoal/70">{path(r)} · {label(PAGE_LABEL, r.status)}</p></div>
           <div className="flex flex-wrap gap-2">
             <button className="btn-ghost" onClick={() => setF({ slug: r.slug, kind: r.kind, title: r.title, summary: r.summary ?? "", body: r.body })}>Edit</button>
             {r.status !== "published" && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "published")}>Publish</button>}

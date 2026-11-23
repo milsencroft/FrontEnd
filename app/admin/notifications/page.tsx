@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
+import { CHANNEL_LABEL, human, label } from "@/lib/labels";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const STATUSES = ["pending", "sent", "delivered", "failed", "cancelled"];
@@ -35,7 +36,7 @@ function Notifications() {
       {(d.items as any[]).length === 0 ? <p className="text-charcoal/70">No messages here.</p> : (
         <ul className="grid gap-3">{(d.items as any[]).map((i) => (
           <li key={i.id} className="card flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0 text-sm"><p className="font-medium">{i.template.replace(/_/g, " ")} <span className="text-charcoal/60">via {i.channel.replace(/_/g, " ")}</span></p>
+            <div className="min-w-0 text-sm"><p className="font-medium">{human(i.template)} <span className="text-charcoal/60">via {label(CHANNEL_LABEL, i.channel)}</span></p>
               <p className="break-all text-charcoal/70">{i.recipient ?? "Staff"}{i.order_number ? ` · ${i.order_number}` : ""}</p>
               <p className="text-charcoal/70">{LABEL[i.status]} · tried {i.attempts} time{i.attempts === 1 ? "" : "s"} · queued {new Date(i.created_at).toLocaleString("en-IN")}{i.delivered_at ? ` · delivered ${new Date(i.delivered_at).toLocaleString("en-IN")}` : ""}</p>
               {i.last_error && <p className="text-danger">Last error: {i.last_error}</p>}</div>
