@@ -10,7 +10,7 @@ export function LaunchBand() {
   const R = 54, C = 2 * Math.PI * R;
   const full = state.remaining <= 0 && state.held === 0;
   return (
-    <section className="bg-charcoal text-ivory" aria-label="Launch progress">
+    <section className="dark-surface bg-charcoal text-ivory" aria-label="Launch progress">
       <div className="wrap grid items-center gap-10 py-20 md:grid-cols-[auto_1fr_auto]">
         <svg viewBox="0 0 140 140" className="h-40 w-40" role="img" aria-label={`${state.allocated} of ${state.capacity} allocated`}>
           <circle cx="70" cy="70" r={R} fill="none" className="stroke-ivory" strokeOpacity="0.15" strokeWidth="2" />

@@ -16,7 +16,7 @@ function Card() {
   return (
     <section className="wrap py-16">
       <div className="no-print flex flex-wrap items-center justify-between gap-4"><Link href="/account" className="text-sm underline underline-offset-4">Your account</Link><button className="btn" onClick={() => window.print()}>Print or save as PDF</button></div>
-      <article aria-label="Society card" className="mt-8 max-w-xl bg-charcoal p-8 text-ivory sm:p-12">
+      <article aria-label="Society card" className="dark-surface mt-8 max-w-xl bg-charcoal p-8 text-ivory sm:p-12">
         <p className="font-serif text-lg tracking-wide">Milsen &amp; Croft</p>
         <p className="mt-16 font-serif text-4xl">{m.tier_name}</p>
         <p className="mt-2 text-sm text-stone">{name}</p>
