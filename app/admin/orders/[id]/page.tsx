@@ -10,6 +10,21 @@ import { rupees } from "@/lib/money";
 import { FULFIL_LABEL, NEXT_ACTIONS, PAYMENT_LABEL, TYPE_LABEL, orderError } from "@/lib/orders";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+function Packing({ id, onError }: { id: string; onError: (m: string) => void }) {
+  const [items, setItems] = useState<any[]>([]);
+  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_order_packing", { p_order: id }); setItems((data as any[]) ?? []); }, [id]);
+  useEffect(() => { void load(); }, [load]);
+  const done = items.filter((i) => i.checked).length;
+  return (
+    <div className="card"><h2 className="text-2xl">Packing checklist</h2>
+      <p className="text-sm text-charcoal/60">{done} of {items.length} done. All items must be ticked before the order can be marked as packed.</p>
+      <ul className="mt-3 text-sm">{items.map((i) => (
+        <li key={i.key} className="border-b border-stone/30"><label className="flex min-h-[44px] cursor-pointer items-center gap-3"><input type="checkbox" className="h-5 w-5" checked={i.checked}
+          onChange={async (e) => { const { error } = await supabase.rpc("admin_pack_check", { p_order: id, p_key: i.key, p_checked: e.target.checked }); if (error) onError(orderError(error.message)); void load(); }} />{i.label}</label></li>))}</ul>
+    </div>
+  );
+}
+
 function Detail() {
   const { id } = useParams<{ id: string }>();
   const { permissions } = useSession();
@@ -64,6 +79,8 @@ function Detail() {
           </div>
           <p className="text-sm text-charcoal/70">Shipped: {o.shipped_at ? new Date(o.shipped_at).toLocaleDateString("en-IN") : "—"} · Courier: {o.courier ?? "—"} · Tracking: {o.tracking_number ?? "—"} · Estimated delivery: {o.estimated_delivery ?? "—"}</p>
         </div>)}
+
+      {o.payment_status === "captured" && o.fulfilment_status === "processing" && can("orders.manage") && <div className="mt-8 max-w-2xl"><Packing id={id} onError={setMsg} /></div>}
 
       <div className="cq mt-8"><div className="cq-grid grid grid-cols-1 gap-8">
         <div className="card"><h2 className="text-2xl">Status history</h2><ol className="mt-3 text-sm">{d.history.map((h: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{new Date(h.at).toLocaleString("en-IN")} · {h.kind} · {h.from ?? "—"} → {h.to}{h.note ? ` · ${h.note}` : ""}</li>)}</ol></div>
