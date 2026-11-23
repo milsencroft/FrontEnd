@@ -1,13 +1,11 @@
 "use client";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
-import { refundOrder } from "@/lib/api";
-import { rupees } from "@/lib/money";
 
-type Tab = "overview" | "launches" | "orders" | "settings" | "staff";
-const FULFIL = ["unfulfilled", "processing", "packed", "shipped", "delivered", "cancelled", "returned"];
+type Tab = "overview" | "launches" | "orders" | "catalogue" | "coupons" | "media" | "reports" | "notifications" | "newsletter" | "content" | "society" | "settings" | "staff";
 const LAUNCH_STATUS = ["draft", "pending_approval", "preorder_active", "paused", "closed", "post_launch_review", "published_in_shop", "completed", "postponed", "cancelled", "archived"];
 const ROLES = ["admin", "product_manager", "order_manager", "content_manager", "customer_support"];
 
@@ -18,7 +16,7 @@ function Admin() {
   const can = (p: string) => permissions.includes(p);
   const [tab, setTab] = useState<Tab>("overview");
   const [note, setNote] = useState<string | null>(null);
-  const tabs: [Tab, string, boolean][] = [["overview", "Overview", can("orders.view")], ["launches", "Launches", can("launches.manage")], ["orders", "Orders", can("orders.view")], ["settings", "Settings", can("settings.manage")], ["staff", "Staff", can("staff.manage")]];
+  const tabs: [Tab, string, boolean][] = [["overview", "Overview", can("orders.view")], ["launches", "Launches", can("launches.manage")], ["orders", "Orders", can("orders.view")], ["catalogue", "Catalogue", can("catalog.manage")], ["coupons", "Coupons", can("coupons.manage")], ["media", "Media", can("media.manage")], ["reports", "Reports", can("payments.view")], ["notifications", "Notifications", can("notifications.view")], ["newsletter", "Newsletter", can("newsletter.manage")], ["content", "Content", can("content.manage")], ["society", "Society", can("society.manage")], ["settings", "Settings", can("settings.manage")], ["staff", "Staff", can("staff.manage")]];
   if (permissions.length === 0) return <div className="wrap py-16"><h1 className="text-3xl">No admin access</h1><p className="mt-2">Your Google account is not a staff account.</p></div>;
   return (
     <section className="wrap py-10">
@@ -30,7 +28,15 @@ function Admin() {
       <div className="mt-8">
         {tab === "overview" && <Overview />}
         {tab === "launches" && <Launches setNote={setNote} />}
-        {tab === "orders" && <Orders can={can} setNote={setNote} />}
+        {tab === "orders" && <div><Link href="/admin/orders" className="btn">Open order management</Link></div>}
+        {tab === "catalogue" && <div><Link href="/admin/catalogue" className="btn">Open catalogue management</Link></div>}
+        {tab === "coupons" && <div><Link href="/admin/coupons" className="btn">Open coupon management</Link></div>}
+        {tab === "media" && <div><Link href="/admin/media" className="btn">Open media library</Link></div>}
+        {tab === "reports" && <div><Link href="/admin/reports" className="btn">Open reports</Link></div>}
+        {tab === "content" && <div><Link href="/admin/content" className="btn">Open content editor</Link></div>}
+        {tab === "newsletter" && <div><Link href="/admin/newsletter" className="btn">Open newsletter list</Link></div>}
+        {tab === "notifications" && <div><Link href="/admin/notifications" className="btn">Open notifications</Link></div>}
+        {tab === "society" && <div><Link href="/admin/society" className="btn">Open Society management</Link></div>}
         {tab === "settings" && <Settings setNote={setNote} />}
         {tab === "staff" && <Staff setNote={setNote} />}
       </div>
@@ -63,33 +69,6 @@ function Launches({ setNote }: { setNote: (s: string) => void }) {
             <input id={`c${l.id}`} className="field" type="number" min={1} defaultValue={l.capacity} disabled={!reason.trim()} onBlur={async (e) => { const n = Number(e.target.value); if (n === l.capacity) return; const { error } = await supabase.rpc("admin_set_launch_capacity", { p_launch: l.id, p_capacity: n, p_reason: reason }); setNote(msg(error)); void load(); }} /></div>
         </div>))}
     </div>
-  );
-}
-
-interface O { id: string; order_number: string; total_paise: number; payment_status: string; fulfilment_status: string; created_at: string }
-function Orders({ can, setNote }: { can: (p: string) => boolean; setNote: (s: string) => void }) {
-  const [rows, setRows] = useState<O[]>([]);
-  const [track, setTrack] = useState<Record<string, { courier: string; tracking: string }>>({});
-  const load = useCallback(() => supabase.from("orders").select("id,order_number,total_paise,payment_status,fulfilment_status,created_at").order("created_at", { ascending: false }).limit(100).then(({ data }) => setRows((data as O[]) ?? [])), []);
-  useEffect(() => { void load(); }, [load]);
-  return (
-    <ul className="grid gap-3">
-      {rows.map((o) => { const t = track[o.id] ?? { courier: "", tracking: "" }; return (
-        <li key={o.id} className="card grid gap-3 lg:grid-cols-[1fr_auto]">
-          <div><p className="font-medium">{o.order_number} · {rupees(o.total_paise)}</p><p className="text-sm">Payment {o.payment_status.replace(/_/g, " ")} · {o.fulfilment_status}</p></div>
-          {can("orders.manage") && (
-            <div className="flex flex-wrap items-end gap-2">
-              <select aria-label="Fulfilment status" className="field w-auto" value={o.fulfilment_status} onChange={async (e) => {
-                const { error } = await supabase.rpc("admin_set_fulfilment", { p_order: o.id, p_status: e.target.value, p_courier: t.courier || null, p_tracking: t.tracking || null, p_note: null }); setNote(msg(error)); void load(); }}>
-                {FULFIL.map((s) => <option key={s}>{s}</option>)}</select>
-              <input aria-label="Courier" placeholder="Courier" className="field w-32" value={t.courier} onChange={(e) => setTrack({ ...track, [o.id]: { ...t, courier: e.target.value } })} />
-              <input aria-label="Tracking number" placeholder="Tracking no." className="field w-40" value={t.tracking} onChange={(e) => setTrack({ ...track, [o.id]: { ...t, tracking: e.target.value } })} />
-              {can("payments.refund") && ["captured", "refund_pending"].includes(o.payment_status) && <button className="btn-ghost" onClick={async () => {
-                const reason = window.prompt("Reason for full refund?"); if (!reason) return;
-                try { await refundOrder(o.id, reason); setNote("Refund started."); } catch { setNote("Refund failed."); } void load(); }}>Refund</button>}
-            </div>)}
-        </li>); })}
-    </ul>
   );
 }
 

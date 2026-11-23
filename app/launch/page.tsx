@@ -6,6 +6,8 @@ import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import { checkoutLaunch } from "@/lib/api";
 import { CheckoutPanel } from "@/components/CheckoutPanel";
+import { Flacon } from "@/components/Flacon";
+import { MediaSlot } from "@/components/MediaSlot";
 
 interface State { code: string; name: string; status: string; capacity: number; allocated: number; held: number; remaining: number }
 interface Item { sku: string; product_name: string; family: string; region_name: string; story: string | null; size_ml: number; launch_price_paise: number; regular_price_paise: number; in_stock: boolean }
@@ -51,24 +53,27 @@ export default function LaunchPage() {
 
   return (
     <section className="wrap py-16 cq">
-      <p className="text-xs uppercase tracking-[0.3em] text-bronze">Pre-order launch</p>
-      <h1 className="mt-2 text-4xl sm:text-6xl">{st.name}</h1>
-      <div className="card mt-8" aria-live="polite">
-        <p className="text-2xl font-serif">{st.allocated} / {st.capacity} allocated, {st.remaining} remaining</p>
+      <p className="text-sm text-bronze">Pre-order launch</p>
+      <h1 className="mt-2 text-5xl sm:text-7xl">{st.name}</h1>
+      <MediaSlot slot="launch.hero" className="mt-8" />
+      <div className="mt-8 border-y border-stone/60 py-6" aria-live="polite">
+        <p className="font-serif text-3xl">{st.allocated} / {st.capacity} allocated, {st.remaining} remaining</p>
         {st.held > 0 && <p className="mt-1 text-sm text-charcoal/70">{st.held} slot{st.held > 1 ? "s are" : " is"} temporarily held by customers mid-payment and may become available.</p>}
         <div className="mt-4 h-2 bg-stone/40" role="progressbar" aria-valuemin={0} aria-valuemax={st.capacity} aria-valuenow={st.allocated}><div className="h-2 bg-sage" style={{ width: `${Math.min(100, (st.allocated / st.capacity) * 100)}%` }} /></div>
       </div>
       {(full || st.status === "closed") && <p className="mt-8 text-2xl font-serif">Fully Allocated</p>}
       {!open && !full && st.status !== "closed" && <p className="mt-8 text-charcoal/70">This launch is currently {st.status.replace(/_/g, " ")}.</p>}
+      <MediaSlot slot="launch.story" className="mt-10" />
       {err && <p role="alert" className="mt-6 text-danger">{err}</p>}
       {holdUntil && <p className="mt-6 text-lg" role="timer">Your slot is held for {mins}:{secs}</p>}
 
       {open && !full && !pick && (
         <div className="cq-grid mt-10 grid grid-cols-1 gap-6">
           {items.map((i) => (
-            <article key={i.sku} className="card">
-              <p className="text-xs uppercase tracking-[0.18em] text-bronze">{i.region_name}</p>
-              <h2 className="mt-2 text-2xl">{i.product_name}</h2>
+            <article key={i.sku} className="border border-stone/60 bg-white p-6">
+              <Flacon tone={i.region_name === "Japan" ? "bronze" : "sage"} label={i.product_name.split(" ")[0]} className="mb-4" />
+              <p className="text-sm text-bronze">{i.region_name}</p>
+              <h2 className="mt-1 text-3xl">{i.product_name}</h2>
               <p className="text-sm text-charcoal/70">{i.family} · {i.size_ml} ml</p>
               {i.story && <p className="mt-3 text-sm">{i.story}</p>}
               <p className="mt-4 text-xl">{rupees(i.launch_price_paise)} <span className="text-sm text-charcoal/50 line-through">{rupees(i.regular_price_paise)}</span></p>
