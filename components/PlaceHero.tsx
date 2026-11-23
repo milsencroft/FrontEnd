@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { MediaBackdrop } from "./MediaSlot";
 import { Flacon, type Tone } from "./Flacon";
 import { useLaunch } from "@/lib/useLaunch";
 import { rupees } from "@/lib/money";
