@@ -5,6 +5,7 @@ import { SessionProvider } from "@/lib/session";
 import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { NavProgress } from "@/components/NavProgress";
 import { Splash } from "@/components/Splash";
 import { ScrollVideo } from "@/components/ScrollVideo";
 import { ScrollEffects } from "@/components/ScrollEffects";
@@ -23,7 +24,7 @@ const THEME_SCRIPT = `try{var t=localStorage.getItem("mc_theme");if(t==="dark"||
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} /></head><body><Splash /><ScrollEffects /><ScrollVideo />
+    <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} /></head><body><Splash /><NavProgress /><ScrollEffects /><ScrollVideo />
       <SessionProvider><CartProvider><Header /><main>{children}</main><Footer /></CartProvider></SessionProvider>
     </body></html>
   );
