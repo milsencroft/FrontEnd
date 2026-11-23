@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import { PAGE_LABEL, PRODUCT_LABEL, label } from "@/lib/labels";
@@ -18,7 +18,7 @@ const say = (e: { message: string } | null) => (e ? ERR[e.message] ?? "Could not
 function Catalogue() {
   const { permissions } = useSession();
   const [cat, setCat] = useState<any>(null); const [msg, setMsg] = useState<string | null>(null); const [reason, setReason] = useState("");
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_catalogue"); setCat(data); }, []);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_catalogue"); setCat(data); }, []);
   useEffect(() => { void load(); }, [load]);
   const [r, setR] = useState({ code: "", name: "", country: "", description: "", story: "" });
   const [p, setP] = useState({ code: "", name: "", region: "", family: "", story: "", notes: "" });
@@ -27,7 +27,7 @@ function Catalogue() {
   const [dlg, setDlg] = useState<null | "region" | "product" | "launch" | "lines">(null);
   if (!permissions.includes("catalog.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   if (!cat) return <Loader />;
-  const run = async (fn: string, args: Record<string, unknown>) => { const { error } = await supabase.rpc(fn, args); setMsg(say(error)); if (!error) { setDlg(null); void load(); } };
+  const run = async (fn: string, args: Record<string, unknown>) => { const { error } = await db.rpc(fn, args); setMsg(say(error)); if (!error) { setDlg(null); void load(); } };
   const need = !reason.trim();
 
   return (

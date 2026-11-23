@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import { toCsv, FULFIL_LABEL, TYPE_LABEL } from "@/lib/orders";
@@ -35,7 +35,7 @@ function Reports() {
   const { permissions } = useSession();
   const [range, setRange] = useState(() => presetRange("30")); const [r, setR] = useState<any>(null); const [err, setErr] = useState<string | null>(null);
   const load = useCallback(async () => {
-    setErr(null); const { data, error } = await supabase.rpc("admin_report", { p_from: range.from, p_to: range.to });
+    setErr(null); const { data, error } = await db.rpc("admin_report", { p_from: range.from, p_to: range.to });
     if (error) { setR(null); return setErr(error.message === "invalid_range" ? "Choose a start date before the end date, within one year." : "Could not load the report."); } setR(data);
   }, [range]);
   useEffect(() => { void load(); }, [load]);

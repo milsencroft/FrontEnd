@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { SOURCE_LABEL, label } from "@/lib/labels";
 
@@ -15,12 +15,12 @@ const csvCell = (v: string) => { const t = /^[=+\-@\t\r]/.test(v) ? `'${v}` : v;
 function List() {
   const { permissions } = useSession();
   const [list, setList] = useState<Sub[]>([]); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null);
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_newsletter_list"); setList((data as Sub[]) ?? []); }, []);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_newsletter_list"); setList((data as Sub[]) ?? []); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("newsletter.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   const active = list.filter((s) => !s.unsubscribed_at);
   async function unsub(id: string) {
-    const { error } = await supabase.rpc("admin_newsletter_unsubscribe", { p_id: id, p_reason: reason });
+    const { error } = await db.rpc("admin_newsletter_unsubscribe", { p_id: id, p_reason: reason });
     setMsg(error ? ERR[error.message] ?? "Could not unsubscribe." : "Unsubscribed."); if (!error) void load();
   }
   function exportCsv() {

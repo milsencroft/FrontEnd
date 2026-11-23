@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { refundOrder } from "@/lib/api";
 import { rupees } from "@/lib/money";
@@ -15,7 +15,7 @@ import { HISTORY_KIND_LABEL, REFUND_LABEL, human, label } from "@/lib/labels";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function Packing({ id, onError }: { id: string; onError: (m: string) => void }) {
   const [items, setItems] = useState<any[]>([]);
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_order_packing", { p_order: id }); setItems((data as any[]) ?? []); }, [id]);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_order_packing", { p_order: id }); setItems((data as any[]) ?? []); }, [id]);
   useEffect(() => { void load(); }, [load]);
   const done = items.filter((i) => i.checked).length;
   return (
@@ -23,7 +23,7 @@ function Packing({ id, onError }: { id: string; onError: (m: string) => void }) 
       <p className="text-sm text-charcoal/60">{done} of {items.length} done. All items must be ticked before the order can be marked as packed.</p>
       <ul className="mt-3 text-sm">{items.map((i) => (
         <li key={i.key} className="border-b border-stone/30"><label className="flex min-h-[44px] cursor-pointer items-center gap-3"><input type="checkbox" className="h-5 w-5" checked={i.checked}
-          onChange={async (e) => { const { error } = await supabase.rpc("admin_pack_check", { p_order: id, p_key: i.key, p_checked: e.target.checked }); if (error) onError(orderError(error.message)); void load(); }} />{i.label}</label></li>))}</ul>
+          onChange={async (e) => { const { error } = await db.rpc("admin_pack_check", { p_order: id, p_key: i.key, p_checked: e.target.checked }); if (error) onError(orderError(error.message)); void load(); }} />{i.label}</label></li>))}</ul>
     </div>
   );
 }
@@ -36,11 +36,11 @@ function Detail() {
   const [d, setD] = useState<any>(null); const [msg, setMsg] = useState<string | null>(null);
   const [t, setT] = useState({ courier: "", tracking: "", url: "", eta: "", note: "" }); const [note, setNote] = useState("");
   const load = useCallback(async () => {
-    const { data, error } = await supabase.rpc("admin_order_detail", { p_order: id });
+    const { data, error } = await db.rpc("admin_order_detail", { p_order: id });
     if (error) return setMsg(error.message === "not_found" ? "Order not found." : "Could not load this order."); setD(data);
   }, [id]);
-  const loadUpdates = useCallback(async () => { const { data } = await supabase.rpc("admin_order_updates", { p_order: id }); setUpdates((data as any[]) ?? []); }, [id]);
-  useEffect(() => { void load(); void loadUpdates(); void Promise.resolve(supabase.rpc("admin_list_couriers")).then(({ data }) => setCouriers((data as Courier[]) ?? [])); }, [load, loadUpdates]);
+  const loadUpdates = useCallback(async () => { const { data } = await db.rpc("admin_order_updates", { p_order: id }); setUpdates((data as any[]) ?? []); }, [id]);
+  useEffect(() => { void load(); void loadUpdates(); void Promise.resolve(db.rpc("admin_list_couriers")).then(({ data }) => setCouriers((data as Courier[]) ?? [])); }, [load, loadUpdates]);
   if (!d) return <Loader />;
   const o = d.order, c = d.customer, a = o.shipping_address ?? {};
   const courierName = t.courier || o.courier; const trackingNo = t.tracking || o.tracking_number;
@@ -51,7 +51,7 @@ function Detail() {
   const actions = o.payment_status === "captured" ? NEXT_ACTIONS[o.fulfilment_status] ?? [] : [];
 
   async function act(to: string) {
-    const { error } = await supabase.rpc("admin_set_fulfilment", { p_order: id, p_status: to, p_courier: t.courier || null, p_tracking: t.tracking || null, p_tracking_url: t.url || autoUrl || null, p_estimated_delivery: t.eta || null, p_note: t.note || null });
+    const { error } = await db.rpc("admin_set_fulfilment", { p_order: id, p_status: to, p_courier: t.courier || null, p_tracking: t.tracking || null, p_tracking_url: t.url || autoUrl || null, p_estimated_delivery: t.eta || null, p_note: t.note || null });
     setMsg(error ? orderError(error.message) : "Status updated."); if (!error) setT({ ...t, note: "" }); void load();
   }
   const row = (k: string, v: any) => <div className="flex justify-between gap-4 border-b border-stone/30 py-1.5"><dt className="text-charcoal/60">{k}</dt><dd className="text-right">{v ?? "—"}</dd></div>;
@@ -98,9 +98,9 @@ function Detail() {
           <label className="label" htmlFor="msg">Message</label>
           <textarea id="msg" className="field" rows={4} value={message} onChange={(e) => setText(e.target.value)} />
           <div className="flex flex-wrap gap-3">
-            {wa ? <a className="btn" href={wa} target="_blank" rel="noopener noreferrer" onClick={() => { void supabase.rpc("admin_log_order_update", { p_order: id, p_channel: "whatsapp" }).then(loadUpdates); }}>Open WhatsApp with this message</a>
+            {wa ? <a className="btn" href={wa} target="_blank" rel="noopener noreferrer" onClick={() => { void db.rpc("admin_log_order_update", { p_order: id, p_channel: "whatsapp" }).then(loadUpdates); }}>Open WhatsApp with this message</a>
               : <button className="btn" disabled>Open WhatsApp with this message</button>}
-            <button className="btn-ghost" onClick={async () => { try { await navigator.clipboard.writeText(message); setMsg("Message copied."); await supabase.rpc("admin_log_order_update", { p_order: id, p_channel: "copy" }); void loadUpdates(); } catch { setMsg("Could not copy. Select the message and copy it."); } }}>Copy message</button>
+            <button className="btn-ghost" onClick={async () => { try { await navigator.clipboard.writeText(message); setMsg("Message copied."); await db.rpc("admin_log_order_update", { p_order: id, p_channel: "copy" }); void loadUpdates(); } catch { setMsg("Could not copy. Select the message and copy it."); } }}>Copy message</button>
           </div>
           {!wa && <p className="text-sm text-charcoal/70">{c.whatsapp_consent ? "This customer has no usable phone number." : "This customer has not agreed to WhatsApp updates. Copy the message and use another channel."}</p>}
           <p className="text-sm text-charcoal/60">Opening WhatsApp only prepares the message. Nothing is marked as delivered.</p>
@@ -113,7 +113,7 @@ function Detail() {
         <div className="card"><h2 className="text-2xl">Status history</h2><ol className="mt-3 text-sm">{d.history.map((h: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{new Date(h.at).toLocaleString("en-IN")} · {label(HISTORY_KIND_LABEL, h.kind)} · {h.from ? (PAYMENT_LABEL[h.from] ?? FULFIL_LABEL[h.from] ?? human(h.from)) : "—"} → {PAYMENT_LABEL[h.to] ?? FULFIL_LABEL[h.to] ?? human(h.to)}{h.note ? ` · ${h.note}` : ""}</li>)}</ol></div>
         <div className="card"><h2 className="text-2xl">Internal notes</h2><p className="text-sm text-charcoal/60">Never shown to customers.</p>
           <ul className="mt-3 text-sm">{d.notes.map((n: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{n.note}<br /><span className="text-charcoal/60">{n.by ?? "Staff"} · {new Date(n.at).toLocaleString("en-IN")}</span></li>)}</ul>
-          {can("orders.manage") && <form className="mt-4 flex gap-2" onSubmit={async (e) => { e.preventDefault(); if (!note.trim()) return; const { error } = await supabase.rpc("admin_add_order_note", { p_order: id, p_note: note }); setMsg(error ? "Could not add the note." : "Note added."); setNote(""); void load(); }}>
+          {can("orders.manage") && <form className="mt-4 flex gap-2" onSubmit={async (e) => { e.preventDefault(); if (!note.trim()) return; const { error } = await db.rpc("admin_add_order_note", { p_order: id, p_note: note }); setMsg(error ? "Could not add the note." : "Note added."); setNote(""); void load(); }}>
             <label className="sr-only" htmlFor="nn">Add a note</label><input id="nn" className="field" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note" /><button className="btn">Add</button></form>}</div>
       </div></div>
     </section>

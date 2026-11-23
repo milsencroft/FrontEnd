@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 
 export type PageRow = { slug: string; kind: string; title: string; summary: string | null; body?: string; published_at: string | null };
 
@@ -10,7 +10,7 @@ export function PageBody({ slug, kind, fallbackTitle }: { slug: string; kind: st
   const [page, setPage] = useState<PageRow | null | undefined>(undefined);
   useEffect(() => {
     let live = true;
-    supabase.rpc("public_page", { p_slug: slug }).then(({ data }) => { if (live) setPage(data && (data as PageRow).kind === kind ? (data as PageRow) : null); });
+    db.rpc("public_page", { p_slug: slug }).then(({ data }) => { if (live) setPage(data && (data as PageRow).kind === kind ? (data as PageRow) : null); });
     return () => { live = false; };
   }, [slug, kind]);
   if (page === undefined) return <article className="wrap max-w-2xl py-16" aria-busy="true"><div className="h-10 w-2/3 bg-stone/30" /></article>;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { Photo } from "@/components/ProductImage";
-import { supabase } from "@/lib/supabase";
+import { db, uploadMedia } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { Modal } from "@/components/Modal";
 import { mediaError, mediaUrl } from "@/lib/media";
@@ -18,7 +18,7 @@ function Media() {
   const [d, setD] = useState<any>(null); const [reason, setReason] = useState(""); const [msg, setMsg] = useState<string | null>(null);
   const [mode, setMode] = useState<"image" | "video" | "link">("image"); const [poster, setPoster] = useState<File | null>(null); const [link, setLink] = useState(""); const [file, setFile] = useState<File | null>(null); const [alt, setAlt] = useState(""); const [busy, setBusy] = useState(false); const [adding, setAdding] = useState(false);
   const [alts, setAlts] = useState<Record<string, string>>({}); const [sel, setSel] = useState<Record<string, string[]>>({});
-  const load = useCallback(async () => { const { data } = await supabase.rpc("admin_list_media"); setD(data); }, []);
+  const load = useCallback(async () => { const { data } = await db.rpc("admin_list_media"); setD(data); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("media.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   if (!d) return <Loader />;
@@ -27,9 +27,8 @@ function Media() {
 
   async function upload(e: React.FormEvent) {
     e.preventDefault(); setMsg(null);
-    const bucket = supabase.storage.from("product-media");
     if (mode === "link") {
-      const { error } = await supabase.rpc("admin_register_embed", { p_url: link, p_alt: alt, p_reason: reason });
+      const { error } = await db.rpc("admin_register_embed", { p_url: link, p_alt: alt, p_reason: reason });
       setMsg(error ? mediaError(error.message) : "Link added."); if (!error) { setLink(""); setAlt(""); setAdding(false); void load(); } return;
     }
     if (!file) return;
@@ -38,26 +37,21 @@ function Media() {
     if (file.size > (mode === "image" ? 5 : 50) * 1024 * 1024) return setMsg(mode === "image" ? "The image must be under 5 MB." : "The video must be under 50 MB. For longer films, add a YouTube or Vimeo link instead.");
     if (poster && !EXT[poster.type]) return setMsg("The poster must be a JPG, PNG, WebP or AVIF image.");
     setBusy(true);
-    const id = crypto.randomUUID(); const path = `${mode === "image" ? "products" : "videos"}/${id}.${ext}`;
-    const up = await bucket.upload(path, file, { contentType: file.type, upsert: false });
-    if (up.error) { setBusy(false); return setMsg("Upload failed. Please try again."); }
-    let posterPath: string | null = null;
-    if (mode === "video" && poster) {
-      posterPath = `posters/${crypto.randomUUID()}.${EXT[poster.type]}`;
-      const pu = await bucket.upload(posterPath, poster, { contentType: poster.type, upsert: false });
-      if (pu.error) { await bucket.remove([path]); setBusy(false); return setMsg("Poster upload failed. Please try again."); }
-    }
-    const { error } = mode === "image" ? await supabase.rpc("admin_register_media", { p_path: path, p_alt: alt, p_reason: reason })
-      : await supabase.rpc("admin_register_video", { p_path: path, p_poster: posterPath, p_alt: alt, p_reason: reason });
-    if (error) await bucket.remove([path, ...(posterPath ? [posterPath] : [])]);
+    let path: string; let posterPath: string | null = null;
+    try {
+      path = await uploadMedia(file);
+      if (mode === "video" && poster) posterPath = await uploadMedia(poster, true);
+    } catch { setBusy(false); return setMsg("Upload failed. Please try again."); }
+    const { error } = mode === "image" ? await db.rpc("admin_register_media", { p_path: path, p_alt: alt, p_reason: reason })
+      : await db.rpc("admin_register_video", { p_path: path, p_poster: posterPath, p_alt: alt, p_reason: reason });
     setBusy(false); setMsg(error ? mediaError(error.message) : "Added.");
     if (!error) { setAdding(false); setFile(null); setPoster(null); setAlt(""); (document.getElementById("file") as HTMLInputElement | null)?.setAttribute("value", ""); void load(); }
   }
   async function remove(m: any) {
     if (!confirm("Delete this image permanently?")) return;
-    const { data, error } = await supabase.rpc("admin_delete_media", { p_id: m.id, p_reason: reason });
+    const { error } = await db.rpc("admin_delete_media", { p_id: m.id, p_reason: reason }); // the backend also removes the stored files
     if (error) return setMsg(mediaError(error.message));
-    await supabase.storage.from("product-media").remove(data as string[]); setMsg("Image deleted."); void load();
+    setMsg("Image deleted."); void load();
   }
   const current = (p: any) => sel[p.code] ?? p.paths;
   const toggle = (p: any, path: string) => { const c = current(p); setSel({ ...sel, [p.code]: c.includes(path) ? c.filter((x: string) => x !== path) : [...c, path] }); };
@@ -85,7 +79,7 @@ function Media() {
       <div><h2 className="mb-4 text-2xl">Where media appears</h2>
         <ul className="grid max-w-2xl gap-3">{(d.slots as any[]).map((sl) => (
           <li key={sl.slot} className="card grid gap-2"><label className="label" htmlFor={`sl-${sl.slot}`}>{sl.label}</label>
-            <select id={`sl-${sl.slot}`} className="field" value={sl.media_id ?? ""} disabled={!ok} onChange={async (e) => { const { error } = await supabase.rpc("admin_set_media_slot", { p_slot: sl.slot, p_media: e.target.value || null, p_reason: reason }); setMsg(error ? mediaError(error.message) : "Placement saved."); void load(); }}>
+            <select id={`sl-${sl.slot}`} className="field" value={sl.media_id ?? ""} disabled={!ok} onChange={async (e) => { const { error } = await db.rpc("admin_set_media_slot", { p_slot: sl.slot, p_media: e.target.value || null, p_reason: reason }); setMsg(error ? mediaError(error.message) : "Placement saved."); void load(); }}>
               <option value="">Nothing (hidden)</option>{(d.media as any[]).map((m) => <option key={m.id} value={m.id}>{m.kind === "image" ? "Image" : m.kind === "video" ? "Video" : "Link"}: {m.alt}</option>)}</select></li>))}</ul>
         {!ok && <p className="mt-2 text-sm text-charcoal/70">Enter a reason above to change placements.</p>}
       </div>
@@ -99,7 +93,7 @@ function Media() {
             <input id={`a${m.id}`} className="field" value={alts[m.id] ?? m.alt} onChange={(e) => setAlts({ ...alts, [m.id]: e.target.value })} />
             <p className="text-sm text-charcoal/70">{m.used_by.length ? `Used by ${m.used_by.join(", ")}` : "Not used yet"}</p>
             <div className="flex gap-2">
-              <button className="btn-ghost" disabled={!ok} onClick={async () => { const { error } = await supabase.rpc("admin_update_media_alt", { p_id: m.id, p_alt: alts[m.id] ?? m.alt, p_reason: reason }); setMsg(error ? mediaError(error.message) : "Description saved."); void load(); }}>Save description</button>
+              <button className="btn-ghost" disabled={!ok} onClick={async () => { const { error } = await db.rpc("admin_update_media_alt", { p_id: m.id, p_alt: alts[m.id] ?? m.alt, p_reason: reason }); setMsg(error ? mediaError(error.message) : "Description saved."); void load(); }}>Save description</button>
               <button className="btn-ghost" disabled={!ok} onClick={() => remove(m)}>Delete</button>
             </div>
           </li>))}</ul>
@@ -113,7 +107,7 @@ function Media() {
               <div className="flex flex-wrap gap-3">{(d.media as any[]).filter((m) => m.kind === "image").map((m) => { const on = current(p).includes(m.path); return (
                 <label key={m.id} className={`block h-24 w-24 cursor-pointer overflow-hidden border-2 ${on ? "border-charcoal" : "border-transparent opacity-60"}`}>
                   <input type="checkbox" className="sr-only" checked={on} onChange={() => toggle(p, m.path)} /><Photo image={{ path: m.path, alt: m.alt }} /></label>); })}</div>}
-            <div><button className="btn-ghost" disabled={!ok || !sel[p.code]} onClick={async () => { const { error } = await supabase.rpc("admin_set_product_images", { p_code: p.code, p_paths: sel[p.code], p_reason: reason }); setMsg(error ? mediaError(error.message) : `Saved images for ${p.code}.`); setSel({ ...sel, [p.code]: undefined as never }); void load(); }}>Save images</button></div>
+            <div><button className="btn-ghost" disabled={!ok || !sel[p.code]} onClick={async () => { const { error } = await db.rpc("admin_set_product_images", { p_code: p.code, p_paths: sel[p.code], p_reason: reason }); setMsg(error ? mediaError(error.message) : `Saved images for ${p.code}.`); setSel({ ...sel, [p.code]: undefined as never }); void load(); }}>Save images</button></div>
           </li>))}</ul></div>}
     </section>
   );

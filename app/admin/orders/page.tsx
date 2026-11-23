@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
-import { supabase } from "@/lib/supabase";
+import { db } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import { FULFIL_LABEL, PAYMENT_LABEL, TYPE_LABEL, toCsv } from "@/lib/orders";
@@ -16,7 +16,7 @@ function Orders() {
   const [rows, setRows] = useState<Row[]>([]); const [page, setPage] = useState(0); const [err, setErr] = useState<string | null>(null);
   const args = (offset: number, limit: number) => ({ p_q: f.q || null, p_payment: f.payment || null, p_fulfilment: f.fulfilment || null, p_type: f.type || null, p_from: f.from || null, p_to: f.to || null, p_limit: limit, p_offset: offset });
   const load = useCallback(async () => {
-    const { data, error } = await supabase.rpc("admin_search_orders", args(page * PAGE, PAGE));
+    const { data, error } = await db.rpc("admin_search_orders", args(page * PAGE, PAGE));
     if (error) { setErr("Could not load orders."); return; } setErr(null); setRows((data as Row[]) ?? []);
   }, [f, page]); // eslint-disable-line
   useEffect(() => { void load(); }, [load]);
@@ -24,7 +24,7 @@ function Orders() {
 
   async function exportCsv() {
     const all: Row[] = [];
-    for (let off = 0; off < 2000; off += 200) { const { data } = await supabase.rpc("admin_search_orders", args(off, 200)); const d = (data as Row[]) ?? []; all.push(...d); if (d.length < 200) break; }
+    for (let off = 0; off < 2000; off += 200) { const { data } = await db.rpc("admin_search_orders", args(off, 200)); const d = (data as Row[]) ?? []; all.push(...d); if (d.length < 200) break; }
     const csv = toCsv(all.map(({ total_count, ...r }) => ({ ...r, total_rupees: r.total_paise / 100 })));
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
     const a = document.createElement("a"); a.href = url; a.download = "orders.csv"; a.click(); URL.revokeObjectURL(url);
