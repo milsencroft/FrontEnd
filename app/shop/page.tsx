@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { PageHero } from "@/components/PageHero";
 import { useMemo, useState } from "react";
 import { useShop } from "@/lib/useShop";
 import { useCart } from "@/lib/cart";
@@ -28,8 +29,9 @@ export default function Shop() {
   const sel = "field w-auto";
 
   return (
+    <>
+    <PageHero title="Shop" tone="noir" />
     <section className="wrap py-16">
-      <h1 className="text-5xl sm:text-7xl">Shop</h1>
       <form role="search" aria-label="Filter products" className="mt-10 flex flex-wrap items-end gap-4" onSubmit={(e) => e.preventDefault()}>
         <div><label className="label" htmlFor="q">Search</label><input id="q" className="field w-56" value={q} onChange={(e) => setQ(e.target.value)} /></div>
         <div><label className="label" htmlFor="rg">Region</label><select id="rg" className={sel} value={region} onChange={(e) => setRegion(e.target.value)}><option value="">All</option>{regions.map((r) => <option key={r}>{r}</option>)}</select></div>
@@ -64,5 +66,6 @@ export default function Shop() {
         ))}
       </div></div>
     </section>
+    </>
   );
 }

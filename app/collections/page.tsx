@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { PageHero } from "@/components/PageHero";
 import { useLaunch } from "@/lib/useLaunch";
 import { Flacon } from "@/components/Flacon";
 
@@ -8,8 +9,9 @@ export default function Collections() {
   const { items } = useLaunch(60000);
   const regions = [...new Set(items.map((i) => i.region_name))];
   return (
+    <>
+    <PageHero title="Collections" tone="kerala" />
     <section className="wrap py-20">
-      <h1 className="text-5xl sm:text-7xl">Collections</h1>
       {regions.length === 0 && <p className="mt-8 text-charcoal/70">The first collection is launching soon.</p>}
       <div className="mt-12 grid gap-12">
         {regions.map((r) => (
@@ -28,5 +30,6 @@ export default function Collections() {
         ))}
       </div>
     </section>
+    </>
   );
 }
