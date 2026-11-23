@@ -8,7 +8,26 @@ type Slots = Record<string, Slot>;
 let cache: Promise<Slots> | null = null;
 const loadSlots = () => (cache ??= Promise.resolve(supabase.rpc("public_media_slots")).then(({ data }) => (data as Slots) ?? {}).catch((): Slots => ({})));
 
+function useSlot(slot: string) {
+  const [s, setS] = useState<Slot | null>(null);
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    void loadSlots().then((all) => setS(all[slot] ?? null));
+    try { setStill(window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch { /* ignore */ }
+  }, [slot]);
+  return { s, still };
+}
+
 /* eslint-disable @next/next/no-img-element */
+/** Full-bleed film or image behind a section. Place inside a relative, overflow-hidden parent. Renders nothing when the slot is empty. */
+export function MediaBackdrop({ slot }: { slot: string }) {
+  const { s, still } = useSlot(slot);
+  if (!s) return null;
+  if (s.kind === "image" && s.path) return <img src={mediaUrl(s.path)} alt="" aria-hidden className="media-backdrop" />;
+  if (s.kind === "video" && s.path) return <video src={mediaUrl(s.path)} poster={s.poster ? mediaUrl(s.poster) : undefined} aria-hidden className="media-backdrop" muted loop playsInline preload="auto" autoPlay={!still} />;
+  return null;
+}
+
 /** Shows the film or image staff placed in this slot. Renders nothing when the slot is empty. */
 export function MediaSlot({ slot, className = "" }: { slot: string; className?: string }) {
   const [s, setS] = useState<Slot | null>(null);
