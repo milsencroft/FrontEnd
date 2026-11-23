@@ -18,6 +18,7 @@ export const NEXT_ACTIONS: Record<string, { to: string; label: string }[]> = {
 export const ORDER_ERRORS: Record<string, string> = {
   invalid_transition: "That status change is not allowed from the current status.", tracking_required: "Courier and tracking number are required to ship.",
   not_paid: "The payment has not been confirmed.", refund_required: "Paid orders must be refunded before cancelling.", forbidden: "You do not have permission for this.",
+  packing_incomplete: "Tick every item on the packing checklist before marking the order as packed.", not_packing: "The checklist can only be changed while the order is being processed.", invalid_item: "That checklist item does not exist.",
   invalid_tracking_url: "The tracking URL must start with http:// or https://",
 };
 export const orderError = (m: string) => ORDER_ERRORS[m] ?? "Could not complete that action.";
