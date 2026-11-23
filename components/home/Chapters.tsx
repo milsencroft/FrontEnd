@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { smooth, useScrollProgress } from "@/lib/useScrollProgress";
 
 const CHAPTERS = [
-  { n: "I", title: "It begins with a place.", text: "Mazha is rain on Kerala’s monsoon forest. Seiran is a fresh breeze in early summer, Japan. Each fragrance starts as a place, not a formula." },
+  { n: "I", title: "It begins with a place.", text: "Mazha is rain falling on Kerala’s monsoon forest. Seiran is a fresh breeze of early summer in Japan. Each fragrance starts with a place, not a formula." },
   { n: "II", title: "Made in small numbers.", text: "Every launch has one combined pool of 100 places, and one place for each customer. When the pool is allocated, the launch closes." },
   { n: "III", title: "Kept for the Society.", text: "Those who collect with us join the Milsen & Croft Society, with six tiers and numbered memberships." },
 ];
