@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { notesList, useShop } from "@/lib/useShop";
-import { useCart } from "@/lib/cart";
+import { AddToCart } from "@/components/AddToCart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
 import { Photo } from "@/components/ProductImage";
@@ -25,11 +25,9 @@ function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fa
 
 export default function Product() {
   const { code } = useParams<{ code: string }>();
-  const router = useRouter();
   const { rows } = useShop();
-  const { add, error: cartError } = useCart();
   const variants = (rows ?? []).filter((r) => r.product_code === code);
-  const [sku, setSku] = useState(""); const [qty, setQty] = useState(1); const [done, setDone] = useState(false);
+  const [sku, setSku] = useState(""); 
   useEffect(() => { if (variants.length && !variants.find((v) => v.sku === sku)) setSku((variants.find((v) => v.in_stock) ?? variants[0]).sku); }, [rows]); // eslint-disable-line
   if (rows === null) return <Loader />;
   const v = variants.find((x) => x.sku === sku);
@@ -56,12 +54,9 @@ export default function Product() {
           <p className="mt-6 text-2xl">{rupees(v.price_paise)}{v.compare_at_paise ? <span className="ml-3 text-base text-charcoal/50 line-through">{rupees(v.compare_at_paise)}</span> : null}</p>
           <p className="mt-1 text-sm">{v.in_stock ? "In stock" : "Out of stock"}</p>
           <div className="mt-6 flex flex-wrap items-end gap-4">
-            <div><label className="label" htmlFor="qty">Quantity</label><select id="qty" className="field w-24" value={qty} onChange={(e) => setQty(Number(e.target.value))}>{[1, 2, 3, 4, 5].map((n) => <option key={n}>{n}</option>)}</select></div>
-            <button className="btn" disabled={!v.in_stock} onClick={async () => { setDone(await add({ sku: v.sku }, qty)); }}>{done ? "Added to cart" : "Add to cart"}</button>
-            <button className="btn-ghost" disabled={!v.in_stock} onClick={async () => { if (await add({ sku: v.sku }, qty)) router.push("/cart"); }}>Buy now</button>
+            <AddToCart key={v.sku} id={`d-${v.sku}`} line={{ sku: v.sku }} max={v.max_qty} />
             <WishlistButton code={code} />
           </div>
-          {cartError && <p role="alert" className="mt-3 text-sm text-danger">{cartError}</p>}
           <p className="mt-8 text-sm text-charcoal/70">See our <Link className="underline underline-offset-4" href="/legal/shipping">shipping</Link> and <Link className="underline underline-offset-4" href="/legal/returns">returns</Link> policies.</p>
         </div>
       </div>

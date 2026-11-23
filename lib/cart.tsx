@@ -5,14 +5,14 @@ import { useSession } from "./session";
 
 const EMPTY: CartView = { lines: [], count: 0, subtotal_paise: 0 };
 interface Ctx {
-  cart: CartView; loading: boolean; count: number; error: string | null;
+  cart: CartView; loading: boolean; count: number; error: string | null; notice: string | null;
   add: (l: LineRef, qty?: number) => Promise<boolean>;
   setQty: (l: LineRef, qty: number) => Promise<void>;
   remove: (l: LineRef) => Promise<void>;
   clear: () => Promise<void>;
   reload: () => Promise<void>;
 }
-const CartCtx = createContext<Ctx>({ cart: EMPTY, loading: true, count: 0, error: null, add: async () => false, setQty: async () => {}, remove: async () => {}, clear: async () => {}, reload: async () => {} });
+const CartCtx = createContext<Ctx>({ cart: EMPTY, loading: true, count: 0, error: null, notice: null, add: async () => false, setQty: async () => {}, remove: async () => {}, clear: async () => {}, reload: async () => {} });
 export const useCart = () => useContext(CartCtx);
 
 /**
@@ -24,6 +24,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartView>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const userId = session?.user.id ?? null;
 
   const reload = useCallback(async () => {
@@ -42,12 +43,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [userId, sessionLoading, reload]);
 
   const run = async (fn: () => Promise<CartView>) => {
-    setError(null);
-    try { setCart(await fn()); return true; }
+    setError(null); setNotice(null);
+    try {
+      const next = await fn(); setCart(next);
+      if (next.capped) setNotice("Only the available quantity was added.");
+      return true;
+    }
     catch (e) { setError(e instanceof ApiError ? errorText(e) : "Something went wrong. Please try again."); return false; }
   };
   const value: Ctx = {
-    cart, loading, count: cart.count, error, reload,
+    cart, loading, count: cart.count, error, notice, reload,
     add: (l, qty = 1) => run(() => cartApi.add(l, qty)),
     setQty: async (l, qty) => { await run(() => cartApi.setQty(l, qty)); },
     remove: async (l) => { await run(() => cartApi.remove(l)); },
