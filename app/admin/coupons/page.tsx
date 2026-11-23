@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
 import { rupees } from "@/lib/money";
 import { toCsv } from "@/lib/orders";
+import { Modal } from "@/components/Modal";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const ERR: Record<string, string> = { reason_required: "A reason is required.", invalid_input: "Please check the values.", invalid_code: "Codes use letters, numbers and hyphens (3–30 characters).", duplicate_code: "That code already exists.", forbidden: "You do not have permission for this.", could_not_generate: "Could not generate unique codes. Try a different prefix." };
@@ -18,7 +19,7 @@ function Coupons() {
   const load = useCallback(async () => { const { data } = await supabase.rpc("admin_list_coupons"); setList((data as any[]) ?? []); }, []);
   const [products, setProducts] = useState<{ id: string; code: string; name: string }[]>([]);
   const [tiers, setTiers] = useState<number[]>([]);
-  const [editing, setEditing] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null); const [adding, setAdding] = useState(false);
   const [rules, setRules] = useState({ per: "", cap: "", products: [] as string[], tiers: [] as number[] });
   useEffect(() => { void load(); void Promise.resolve(supabase.from("products").select("id,code,name").order("code")).then(({ data }) => setProducts((data as typeof products) ?? [])); void Promise.resolve(supabase.from("society_tiers").select("tier").order("tier")).then(({ data }) => setTiers(((data as { tier: number }[]) ?? []).map((t) => t.tier))); }, [load]);
   if (!permissions.includes("coupons.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
@@ -30,7 +31,7 @@ function Coupons() {
     const { data, error } = await supabase.rpc("admin_create_coupons", { p_code: f.code || null, p_count: Number(f.count) || 1, p_prefix: f.prefix || null, p_discount_type: f.type, p_value: value,
       p_min_order_paise: f.min ? Math.round(Number(f.min) * 100) : 0, p_max_uses: f.max ? Number(f.max) : null, p_starts_at: f.from ? new Date(f.from).toISOString() : null, p_ends_at: f.to ? new Date(f.to).toISOString() : null, p_allow_on_launch: f.launch, p_reason: reason });
     if (error) return setMsg(ERR[error.message] ?? "Could not create coupons.");
-    const codes = data as string[]; setMsg(`Created ${codes.length} coupon${codes.length > 1 ? "s" : ""}.`); void load();
+    const codes = data as string[]; setMsg(`Created ${codes.length} coupon${codes.length > 1 ? "s" : ""}.`); setAdding(false); void load();
     if (codes.length > 1) download("coupon-codes.csv", toCsv(codes.map((code) => ({ code }))));
   }
   function startEdit(c: any) {
@@ -49,11 +50,11 @@ function Coupons() {
   }
   return (
     <section className="wrap py-12">
-      <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Coupons</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
+      <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Coupons</h1><div className="flex items-center gap-4"><button className="btn" onClick={() => { setMsg(null); setAdding(true); }}>Add coupons</button><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div></div>
       <div className="mt-6 max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="mt-4 text-sm">{msg}</p>}
-      <form onSubmit={create} className="card mt-8 grid max-w-3xl gap-3">
-        <h2 className="text-2xl">Create coupons</h2>
+      <Modal open={adding} onClose={() => setAdding(false)} title="Add coupons">
+      <form onSubmit={create} className="grid gap-3">
         <p className="text-sm text-charcoal/70">Enter a code for one custom coupon, or leave it empty and set a number to generate random single-use codes.</p>
         <div className="grid gap-3 sm:grid-cols-3">
           <div><label className="label" htmlFor="cc">Custom code</label><input id="cc" className="field" value={f.code} onChange={set("code")} /></div>
@@ -67,8 +68,11 @@ function Coupons() {
           <div><label className="label" htmlFor="ce">Expires</label><input id="ce" type="datetime-local" className="field" value={f.to} onChange={set("to")} /></div>
         </div>
         <label className="flex min-h-[44px] items-center gap-3 text-sm"><input type="checkbox" className="h-5 w-5" checked={f.launch} onChange={set("launch")} />Allow on launch pre-orders</label>
+        <div><label className="label" htmlFor="cwhy">Reason (required, recorded in the audit log)</label><input id="cwhy" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+        {msg && <p role="alert" className="text-sm">{msg}</p>}
         <div><button className="btn" disabled={!reason.trim()}>Create</button></div>
       </form>
+      </Modal>
       <ul className="mt-10 grid gap-3">{list.length === 0 && <li className="text-charcoal/70">No coupons yet.</li>}
         {list.map((c) => (
           <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 border border-stone/60 bg-white p-4">
