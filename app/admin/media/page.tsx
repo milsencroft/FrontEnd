@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -20,7 +21,7 @@ function Media() {
   const load = useCallback(async () => { const { data } = await supabase.rpc("admin_list_media"); setD(data); }, []);
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("media.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
-  if (!d) return <p className="wrap py-16">Loading…</p>;
+  if (!d) return <Loader />;
   const ok = !!reason.trim();
   const canAssign = permissions.includes("catalog.manage");
 

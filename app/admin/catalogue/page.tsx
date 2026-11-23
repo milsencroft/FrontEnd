@@ -1,4 +1,5 @@
 "use client";
+import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -25,7 +26,7 @@ function Catalogue() {
   const [lv, setLv] = useState({ code: "", lines: "" });
   const [dlg, setDlg] = useState<null | "region" | "product" | "launch" | "lines">(null);
   if (!permissions.includes("catalog.manage")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
-  if (!cat) return <p className="wrap py-16">Loading…</p>;
+  if (!cat) return <Loader />;
   const run = async (fn: string, args: Record<string, unknown>) => { const { error } = await supabase.rpc(fn, args); setMsg(say(error)); if (!error) { setDlg(null); void load(); } };
   const need = !reason.trim();
 
