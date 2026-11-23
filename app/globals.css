@@ -110,4 +110,4 @@ a, button { transition: opacity .2s, background-color .2s, color .2s; }
 .tone-noir { background: linear-gradient(to top, rgb(14 12 9 / .85), rgb(14 12 9 / .35) 60%, rgb(14 12 9 / .5)); }
 .tone-kerala { background: linear-gradient(to top, rgb(23 37 29 / .88), rgb(36 56 45 / .4) 60%, rgb(23 37 29 / .5)); }
 .tone-japan { background: linear-gradient(to top, rgb(18 25 34 / .88), rgb(29 39 51 / .4) 60%, rgb(18 25 34 / .5)); }
-.band-soft { background-image: none; background-color: rgb(var(--c-ivory) / .72); backdrop-filter: blur(6px); }
+.band-soft { background-image: none; background-color: rgb(var(--c-ivory) / .8); }

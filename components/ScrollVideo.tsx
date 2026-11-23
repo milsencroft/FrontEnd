@@ -38,8 +38,9 @@ export function ScrollVideo() {
         // Scrolling down moves the film forward; scrolling up moves it back. The files have a full frame every frame, so seeking is instant.
         const p = Math.min(1, Math.max(0, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
         const target = p * (v.duration - 0.05);
-        cur += (target - cur) * 0.18;
-        if (Math.abs(cur - v.currentTime) > 0.01) v.currentTime = cur;
+        cur += (target - cur) * 0.22;
+        // Never queue a new seek while one is running; queued seeks are what makes phones stutter.
+        if (!v.seeking && Math.abs(cur - v.currentTime) > 0.04) v.currentTime = cur;
       }
       raf = requestAnimationFrame(tick);
     };
@@ -54,7 +55,7 @@ export function ScrollVideo() {
       {s.kind === "image"
         // eslint-disable-next-line @next/next/no-img-element
         ? <img src={mediaUrl(s.path)} alt="" className="h-full w-full object-cover" />
-        : <video ref={video} key={s.path} src={mediaUrl(s.path)} poster={s.poster ? mediaUrl(s.poster) : undefined} className="h-full w-full object-cover" muted playsInline preload="auto" />}
+        : <video ref={video} key={s.path} src={mediaUrl(s.path)} poster={s.poster ? mediaUrl(s.poster) : undefined} className="h-full w-full object-cover [transform:translateZ(0)]" muted playsInline preload="auto" />}
       <div ref={veil} className="absolute inset-0 bg-ivory opacity-0" />
     </div>
   );
