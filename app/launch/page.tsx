@@ -48,6 +48,12 @@ export default function LaunchPage() {
   if (st === undefined) return <p className="wrap py-16">Loading…</p>;
   if (st === null || st.status === "draft") return <section className="wrap py-16"><h1 className="text-4xl">Launch</h1><p className="mt-6 text-charcoal/70">Our first launch opens soon.</p></section>;
   const open = st.status === "preorder_active";
+  const STATUS_TEXT: Record<string, string> = {
+    pending_approval: "This launch opens soon.", paused: "This launch is paused for a moment. Please check back shortly.",
+    post_launch_review: "Pre-orders have ended. Thank you.", published_in_shop: "This launch has ended. Its fragrances are now in the shop.",
+    completed: "This launch has ended. Thank you.", postponed: "This launch has been postponed. We will share the new date.",
+    cancelled: "This launch has been cancelled.", archived: "This launch has ended.",
+  };
   const full = st.remaining <= 0 && st.held === 0 && st.allocated >= st.capacity;
   const mins = String(Math.floor(left / 60)).padStart(2, "0"), secs = String(left % 60).padStart(2, "0");
 
@@ -62,7 +68,7 @@ export default function LaunchPage() {
         <div className="mt-4 h-2 bg-stone/40" role="progressbar" aria-valuemin={0} aria-valuemax={st.capacity} aria-valuenow={st.allocated}><div className="h-2 bg-sage" style={{ width: `${Math.min(100, (st.allocated / st.capacity) * 100)}%` }} /></div>
       </div>
       {(full || st.status === "closed") && <p className="mt-8 text-2xl font-serif">Fully Allocated</p>}
-      {!open && !full && st.status !== "closed" && <p className="mt-8 text-charcoal/70">This launch is currently {st.status.replace(/_/g, " ")}.</p>}
+      {!open && !full && st.status !== "closed" && <p className="mt-8 text-charcoal/70">{STATUS_TEXT[st.status] ?? "This launch is not open right now."}</p>}
       <MediaSlot slot="launch.story" className="mt-10" />
       {err && <p role="alert" className="mt-6 text-danger">{err}</p>}
       {holdUntil && <p className="mt-6 text-lg" role="timer">Your slot is held for {mins}:{secs}</p>}
