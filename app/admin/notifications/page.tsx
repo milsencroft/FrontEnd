@@ -27,7 +27,7 @@ function Notifications() {
     <section className="wrap py-12 grid gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Notifications</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
       <p className="max-w-2xl text-charcoal/80">Every customer and staff message is queued here first, so a failed message never blocks or duplicates an order. A message only counts as delivered when the provider confirms it.</p>
-      <p className="max-w-2xl rounded border border-stone/60 bg-white p-4 text-sm" role="note">Sending is not switched on yet. Email starts once the domain and email provider are connected. Until then, messages wait in the queue.</p>
+      <p className="max-w-2xl surface p-4 text-sm" role="note">Sending is not switched on yet. Email starts once the domain and email provider are connected. Until then, messages wait in the queue.</p>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
         <button className={status === "" ? "btn" : "btn-ghost"} aria-pressed={status === ""} onClick={() => setStatus("")}>All</button>
         {STATUSES.map((s) => <button key={s} className={status === s ? "btn" : "btn-ghost"} aria-pressed={status === s} onClick={() => setStatus(s)}>{LABEL[s]} ({d.counts[s] ?? 0})</button>)}

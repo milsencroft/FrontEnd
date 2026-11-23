@@ -58,7 +58,7 @@ function Orders() {
             <td className="pr-3">{r.courier}</td><td className="pr-3">{r.tracking_number}</td><td><Link className="underline underline-offset-4" href={`/admin/orders/${r.id}`}>View</Link></td>
           </tr>))}</tbody></table></div>
       <ul className="mt-4 grid gap-3 orders-cards">{rows.map((r) => (
-        <li key={r.id} className="border border-stone/60 bg-white p-4">
+        <li key={r.id} className="surface p-4">
           <div className="flex flex-wrap justify-between gap-2"><p className="font-medium">{r.order_number}</p><p>{rupees(r.total_paise)}</p></div>
           <p className="text-sm">{r.customer_name} · {r.phone}</p><p className="text-sm text-charcoal/70">{TYPE_LABEL[r.order_type]} · {r.items}</p>
           <p className="mt-1 text-sm">{PAYMENT_LABEL[r.payment_status]} · {FULFIL_LABEL[r.fulfilment_status]}</p>

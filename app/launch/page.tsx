@@ -78,9 +78,9 @@ export default function LaunchPage() {
       {open && !full && !pick && (
         <div className="cq-grid mt-10 grid grid-cols-1 gap-6">
           {items.map((i) => (
-            <article key={i.sku} className="border border-stone/60 bg-white p-6">
+            <article key={i.sku} className="surface p-6">
               {imagesOf(i.images)[0]
-                ? <div className="mb-4 aspect-[4/5] overflow-hidden bg-stone/20"><Photo image={imagesOf(i.images)[0]} /></div>
+                ? <div className="mb-4 aspect-[4/5] overflow-hidden rounded-2xl bg-stone/20"><Photo image={imagesOf(i.images)[0]} /></div>
                 : <Flacon tone={i.region_name === "Japan" ? "bronze" : "sage"} label={i.product_name.split(" ")[0]} className="mb-4" />}
               <p className="text-sm text-brass">{i.region_name}</p>
               <h2 className="mt-1 text-3xl">{i.product_name}</h2>
