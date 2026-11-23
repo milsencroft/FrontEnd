@@ -18,7 +18,7 @@ export function MediaSlot({ slot, className = "" }: { slot: string; className?: 
     try { setStill(window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch { /* ignore */ }
   }, [slot]);
   if (!s) return null;
-  const frame = `relative aspect-video w-full overflow-hidden bg-charcoal ${className}`;
+  const frame = `dark-surface relative aspect-video w-full overflow-hidden bg-charcoal ${className}`;
   if (s.kind === "image" && s.path) return <figure className={frame}><img src={mediaUrl(s.path)} alt={s.alt} className="h-full w-full object-cover" loading="lazy" /></figure>;
   if (s.kind === "embed" && s.embed) return <div className={frame}><iframe src={s.embed} title={s.alt} className="absolute inset-0 h-full w-full" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen /></div>;
   if (s.kind === "video" && s.path) return (

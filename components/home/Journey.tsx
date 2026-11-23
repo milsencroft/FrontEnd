@@ -29,7 +29,7 @@ export function Journey() {
 
   if (still) {
     return (
-      <section aria-label="Kerala and Japan" className="text-ivory">
+      <section aria-label="Kerala and Japan" className="dark-surface text-ivory">
         {PLACES.map((x, i) => (
           <div key={x.name} className={`${i === 0 ? "bg-kerala" : "bg-japan"} py-20`}>
             <div className="wrap grid items-center gap-10 md:grid-cols-2">
@@ -43,7 +43,7 @@ export function Journey() {
   }
 
   return (
-    <section ref={outer} aria-label="Kerala and Japan" className="relative h-[320svh] bg-kerala text-ivory">
+    <section ref={outer} aria-label="Kerala and Japan" className="dark-surface relative h-[320svh] bg-kerala text-ivory">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <div ref={bg2} aria-hidden className="absolute inset-0 bg-japan" style={{ opacity: 0 }} />
         <div className="wrap relative grid h-full grid-rows-[1fr_auto] pt-28 pb-10">
