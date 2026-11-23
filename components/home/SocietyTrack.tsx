@@ -25,7 +25,7 @@ export function SocietyTrack() {
   useScrollProgress(outer, onP);
 
   const cards = TIERS.map(([n, d], i) => (
-    <li key={n} className="w-[78vw] max-w-sm shrink-0 border border-stone/60 bg-white p-6 sm:w-80">
+    <li key={n} className="w-[78vw] max-w-sm shrink-0 border border-bronze/30 bg-ivory p-6 sm:w-80">
       <p className="font-serif text-5xl text-bronze">{i + 1}</p>
       <h3 className="mt-6 text-2xl">{n}</h3>
       <p className="mt-3 text-sm text-charcoal/80">{d}</p>
@@ -38,9 +38,9 @@ export function SocietyTrack() {
       <Link href="/society" className="btn-ghost mt-6">About the Society</Link>
     </div>
   );
-  if (still) return <section className="py-24">{head}<ul className="wrap mt-10 grid gap-4 sm:grid-cols-2">{cards}</ul></section>;
+  if (still) return <section className="bg-bone py-24">{head}<ul className="wrap mt-10 grid gap-4 sm:grid-cols-2">{cards}</ul></section>;
   return (
-    <section ref={outer} aria-label="The Society" className="relative h-[300svh]">
+    <section ref={outer} aria-label="The Society" className="relative h-[300svh] bg-bone">
       <div className="sticky top-0 flex h-[100svh] flex-col justify-center gap-10 overflow-hidden pt-20">
         {head}
         <div className="wrap overflow-visible"><ul ref={track} className="flex w-max gap-5 will-change-transform">{cards}</ul></div>

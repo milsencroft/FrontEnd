@@ -6,8 +6,8 @@ import { useLaunch } from "@/lib/useLaunch";
 import { rupees } from "@/lib/money";
 
 const PLACES = [
-  { id: "kerala", tab: "Kerala", name: "Mazha", region: "Kerala", bg: "bg-sage", tone: "stone" as Tone, line: "Mazha is the Malayalam word for rain." },
-  { id: "japan", tab: "Japan", name: "Seiran", region: "Japan", bg: "bg-charcoal", tone: "bronze" as Tone, line: "Seiran is the Japanese word for a fresh breeze in early summer." },
+  { id: "kerala", tab: "Kerala", name: "Mazha", region: "Kerala", bg: "bg-kerala", tone: "stone" as Tone, line: "Mazha is the Malayalam word for rain." },
+  { id: "japan", tab: "Japan", name: "Seiran", region: "Japan", bg: "bg-japan", tone: "bronze" as Tone, line: "Seiran is the Japanese word for a fresh breeze in early summer." },
 ] as const;
 
 export function PlaceHero() {
