@@ -4,7 +4,7 @@ import { supabase } from "./supabase";
 import { env } from "./env";
 
 export interface LaunchState { name: string; status: string; capacity: number; allocated: number; held: number; remaining: number }
-export interface LaunchItem { sku: string; product_name: string; region_name: string; family: string; size_ml: number; launch_price_paise: number; story: string | null; in_stock: boolean }
+export interface LaunchItem { sku: string; product_name: string; region_name: string; family: string; size_ml: number; launch_price_paise: number; story: string | null; in_stock: boolean; images?: unknown }
 
 /** Public launch data straight from the backend. Nothing here is computed in the browser. */
 export function useLaunch(poll = 15000) {

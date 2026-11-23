@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { Photo } from "./ProductImage";
+import { imagesOf } from "@/lib/media";
 import { Flacon, type Tone } from "./Flacon";
 import { useLaunch } from "@/lib/useLaunch";
 import { rupees } from "@/lib/money";
@@ -51,7 +53,9 @@ export function PlaceHero() {
             <Link href="/shop" className="inline-flex min-h-[48px] items-center border border-ivory/60 px-8 text-xs uppercase tracking-[0.22em] hover:bg-ivory hover:text-charcoal">Shop</Link>
           </div>
         </div>
-        <Flacon tone={p.tone} label={p.name} className="hero-in hero-in-2" />
+        {imagesOf(item?.images)[0]
+          ? <div className="hero-in hero-in-2 mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden border border-bronze/40 shadow-2xl"><Photo image={imagesOf(item?.images)[0]} /></div>
+          : <Flacon tone={p.tone} label={p.name} className="hero-in hero-in-2" />}
       </div>
     </section>
   );
