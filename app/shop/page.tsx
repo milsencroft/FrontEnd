@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/PageHero";
 import { useMemo, useState } from "react";
 import { useShop } from "@/lib/useShop";
-import { useCart } from "@/lib/cart";
+import { AddToCart } from "@/components/AddToCart";
 import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
 import { Photo } from "@/components/ProductImage";
@@ -14,9 +14,8 @@ const tone = (region: string) => (region === "Japan" ? "bronze" : "sage");
 
 export default function Shop() {
   const { rows, bundles } = useShop();
-  const { add } = useCart();
   const [q, setQ] = useState(""); const [region, setRegion] = useState(""); const [family, setFamily] = useState("");
-  const [inStock, setInStock] = useState(false); const [sort, setSort] = useState("featured"); const [added, setAdded] = useState<string | null>(null);
+  const [inStock, setInStock] = useState(false); const [sort, setSort] = useState("featured");
 
   // One card per product (cheapest size shown); sizes are chosen on the product page.
   const products = useMemo(() => {
@@ -51,8 +50,8 @@ export default function Shop() {
             <p className="text-sm text-charcoal/70">{p.family}</p>
             <p className="mt-3">From {rupees(p.price_paise)}</p>
             <div className="mt-4 flex flex-wrap gap-3">
-              {p.in_stock ? <button className="btn" onClick={async () => { if (await add({ sku: p.sku })) setAdded(p.sku); }}>{added === p.sku ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}
-              <Link className="btn-ghost" href={`/shop/${p.product_code}`}>Details</Link>
+              <AddToCart id={p.sku} line={{ sku: p.sku }} max={p.max_qty} compact />
+              <Link className="btn-ghost self-end" href={`/shop/${p.product_code}`}>Details</Link>
             </div>
           </article>
         ))}
@@ -62,7 +61,7 @@ export default function Shop() {
             <h2 className="mt-1 text-3xl">{b.name}</h2>
             {b.description && <p className="mt-2 text-charcoal/80">{b.description}</p>}
             <p className="mt-3">{rupees(b.price_paise)}</p>
-            <div className="mt-4">{b.in_stock ? <button className="btn" onClick={async () => { if (await add({ bundle: b.code })) setAdded(b.code); }}>{added === b.code ? "Added to cart" : "Add to cart"}</button> : <p className="text-sm text-danger">Out of stock</p>}</div>
+            <div className="mt-4"><AddToCart id={b.code} line={{ bundle: b.code }} max={b.max_qty} compact /></div>
           </article>
         ))}
       </div></div>
