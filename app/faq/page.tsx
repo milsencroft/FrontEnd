@@ -1,5 +1,10 @@
+import { NOINDEX_FOLLOW, pageMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/PageHero";
-export const metadata = { title: "FAQ · Milsen & Croft" };
+// Answers are not published yet, so the page is thin: keep it out of the index until they are.
+export const metadata = pageMetadata({
+  title: "FAQ", path: "/faq", robots: NOINDEX_FOLLOW,
+  description: "Frequently asked questions about Milsen & Croft fragrances, orders and delivery.",
+});
 export default function Faq() {
   return (
     <>
