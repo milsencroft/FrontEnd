@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -24,7 +25,7 @@ function Bars({ rows }: { rows: { day: string; orders: number; gross_paise: numb
 }
 
 function Table({ head, rows }: { head: string[]; rows: (string | number)[][] }) {
-  if (rows.length === 0) return <p className="text-sm text-charcoal/70">Nothing in this period.</p>;
+  if (rows.length === 0) return <Empty art="reports">Nothing in this period.</Empty>;
   return (
     <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr>{head.map((h, i) => <th key={h} scope="col" className={`border-b border-stone/60 py-2 pr-4 font-medium ${i > 0 ? "text-right" : ""}`}>{h}</th>)}</tr></thead>
       <tbody>{rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j} className={`border-b border-stone/30 py-2 pr-4 ${j > 0 ? "text-right" : ""}`}>{c}</td>)}</tr>)}</tbody></table></div>
@@ -41,7 +42,8 @@ function Reports() {
   useEffect(() => { void load(); }, [load]);
   if (!permissions.includes("payments.view")) return <div className="wrap py-16"><h1 className="text-3xl">No access</h1></div>;
   const s = r?.summary;
-  const tile = (k: string, v: string) => <div className="border-t border-stone/60 py-3"><dt className="text-sm text-charcoal/70">{k}</dt><dd className="font-serif text-2xl">{v}</dd></div>;
+  const tile = (k: string, v: string) => <div className="card"><dt className="text-sm text-charcoal/70">{k}</dt><dd className="font-serif text-3xl">{v}</dd></div>;
+  const small = (k: string, v: string) => <div className="border-t border-stone/40 py-3"><dt className="text-sm text-charcoal/70">{k}</dt><dd className="font-serif text-xl">{v}</dd></div>;
   return (
     <section className="wrap py-12 grid gap-10">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Reports</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
@@ -54,14 +56,17 @@ function Reports() {
       {!r && !err && <Loader />}
       {r && <>
         <p className="max-w-2xl text-sm text-charcoal/70">Counts paid orders only, by India date. Refunds are taken off in the period they were made. All amounts include tax.</p>
-        <dl className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
-          {tile("Paid orders", String(s.orders))}{tile("Sales", rupees(s.gross_paise))}{tile("Refunds", rupees(s.refunded_paise))}{tile("Net sales", rupees(s.net_paise))}
-          {tile("Average order", rupees(s.aov_paise))}{tile("Customers", String(s.customers))}{tile("Repeat customers", String(s.repeat_customers))}{tile("Discounts given", rupees(s.discount_paise))}
-          {tile("Tax collected", rupees(s.tax_paise))}{tile("Shipping charged", rupees(s.shipping_paise))}
+        <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {tile("Paid orders", String(s.orders))}{tile("Sales", rupees(s.gross_paise))}{tile("Net sales", rupees(s.net_paise))}{tile("Average order", rupees(s.aov_paise))}
         </dl>
+        <details className="admin-filters"><summary className="btn-ghost cursor-pointer">More numbers</summary>
+          <dl className="mt-3 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+            {small("Refunds", rupees(s.refunded_paise))}{small("Customers", String(s.customers))}{small("Repeat customers", String(s.repeat_customers))}{small("Discounts given", rupees(s.discount_paise))}{small("Tax collected", rupees(s.tax_paise))}{small("Shipping charged", rupees(s.shipping_paise))}
+          </dl>
+        </details>
         <div><div className="mb-2 flex flex-wrap items-baseline justify-between gap-3"><h2 className="text-2xl">Sales by day</h2>
           <button className="btn-ghost" onClick={() => download("sales-by-day.csv", fillDays(r.daily, range.from, range.to).map((d) => ({ date: d.day, orders: d.orders, sales_rupees: d.gross_paise / 100 })))}>Export CSV</button></div>
-          <Bars rows={fillDays(r.daily, range.from, range.to)} /></div>
+          <div className="card"><Bars rows={fillDays(r.daily, range.from, range.to)} /></div></div>
         <div className="cq"><div className="cq-grid grid grid-cols-1 gap-10">
           <div><h2 className="mb-3 text-2xl">By order type</h2><Table head={["Type", "Orders", "Sales"]} rows={r.by_type.map((x: any) => [TYPE_LABEL[x.type] ?? x.type, x.orders, rupees(x.gross_paise)])} /></div>
           <div><h2 className="mb-3 text-2xl">By launch</h2><Table head={["Launch", "Orders", "Sales"]} rows={r.by_launch.map((x: any) => [`${x.name} (${x.code})`, x.orders, rupees(x.gross_paise)])} /></div>

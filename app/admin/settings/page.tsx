@@ -20,7 +20,7 @@ function Settings() {
     <div className="card grid max-w-xl gap-4">
       <h2 className="text-2xl">GST</h2>
       <p className="text-sm text-charcoal/70">Tax is calculated by the server. Confirm rates and GSTIN with your accountant before enabling.</p>
-      <div><label className="label" htmlFor="gr">Reason for change</label><input id="gr" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="gr">Reason for change</label><input id="gr" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       <label className="flex min-h-[44px] items-center gap-3"><input type="checkbox" className="h-5 w-5" checked={gst.enabled} disabled={!reason.trim()} onChange={(e) => save({ ...gst, enabled: e.target.checked })} />Charge GST on orders</label>
       <div><label className="label" htmlFor="gm">Prices are</label><select id="gm" className="field" value={gst.mode} disabled={!reason.trim()} onChange={(e) => save({ ...gst, mode: e.target.value })}><option value="inclusive">GST-inclusive</option><option value="exclusive">GST added at checkout</option></select></div>
       <div><label className="label" htmlFor="gs">GSTIN</label><input id="gs" className="field" defaultValue={gst.gstin ?? ""} disabled={!reason.trim()} onBlur={(e) => e.target.value !== (gst.gstin ?? "") && save({ ...gst, gstin: e.target.value || null })} /></div>

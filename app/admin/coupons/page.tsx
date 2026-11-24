@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -51,7 +52,7 @@ function Coupons() {
   return (
     <section className="wrap py-12">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Coupons</h1><div className="flex items-center gap-4"><button className="btn" onClick={() => { setMsg(null); setAdding(true); }}>Add coupons</button><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div></div>
-      <div className="mt-6 max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="mt-4 text-sm">{msg}</p>}
       <Modal open={adding} onClose={() => setAdding(false)} title="Add coupons">
       <form onSubmit={create} className="grid gap-3">
@@ -73,7 +74,7 @@ function Coupons() {
         <div><button className="btn" disabled={!reason.trim()}>Create</button></div>
       </form>
       </Modal>
-      <ul className="mt-10 grid gap-3">{list.length === 0 && <li className="text-charcoal/70">No coupons yet.</li>}
+      <ul className="mt-10 grid gap-3">{list.length === 0 && <li><Empty art="coupons">No coupons yet.</Empty></li>}
         {list.map((c) => (
           <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 surface p-4">
             <div><p className="font-medium">{c.code} <span className="text-sm text-charcoal/70">{c.is_active ? "Active" : "Disabled"}</span></p>

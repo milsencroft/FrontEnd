@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -32,9 +33,9 @@ function Notifications() {
         <button className={status === "" ? "btn" : "btn-ghost"} aria-pressed={status === ""} onClick={() => setStatus("")}>All</button>
         {STATUSES.map((s) => <button key={s} className={status === s ? "btn" : "btn-ghost"} aria-pressed={status === s} onClick={() => setStatus(s)}>{LABEL[s]} ({d.counts[s] ?? 0})</button>)}
       </div>
-      {canManage && <div className="max-w-xl"><label className="label" htmlFor="why">Reason for retry or cancel (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>}
+      {canManage && <div className="admin-reason"><label className="label" htmlFor="why">Reason for retry or cancel (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>}
       {msg && <p role="status" className="text-sm">{msg}</p>}
-      {(d.items as any[]).length === 0 ? <p className="text-charcoal/70">No messages here.</p> : (
+      {(d.items as any[]).length === 0 ? <Empty art="notifications">No messages here.</Empty> : (
         <ul className="grid gap-3">{(d.items as any[]).map((i) => (
           <li key={i.id} className="card flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 text-sm"><p className="font-medium">{human(i.template)} <span className="text-charcoal/70">via {label(CHANNEL_LABEL, i.channel)}</span></p>
