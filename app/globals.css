@@ -277,3 +277,39 @@ hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgb
 
 /* No elastic bounce at the top and bottom: the fixed film behind the page would otherwise flicker as the page overshoots. */
 html, body { overscroll-behavior-y: none; }
+
+/* ───────── Admin shell ───────── */
+.admin-side { position: sticky; top: 4rem; z-index: 20; margin-inline: -1rem; padding: .5rem 1rem; background: rgb(var(--c-ivory) / .92); backdrop-filter: blur(10px); border-bottom: 1px solid rgb(var(--c-stone) / .35); display: flex; gap: .5rem; align-items: center; overflow-x: auto; scrollbar-width: none; }
+.admin-side::-webkit-scrollbar { display: none; }
+.admin-nav { display: flex; gap: .25rem; align-items: center; }
+.admin-group { display: contents; }
+.admin-group-title { display: none; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: rgb(var(--c-sage) / .8); }
+.admin-link { display: inline-flex; min-height: 44px; align-items: center; gap: .6rem; padding: 0 .9rem; border-radius: 999px; font-size: .85rem; white-space: nowrap; color: rgb(var(--c-charcoal) / .8); transition: background .2s, color .2s; }
+.admin-link:hover { background: rgb(var(--c-bone)); color: rgb(var(--c-charcoal)); }
+.admin-link[aria-current="page"] { background: rgb(var(--c-bone)); color: rgb(var(--c-brass)); box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .35) inset; }
+.admin-home { flex: none; }
+@media (min-width: 1024px) {
+  .admin-side { position: sticky; top: 5rem; align-self: start; margin: 2rem 0 0; padding: 0; background: none; backdrop-filter: none; border: 0; display: block; overflow: visible; max-height: calc(100vh - 6rem); overflow-y: auto; }
+  .admin-nav { display: block; margin-top: 1rem; }
+  .admin-group { display: block; margin-bottom: 1.25rem; }
+  .admin-group-title { display: block; margin: 0 0 .35rem .9rem; }
+  .admin-link { display: flex; width: 100%; border-radius: 1rem; }
+}
+.admin-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: radial-gradient(circle at 30% 25%, rgb(var(--c-brass) / .16), rgb(var(--c-bone))); box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .3) inset; flex: none; }
+.admin-banner { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: .75rem 1rem; border-radius: 1.5rem; background: rgb(var(--c-bone) / .6); }
+.admin-banner .admin-badge { width: 72px !important; height: 72px !important; }
+.admin-banner .admin-badge svg { width: 44px; height: 44px; }
+.admin-main section.wrap, .admin-main > section { padding-inline: 0; max-width: none; }
+.admin-main .wrap { padding-inline: 0; max-width: none; }
+.admin-main h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
+.admin-main a[href="/admin"].underline { display: none; }
+.admin-hero { display: grid; gap: 1rem; align-items: center; padding: 1.5rem; overflow: hidden; }
+.admin-hero-art { height: 9rem; }
+@media (min-width: 720px) { .admin-hero { grid-template-columns: 1fr minmax(12rem, 18rem); padding: 2rem; } }
+.admin-stat { display: flex; align-items: center; gap: 1rem; padding: 1.25rem; transition: transform .25s, box-shadow .25s; }
+a.admin-stat:hover, .admin-tile:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .4) inset, 0 24px 48px -28px rgb(0 0 0 / .7); }
+.admin-stat-art, .admin-tile-art { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: rgb(var(--c-bone)); flex: none; }
+.admin-stat-art { width: 3.25rem; height: 3.25rem; }
+.admin-tile { display: block; padding: 1.25rem; min-height: 44px; }
+.admin-tile-art { width: 4.25rem; height: 4.25rem; margin-bottom: .75rem; }
+@media (prefers-reduced-motion: reduce) { a.admin-stat:hover, .admin-tile:hover { transform: none; } }
