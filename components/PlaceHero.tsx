@@ -5,6 +5,7 @@ import { Photo } from "./ProductImage";
 import { imagesOf } from "@/lib/media";
 import { Flacon, type Tone } from "./Flacon";
 import { useLaunch } from "@/lib/useLaunch";
+import { useAvailability } from "@/lib/useAvailability";
 import { useShop } from "@/lib/useShop";
 import { Split } from "./Split";
 import { rupees } from "@/lib/money";
@@ -20,6 +21,7 @@ export function PlaceHero() {
   const box = useRef<HTMLElement>(null);
   const { state, items } = useLaunch();
   const { rows } = useShop();
+  const av = useAvailability();
   const open = state?.status === "preorder_active";
   // While pre-orders run, show the launch item and launch price. Afterwards show the regular shop product and its price.
   const launchItem = items.find((x) => x.region_name.toLowerCase() === p.region.toLowerCase());
@@ -59,8 +61,8 @@ export function PlaceHero() {
             {open
               ? <><Link href="/launch" className="btn-light">Reserve your place</Link>
                   <Link href="/shop" className="inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link></>
-              : <><Link href="/shop" className="btn-light">Shop now</Link>
-                  <Link href="/society" className="inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">The Society</Link></>}
+              : <>{av.shop && <Link href="/shop" className="btn-light">Shop now</Link>}
+                  <Link href="/society" className={av.shop ? "inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal" : "btn-light"}>The Society</Link></>}
           </div>
         </div>
         {imagesOf(item?.images)[0]

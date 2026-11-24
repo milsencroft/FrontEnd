@@ -1,3 +1,4 @@
+import { ShopLink } from "@/components/ShopLink";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationLd, websiteLd } from "@/lib/seo/jsonld";
@@ -32,7 +33,7 @@ export default function Home() {
       <section className="dark-surface relative isolate overflow-hidden text-ivory"><div aria-hidden className="absolute inset-0 -z-[1] tone-kerala" /><div aria-hidden className="grain" /><div className="wrap py-24 text-center sm:py-32"><span aria-hidden className="mx-auto mb-8 block h-px w-16 bg-bronze" />
         <Split className="mx-auto max-w-3xl text-4xl sm:text-6xl" text="Milsen & Croft is a fragrance house in Kerala." />
         <p className="mx-auto mt-6 text-lg text-ivory/80">Each release begins with a place and is made in a limited run.</p>
-        <Link href="/shop" className="btn-light mt-10">Shop the collection</Link>
+        <ShopLink className="btn-light mt-10" fallback={<Link href="/society" className="btn-light mt-10">Join the Society</Link>}>Shop the collection</ShopLink>
       </div></section>
     </>
   );
