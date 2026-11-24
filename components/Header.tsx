@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "./ThemeToggle";
 import { useSession } from "@/lib/session";
 import { useCart } from "@/lib/cart";
 import { signInWithGoogle, signOut } from "@/lib/supabase";
@@ -42,18 +41,18 @@ export function Header() {
       <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/30 bg-ivory/85 backdrop-blur-md transition-transform duration-300 ${hide && !open ? "-translate-y-full" : ""}`}>
         <div className="wrap grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4">
           <div className="flex items-center gap-6">
-            <button ref={opener} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} gap-3 lg:hidden`}>
+            <button ref={opener} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} gap-3 xl:hidden`}>
               <span aria-hidden className="flex w-5 flex-col gap-[5px]"><i className="block h-px bg-current" /><i className="block h-px w-3/4 bg-current" /></span>Menu
             </button>
-            <nav aria-label="Main" className="hidden items-center gap-6 lg:flex xl:gap-8">{LEFT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
+            <nav aria-label="Main" className="hidden items-center gap-6 xl:flex xl:gap-8">{LEFT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
           </div>
           <Link href="/" className="inline-flex min-h-[44px] items-center gap-3 font-serif text-2xl whitespace-nowrap" aria-label="Milsen & Croft, home">
             <img src="/logo.png" alt="" width={40} height={40} className="h-10 w-10" /><span className="hidden sm:inline">Milsen &amp; Croft</span>
           </Link>
           <div className="flex items-center justify-end gap-6 xl:gap-8">
-            <nav aria-label="More" className="hidden items-center gap-6 lg:flex xl:gap-8">{RIGHT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
+            <nav aria-label="More" className="hidden items-center gap-6 xl:flex xl:gap-8">{RIGHT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
             <Link className={link} href="/cart">{cart}</Link>
-            <button type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} hidden lg:inline-flex`}>Menu</button>
+            <button type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} hidden xl:inline-flex`}>Menu</button>
           </div>
         </div>
       </header>
@@ -72,7 +71,6 @@ export function Header() {
             <Link href="/cart" onClick={() => setOpen(false)} className={link}>{cart}</Link>
             {session && <Link className={link} href="/account" onClick={() => setOpen(false)}>Account</Link>}
             {permissions.length > 0 && <Link className={link} href="/admin" onClick={() => setOpen(false)}>Admin</Link>}
-            <ThemeToggle className={link} />
             {!loading && (session
               ? <button className={link} onClick={() => signOut()}>Sign out</button>
               : <button className={link} onClick={() => signInWithGoogle()}>Sign in with Google</button>)}
