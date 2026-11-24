@@ -38,28 +38,29 @@ function Stock() {
   }
 
   return (
-    <section className="wrap grid gap-8 py-12">
+    <section className="wrap grid gap-8 py-12 cq">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Stock</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
       <p className="max-w-2xl text-charcoal/70">Available = on hand minus units held by customers who are paying. The shop shows “Out of stock” when available reaches zero.</p>
       {canManage && <div className="admin-reason"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="For example: new batch received" /></div>}
       {msg && <p role="status" className="text-sm">{msg}</p>}
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[40rem] text-left text-sm">
-          <thead><tr className="border-b border-stone/60"><th className="py-3 pr-4">Product</th><th className="pr-4">SKU</th><th className="pr-4">On hand</th><th className="pr-4">Held</th><th className="pr-4">Available</th><th className="pr-4">Status</th>{canManage && <th>Change</th>}</tr></thead>
-          <tbody>{rows.map((r) => (
-            <tr key={r.sku} className="border-b border-stone/40 align-middle">
-              <td className="py-3 pr-4">{r.product_name}, {r.size_ml} ml{r.is_active ? "" : " (inactive)"}</td><td className="pr-4">{r.sku}</td>
-              <td className="pr-4">{r.on_hand}</td><td className="pr-4">{r.reserved}</td><td className="pr-4">{r.available}</td>
-              <td className={`pr-4 ${r.available <= 0 ? "text-danger" : ""}`}>{state(r)}</td>
-              {canManage && <td><div className="flex flex-wrap items-center gap-2 py-2">
-                <label className="sr-only" htmlFor={`q-${r.sku}`}>Quantity for {r.sku}</label>
-                <input id={`q-${r.sku}`} inputMode="numeric" className="field w-24" value={qty[r.sku] ?? ""} onChange={(e) => setQty({ ...qty, [r.sku]: e.target.value.replace(/\D/g, "") })} />
-                <button className="btn" disabled={!ok || !qty[r.sku]} onClick={() => apply(r, "add")}>Add</button>
-                <button className="btn-ghost" disabled={!ok || !qty[r.sku]} onClick={() => apply(r, "set")}>Set to</button>
-              </div></td>}
-            </tr>))}</tbody>
-        </table>
-      </div>
+      <ul className="cq-grid grid grid-cols-1 gap-4">{rows.map((r) => {
+        const pct = r.on_hand > 0 ? Math.max(0, Math.min(100, Math.round((r.available / r.on_hand) * 100))) : 0;
+        return (
+          <li key={r.sku} className="card grid gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div><p className="font-serif text-xl">{r.product_name}</p><p className="text-sm text-charcoal/70">{r.size_ml} ml · {r.sku}{r.is_active ? "" : " · inactive"}</p></div>
+              <span className="chip" data-tone={r.available <= 0 ? "warn" : "good"}>{state(r)}</span>
+            </div>
+            <div><div className="admin-meter" role="img" aria-label={`${r.available} of ${r.on_hand} available`}><i style={{ width: `${pct}%` }} /></div>
+              <p className="mt-1 text-sm text-charcoal/70">{r.available} available · {r.on_hand} on hand · {r.reserved} held</p></div>
+            {canManage && <div className="flex flex-wrap items-center gap-2">
+              <label className="sr-only" htmlFor={`q-${r.sku}`}>Quantity for {r.sku}</label>
+              <input id={`q-${r.sku}`} inputMode="numeric" placeholder="Qty" className="field w-24" value={qty[r.sku] ?? ""} onChange={(e) => setQty({ ...qty, [r.sku]: e.target.value.replace(/\D/g, "") })} />
+              <button className="btn" disabled={!ok || !qty[r.sku]} onClick={() => apply(r, "add")}>Add</button>
+              <button className="btn-ghost" disabled={!ok || !qty[r.sku]} onClick={() => apply(r, "set")}>Set to</button>
+            </div>}
+          </li>);
+      })}</ul>
     </section>
   );
 }

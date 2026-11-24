@@ -56,19 +56,21 @@ function Coupons() {
       {msg && <p role="status" className="mt-4 text-sm">{msg}</p>}
       <Modal open={adding} onClose={() => setAdding(false)} title="Add coupons">
       <form onSubmit={create} className="grid gap-3">
-        <p className="text-sm text-charcoal/70">Enter a code for one custom coupon, or leave it empty and set a number to generate random single-use codes.</p>
+        <p className="text-sm text-charcoal/70">Type a code for one coupon, or leave it empty to create random single-use codes.</p>
         <div className="grid gap-3 sm:grid-cols-3">
           <div><label className="label" htmlFor="cc">Custom code</label><input id="cc" className="field" value={f.code} onChange={set("code")} /></div>
           <div><label className="label" htmlFor="cn">How many random codes</label><input id="cn" type="number" min={1} max={500} className="field" value={f.count} onChange={set("count")} /></div>
-          <div><label className="label" htmlFor="cx">Prefix for random codes</label><input id="cx" className="field" value={f.prefix} onChange={set("prefix")} /></div>
           <div><label className="label" htmlFor="ct">Discount type</label><select id="ct" className="field" value={f.type} onChange={set("type")}><option value="percent">Percent</option><option value="flat">Flat amount (₹)</option></select></div>
           <div><label className="label" htmlFor="cv">{f.type === "percent" ? "Percent off" : "Rupees off"}</label><input id="cv" type="number" min={1} required className="field" value={f.value} onChange={set("value")} /></div>
+        </div>
+        <details className="admin-filters"><summary className="btn-ghost cursor-pointer">More options</summary><div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div><label className="label" htmlFor="cx">Prefix for random codes</label><input id="cx" className="field" value={f.prefix} onChange={set("prefix")} /></div>
           <div><label className="label" htmlFor="cm">Minimum order (₹)</label><input id="cm" type="number" min={0} className="field" value={f.min} onChange={set("min")} /></div>
           <div><label className="label" htmlFor="cu">Total uses (blank = unlimited, random = 1)</label><input id="cu" type="number" min={1} className="field" value={f.max} onChange={set("max")} /></div>
           <div><label className="label" htmlFor="cf">Starts</label><input id="cf" type="datetime-local" className="field" value={f.from} onChange={set("from")} /></div>
           <div><label className="label" htmlFor="ce">Expires</label><input id="ce" type="datetime-local" className="field" value={f.to} onChange={set("to")} /></div>
-        </div>
-        <label className="flex min-h-[44px] items-center gap-3 text-sm"><input type="checkbox" className="h-5 w-5" checked={f.launch} onChange={set("launch")} />Allow on launch pre-orders</label>
+        <label className="flex min-h-[44px] items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" className="h-5 w-5" checked={f.launch} onChange={set("launch")} />Allow on launch pre-orders</label>
+        </div></details>
         <div><label className="label" htmlFor="cwhy">Reason (required, recorded in the audit log)</label><input id="cwhy" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
         {msg && <p role="alert" className="text-sm">{msg}</p>}
         <div><button className="btn" disabled={!reason.trim()}>Create</button></div>
@@ -77,7 +79,7 @@ function Coupons() {
       <ul className="mt-10 grid gap-3">{list.length === 0 && <li><Empty art="coupons">No coupons yet.</Empty></li>}
         {list.map((c) => (
           <li key={c.code} className="flex flex-wrap items-center justify-between gap-3 surface p-4">
-            <div><p className="font-medium">{c.code} <span className="text-sm text-charcoal/70">{c.is_active ? "Active" : "Disabled"}</span></p>
+            <div><p className="font-medium">{c.code} <span className="chip" data-tone={c.is_active ? "good" : undefined}>{c.is_active ? "Active" : "Disabled"}</span></p>
               <p className="text-sm text-charcoal/70">{c.discount_type === "percent" ? `${c.value}% off` : `${rupees(c.value)} off`}{c.min_order_paise ? ` · min ${rupees(c.min_order_paise)}` : ""} · used {c.redeemed}{c.max_uses ? ` of ${c.max_uses}` : ""}{c.ends_at ? ` · ends ${new Date(c.ends_at).toLocaleDateString("en-IN")}` : ""}</p>
               <p className="text-sm text-charcoal/70">{[c.max_per_customer ? `${c.max_per_customer} per customer` : null, c.max_discount_paise ? `discount up to ${rupees(c.max_discount_paise)}` : null, c.product_ids ? `${c.product_ids.length} product${c.product_ids.length > 1 ? "s" : ""} only` : null, c.tiers ? `Society tier ${c.tiers.join(", ")} only` : null].filter(Boolean).join(" · ") || "No extra rules"}</p></div>
             <div className="flex gap-2">
