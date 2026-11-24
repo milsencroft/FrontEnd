@@ -41,7 +41,7 @@ function Stock() {
     <section className="wrap grid gap-8 py-12">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Stock</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
       <p className="max-w-2xl text-charcoal/70">Available = on hand minus units held by customers who are paying. The shop shows “Out of stock” when available reaches zero.</p>
-      {canManage && <div className="max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="For example: new batch received" /></div>}
+      {canManage && <div className="admin-reason"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="For example: new batch received" /></div>}
       {msg && <p role="status" className="text-sm">{msg}</p>}
       <div className="overflow-x-auto">
         <table className="w-full min-w-[40rem] text-left text-sm">

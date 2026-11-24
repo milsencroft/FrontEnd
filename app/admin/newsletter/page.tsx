@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -32,10 +33,10 @@ function List() {
     <section className="wrap py-12 grid gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Newsletter</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin</Link></div>
       <p className="text-charcoal/80">{active.length} subscribed, {list.length - active.length} unsubscribed.</p>
-      <div className="flex flex-wrap items-end gap-4"><div className="max-w-xl flex-1"><label className="label" htmlFor="why">Reason for unsubscribing someone (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="flex flex-wrap items-end gap-4"><div className="admin-reason"><label className="label" htmlFor="why">Reason for unsubscribing someone (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
         <button className="btn-ghost" onClick={exportCsv} disabled={active.length === 0}>Download subscribers (CSV)</button></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}
-      <ul className="grid gap-3">{list.length === 0 && <li className="text-charcoal/70">No subscribers yet.</li>}
+      <ul className="grid gap-3">{list.length === 0 && <li><Empty art="newsletter">No subscribers yet.</Empty></li>}
         {list.map((s) => <li key={s.id} className="card flex flex-wrap items-center justify-between gap-3"><div><p className="break-all font-medium">{s.email}</p><p className="text-sm text-charcoal/70">{new Date(s.consented_at).toLocaleDateString("en-IN")} · {label(SOURCE_LABEL, s.source)}{s.unsubscribed_at ? " · unsubscribed" : ""}</p></div>
           {!s.unsubscribed_at && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => unsub(s.id)}>Unsubscribe</button>}</li>)}</ul>
     </section>

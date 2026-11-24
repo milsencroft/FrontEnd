@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -59,7 +60,7 @@ function Media() {
   return (
     <section className="wrap py-12 grid gap-10">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Media library</h1><div className="flex items-center gap-4"><button className="btn" onClick={() => { setMsg(null); setAdding(true); }}>Add media</button><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div></div>
-      <div className="max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}
 
       <Modal open={adding} onClose={() => setAdding(false)} title="Add media">
@@ -85,7 +86,7 @@ function Media() {
       </div>
 
       <div><h2 className="mb-4 text-2xl">Library</h2>
-        {(d.media as any[]).length === 0 && <p className="text-charcoal/70">No images yet.</p>}
+        {(d.media as any[]).length === 0 && <Empty art="media">No images yet. Upload your first photo or film.</Empty>}
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{(d.media as any[]).map((m) => (
           <li key={m.id} className="card grid gap-3">
             <div className="aspect-square overflow-hidden bg-stone/20">{m.kind === "image" ? <Photo image={{ path: m.path, alt: m.alt }} /> : m.kind === "video" ? <video src={mediaUrl(m.path)} poster={m.poster ? mediaUrl(m.poster) : undefined} controls muted preload="metadata" className="h-full w-full object-cover" aria-label={m.alt} /> : <div className="grid h-full place-items-center p-4 text-center text-sm">YouTube or Vimeo link<br />{m.embed}</div>}</div>

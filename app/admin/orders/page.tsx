@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -36,32 +37,34 @@ function Orders() {
     <section className="wrap py-12 cq">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Orders</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
       <form className="mt-8 flex flex-wrap items-end gap-3" role="search" onSubmit={(e) => e.preventDefault()}>
-        <div><label className="label" htmlFor="oq">Search</label><input id="oq" className="field w-64" placeholder="Order ID, name, phone, email, product, tracking" value={f.q} onChange={set("q")} /></div>
+        <div className="min-w-[14rem] flex-1"><label className="label" htmlFor="oq">Search</label><input id="oq" className="field" placeholder="Order ID, name, phone, email, product, tracking" value={f.q} onChange={set("q")} /></div>
+        <details className="admin-filters"><summary className="btn-ghost cursor-pointer">Filters</summary><div className="mt-3 flex flex-wrap items-end gap-3">
         <div><label className="label" htmlFor="op">Payment</label><select id="op" className="field w-auto" value={f.payment} onChange={set("payment")}><option value="">All</option>{Object.entries(PAYMENT_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div><label className="label" htmlFor="of">Status</label><select id="of" className="field w-auto" value={f.fulfilment} onChange={set("fulfilment")}><option value="">All</option>{Object.entries(FULFIL_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div><label className="label" htmlFor="ot">Type</label><select id="ot" className="field w-auto" value={f.type} onChange={set("type")}><option value="">All</option>{Object.entries(TYPE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
         <div><label className="label" htmlFor="od1">From</label><input id="od1" type="date" className="field w-auto" value={f.from} onChange={set("from")} /></div>
         <div><label className="label" htmlFor="od2">To</label><input id="od2" type="date" className="field w-auto" value={f.to} onChange={set("to")} /></div>
+        </div></details>
         <button type="button" className="btn-ghost" onClick={exportCsv}>Export CSV</button>
       </form>
       {err && <p role="alert" className="mt-4 text-danger">{err}</p>}
-      {!err && rows.length === 0 && <p className="mt-10 text-charcoal/70">No orders match.</p>}
+      {!err && rows.length === 0 && <Empty art="orders">No orders match these filters.</Empty>}
       <p className="mt-6 text-sm text-charcoal/70" aria-live="polite">{total} order{total === 1 ? "" : "s"}</p>
       {/* Wide: table. Narrow or folded: cards. Chosen by the container width, not the device. */}
       <div className="mt-4 hidden orders-table"><table className="w-full text-left text-sm">
-        <thead><tr className="border-b border-stone/60 text-charcoal/70">{["Order", "Date", "Customer", "Type", "Items", "Total", "Payment", "Status", "Courier", "Tracking", ""].map((h) => <th key={h} className="py-2 pr-3 font-normal">{h}</th>)}</tr></thead>
+        <thead><tr className="border-b border-stone/60 text-charcoal/70">{["Order", "Customer", "Items", "Total", "Status", ""].map((h) => <th key={h} className="py-2 pr-3 font-normal">{h}</th>)}</tr></thead>
         <tbody>{rows.map((r) => (
           <tr key={r.id} className="border-b border-stone/30 align-top">
-            <td className="py-3 pr-3 font-medium">{r.order_number}</td><td className="pr-3">{new Date(r.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</td>
-            <td className="pr-3">{r.customer_name}<br /><span className="text-charcoal/70">{r.phone}</span></td><td className="pr-3">{TYPE_LABEL[r.order_type]}</td><td className="pr-3 max-w-[14rem]">{r.items}</td>
-            <td className="pr-3">{rupees(r.total_paise)}</td><td className="pr-3">{PAYMENT_LABEL[r.payment_status]}</td><td className="pr-3">{FULFIL_LABEL[r.fulfilment_status]}</td>
-            <td className="pr-3">{r.courier}</td><td className="pr-3">{r.tracking_number}</td><td><Link className="underline underline-offset-4" href={`/admin/orders/${r.id}`}>View</Link></td>
+            <td className="py-3 pr-3"><span className="font-medium">{r.order_number}</span><br /><span className="text-charcoal/60">{new Date(r.created_at).toLocaleDateString("en-IN", { dateStyle: "medium" })} · {TYPE_LABEL[r.order_type]}</span></td>
+            <td className="pr-3">{r.customer_name}<br /><span className="text-charcoal/70">{r.phone}</span></td><td className="pr-3 max-w-[16rem]">{r.items}</td>
+            <td className="pr-3">{rupees(r.total_paise)}</td><td className="pr-3"><span className="chip" data-tone={r.payment_status === "captured" ? "good" : "warn"}>{PAYMENT_LABEL[r.payment_status]}</span> <span className="chip">{FULFIL_LABEL[r.fulfilment_status]}</span></td>
+            <td><Link className="btn-ghost" href={`/admin/orders/${r.id}`}>View</Link></td>
           </tr>))}</tbody></table></div>
       <ul className="mt-4 grid gap-3 orders-cards">{rows.map((r) => (
         <li key={r.id} className="surface p-4">
           <div className="flex flex-wrap justify-between gap-2"><p className="font-medium">{r.order_number}</p><p>{rupees(r.total_paise)}</p></div>
           <p className="text-sm">{r.customer_name} · {r.phone}</p><p className="text-sm text-charcoal/70">{TYPE_LABEL[r.order_type]} · {r.items}</p>
-          <p className="mt-1 text-sm">{PAYMENT_LABEL[r.payment_status]} · {FULFIL_LABEL[r.fulfilment_status]}</p>
+          <p className="mt-2 flex flex-wrap gap-2"><span className="chip" data-tone={r.payment_status === "captured" ? "good" : "warn"}>{PAYMENT_LABEL[r.payment_status]}</span><span className="chip">{FULFIL_LABEL[r.fulfilment_status]}</span></p>
           <Link className="mt-2 inline-flex min-h-[44px] items-center underline underline-offset-4" href={`/admin/orders/${r.id}`}>View order</Link>
         </li>))}</ul>
       <div className="mt-8 flex items-center gap-4">
