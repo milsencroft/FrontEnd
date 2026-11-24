@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -31,7 +32,7 @@ function Society() {
   return (
     <section className="wrap py-12 grid gap-10">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Society</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
-      <div className="max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}
 
       <div><h2 className="text-2xl mb-4">Tiers</h2>
@@ -48,7 +49,7 @@ function Society() {
 
       <div><h2 className="text-2xl mb-4">Launch results</h2>
         <p className="mb-3 max-w-2xl text-sm text-charcoal/70">After a launch has closed, process it once. Members who did not take part get a missed launch; two in a row move them down a tier, or end membership at Tier 1. Cancelled or postponed launches never count.</p>
-        {(o.launches as any[]).length === 0 && <p className="text-charcoal/70">No finished Society launches yet.</p>}
+        {(o.launches as any[]).length === 0 && <Empty art="society">No finished Society launches yet.</Empty>}
         <ul className="grid gap-3">{(o.launches as any[]).map((l) => (
           <li key={l.id} className="card flex flex-wrap items-center justify-between gap-3"><p>{l.code}: {l.name} <span className="text-sm text-charcoal/70">({label(LAUNCH_LABEL, l.status)})</span></p>
             {l.processed ? <span className="text-sm">Processed</span> : <button className="btn" disabled={!ok} onClick={() => { if (confirm(`Process results for ${l.code}? This cannot be repeated.`)) void run(db.rpc("admin_process_launch_cycle", { p_launch: l.id, p_reason: reason }), `Launch ${l.code} processed.`); }}>Process results</button>}</li>))}</ul>

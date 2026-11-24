@@ -1,4 +1,5 @@
 "use client";
+import { Empty } from "@/components/admin/Empty";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
@@ -31,9 +32,9 @@ function Editor() {
     <section className="wrap py-12 grid gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Content</h1><div className="flex items-center gap-4"><button className="btn" onClick={() => { setMsg(null); setF(empty); setOpen(true); }}>Write a page</button><Link href="/admin" className="text-sm underline underline-offset-4">Admin</Link></div></div>
       <p className="max-w-2xl text-charcoal/80">Write journal entries and policy pages here. Only published pages appear on the website. Separate paragraphs with a blank line.</p>
-      <div className="max-w-xl"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="why">Reason (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}
-      <ul className="grid max-w-3xl gap-3">{list.length === 0 && <li className="text-charcoal/70">No pages yet.</li>}
+      <ul className="grid max-w-3xl gap-3">{list.length === 0 && <li><Empty art="content">No pages yet.</Empty></li>}
         {list.map((r) => <li key={r.slug} className="card flex flex-wrap items-center justify-between gap-3">
           <div><p className="font-medium">{r.title}</p><p className="text-sm text-charcoal/70">{path(r)} · {label(PAGE_LABEL, r.status)}</p></div>
           <div className="flex flex-wrap gap-2">

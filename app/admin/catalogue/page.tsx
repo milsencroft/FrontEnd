@@ -33,7 +33,7 @@ function Catalogue() {
   return (
     <section className="wrap py-12">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Catalogue</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
-      <div className="mt-6 max-w-xl"><label className="label" htmlFor="why">Reason for your changes (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="why">Reason for your changes (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="mt-4 text-sm">{msg}</p>}
 
       <div className="mt-12 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Regions</h2><button className="btn" onClick={() => { setMsg(null); setR({ code: "", name: "", country: "", description: "", story: "" }); setDlg("region"); }}>Add region</button></div>

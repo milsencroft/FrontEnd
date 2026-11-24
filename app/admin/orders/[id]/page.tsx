@@ -82,7 +82,7 @@ function Detail() {
             <datalist id="courier-list">{couriers.filter((x) => x.is_active).map((x) => <option key={x.name} value={x.name} />)}</datalist>
             <div><label className="label" htmlFor="te">Estimated delivery</label><input id="te" type="date" className="field" value={t.eta} onChange={(e) => setT({ ...t, eta: e.target.value })} /></div>
           </div>
-          <div><label className="label" htmlFor="tr">Reason or note (optional)</label><input id="tr" className="field" value={t.note} onChange={(e) => setT({ ...t, note: e.target.value })} /></div>
+          <div className="admin-reason"><label className="label" htmlFor="tr">Reason or note (optional)</label><input id="tr" className="field" value={t.note} onChange={(e) => setT({ ...t, note: e.target.value })} /></div>
           <div className="flex flex-wrap gap-3">
             {actions.map((x) => <button key={x.to} className="btn" onClick={() => act(x.to)}>{x.label}</button>)}
             {o.payment_status !== "captured" && !["cancelled"].includes(o.fulfilment_status) && <button className="btn-ghost" onClick={() => act("cancelled")}>Cancel order</button>}

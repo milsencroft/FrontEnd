@@ -17,7 +17,7 @@ function Launches() {
     <div className="grid gap-4">
       <h1 className="text-3xl">Launches</h1>
       {note && <p role="status" className="text-sm">{note}</p>}
-      <div><label className="label" htmlFor="r">Reason (required for every change, recorded in the audit log)</label><input id="r" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+      <div className="admin-reason"><label className="label" htmlFor="r">Reason (required for every change, recorded in the audit log)</label><input id="r" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {rows.map((l) => (
         <div key={l.id} className="card grid gap-3 sm:grid-cols-[1fr_auto_auto] items-end">
           <div><p className="font-serif text-xl">{l.name} <span className="text-sm">({l.code})</span></p><p className="text-sm">Capacity {l.capacity}</p></div>

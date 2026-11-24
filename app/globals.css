@@ -313,3 +313,16 @@ a.admin-stat:hover, .admin-tile:hover { transform: translateY(-2px); box-shadow:
 .admin-tile { display: block; padding: 1.25rem; min-height: 44px; }
 .admin-tile-art { width: 4.25rem; height: 4.25rem; margin-bottom: .75rem; }
 @media (prefers-reduced-motion: reduce) { a.admin-stat:hover, .admin-tile:hover { transform: none; } }
+
+/* ───────── Admin: shared pieces ───────── */
+.admin-reason { max-width: 36rem; padding: .85rem 1.1rem; border-radius: 1.25rem; background: rgb(var(--c-bone) / .7); box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .25) inset; }
+.admin-reason .label { margin-bottom: .25rem; font-size: .75rem; }
+.admin-empty { display: flex; flex-direction: column; align-items: center; gap: .9rem; padding: 2.5rem 1rem; text-align: center; border-radius: 1.5rem; background: rgb(var(--c-bone) / .4); }
+.chip { display: inline-flex; align-items: center; padding: .15rem .7rem; border-radius: 999px; font-size: .75rem; background: rgb(var(--c-bone)); color: rgb(var(--c-charcoal) / .85); box-shadow: 0 0 0 1px rgb(var(--c-stone) / .4) inset; }
+.chip[data-tone="good"] { color: rgb(var(--c-sage)); box-shadow: 0 0 0 1px rgb(var(--c-sage) / .5) inset; }
+.chip[data-tone="warn"] { color: rgb(var(--c-brass)); box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .5) inset; }
+.admin-filters > summary { list-style: none; display: inline-flex; align-items: center; min-height: 44px; }
+.admin-filters > summary::-webkit-details-marker { display: none; }
+.admin-main h2 { font-size: clamp(1.35rem, 3vw, 1.75rem); }
+.admin-main table th { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+.admin-main .surface, .admin-main .card { padding: 1rem 1.15rem; }
