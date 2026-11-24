@@ -80,9 +80,9 @@ function Media() {
 
       <div><h2 className="mb-4 text-2xl">Library</h2>
         {(d.media as any[]).length === 0 && <Empty art="media">No images yet. Upload your first photo or film.</Empty>}
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{(d.media as any[]).map((m) => (
-          <li key={m.id} className="card grid gap-3">
-            <div className="aspect-square overflow-hidden rounded-2xl bg-stone/20">{m.kind === "image" ? <Photo image={{ path: m.path, alt: m.alt }} /> : m.kind === "video" ? <video src={mediaUrl(m.path)} poster={m.poster ? mediaUrl(m.poster) : undefined} controls muted preload="metadata" className="h-full w-full object-cover" aria-label={m.alt} /> : <div className="grid h-full place-items-center p-4 text-center text-sm">YouTube or Vimeo link<br />{m.embed}</div>}</div>
+        <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,14rem),1fr))] gap-4">{(d.media as any[]).map((m) => (
+          <li key={m.id} className="card admin-media-card">
+            <div className="admin-thumb">{m.kind === "image" ? <Photo image={{ path: m.path, alt: m.alt }} /> : m.kind === "video" ? <video src={mediaUrl(m.path)} poster={m.poster ? mediaUrl(m.poster) : undefined} controls muted preload="metadata" className="h-full w-full object-cover" aria-label={m.alt} /> : <div className="grid h-full place-items-center p-4 text-center text-sm">YouTube or Vimeo link<br />{m.embed}</div>}</div>
             <label className="label" htmlFor={`a${m.id}`}>Description</label>
             <input id={`a${m.id}`} className="field" value={alts[m.id] ?? m.alt} onChange={(e) => setAlts({ ...alts, [m.id]: e.target.value })} />
             <p className="text-sm text-charcoal/70">{m.used_by.length ? `Used by ${m.used_by.join(", ")}` : "Not used yet"}</p>

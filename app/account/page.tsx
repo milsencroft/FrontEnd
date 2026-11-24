@@ -10,6 +10,7 @@ import { useAddresses, useWishlist } from "@/lib/useSaved";
 import { useShop } from "@/lib/useShop";
 import { SocietyStatus } from "@/components/SocietyStatus";
 import { human } from "@/lib/labels";
+import { signOut } from "@/lib/supabase";
 import { Modal } from "@/components/Modal";
 import { FULFIL_LABEL, PAYMENT_LABEL } from "@/lib/orders";
 
@@ -99,7 +100,7 @@ function Account() {
 
   return (
     <section className="wrap py-16 grid gap-10">
-      <h1 className="text-4xl">Your account</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4"><h1 className="text-4xl">Your account</h1><button type="button" className="btn-ghost" onClick={() => signOut()}>Sign out</button></div>
       <p className="text-sm text-charcoal/70">{session?.user.email}</p>
       <SocietyStatus />
       <div>
