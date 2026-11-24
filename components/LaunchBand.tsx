@@ -6,7 +6,8 @@ import { useLaunch } from "@/lib/useLaunch";
 /** Live allocation, drawn as a ring. The numbers come from the backend. */
 export function LaunchBand() {
   const { state } = useLaunch();
-  if (!state || state.status === "draft") return null;
+  // Only while pre-orders are running (or paused / fully allocated). Once a launch has ended its fragrances are simply in the shop.
+  if (!state || !["preorder_active", "paused", "closed"].includes(state.status)) return null;
   const pct = state.capacity ? Math.min(1, state.allocated / state.capacity) : 0;
   const R = 54, C = 2 * Math.PI * R;
   const full = state.remaining <= 0 && state.held === 0;

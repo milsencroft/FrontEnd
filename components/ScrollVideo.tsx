@@ -35,14 +35,16 @@ export function ScrollVideo() {
     // Home and launch open on the bare film; every other page keeps a calm veil so text always reads clearly.
     const floor = path === "/" || path.startsWith("/launch") ? 0 : 0.8;
     const tick = () => {
-      if (veil.current) veil.current.style.opacity = String(Math.min(0.92, Math.max(floor, (scrollY / innerHeight - 0.35) * 0.9)));
+      if (veil.current) veil.current.style.opacity = String(Math.min(0.92, Math.max(floor, (Math.max(0, window.scrollY) / window.innerHeight - 0.35) * 0.9)));
       if (v && !still && v.readyState >= 2 && Number.isFinite(v.duration) && v.duration > 0) {
         // Scrolling down moves the film forward; scrolling up moves it back. The files have a full frame every frame, so seeking is instant.
-        const p = Math.min(1, Math.max(0, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
-        const target = p * (v.duration - 0.05);
+        // Clamp: elastic overscroll at the top and bottom reports positions outside the page, and the last frame can flash blank when sought.
+        const max = Math.max(1, document.documentElement.scrollHeight - document.documentElement.clientHeight);
+        const p = Math.min(1, Math.max(0, window.scrollY / max));
+        const target = 0.04 + p * Math.max(0, v.duration - 0.12);
         cur += (target - cur) * 0.22;
-        // Never queue a new seek while one is running; queued seeks are what makes phones stutter.
-        if (!v.seeking && Math.abs(cur - v.currentTime) > 0.04) v.currentTime = cur;
+        // Never queue a new seek while one is running; queued seeks are what makes phones stutter. Tiny moves are ignored so the picture holds still.
+        if (!v.seeking && Math.abs(cur - v.currentTime) > 0.06) v.currentTime = cur;
       }
       raf = requestAnimationFrame(tick);
     };
