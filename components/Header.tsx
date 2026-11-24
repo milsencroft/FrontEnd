@@ -72,7 +72,7 @@ export function Header() {
         <div aria-hidden className="grain" />
         <div className="wrap relative flex min-h-full flex-col py-5">
           <div className="flex h-16 items-center justify-between">
-            <span className="inline-flex items-center gap-3 font-serif text-xl"><img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" />Milsen &amp; Croft</span>
+            <span className="inline-flex items-center gap-3 whitespace-nowrap font-serif text-lg min-[360px]:text-xl"><img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" />Milsen &amp; Croft</span>
             <button ref={closeBtn} type="button" onClick={() => { setOpen(false); opener.current?.focus(); }} className="min-h-[44px] px-2 text-xs font-medium uppercase tracking-[0.2em]">Close</button>
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-x-8 border-b border-stone/40 pb-4">
