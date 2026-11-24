@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/lib/session";
 import { useCart } from "@/lib/cart";
+import { useAvailability } from "@/lib/useAvailability";
 import { signInWithGoogle, signOut } from "@/lib/supabase";
 
 const LEFT: [string, string][] = [["/collections", "Collections"], ["/shop", "Shop"], ["/launch", "Launch"], ["/society", "The Society"]];
@@ -14,6 +15,9 @@ const ALL: [string, string][] = [["/shop", "Shop"], ["/collections", "Collection
 export function Header() {
   const { session, loading, permissions } = useSession();
   const { count } = useCart();
+  const av = useAvailability();
+  // Only offer pages that have something to show.
+  const shown = (href: string) => (href === "/shop" ? av.shop === true : href === "/launch" || href === "/collections" ? av.launch === true : true);
   const path = usePathname();
   const [hide, setHide] = useState(false);
   const [open, setOpen] = useState(false);
@@ -35,6 +39,13 @@ export function Header() {
   }, [open]);
 
   const link = "text-xs font-medium uppercase tracking-[0.2em] min-h-[44px] inline-flex items-center whitespace-nowrap transition-colors hover:text-sage";
+  const acct = (close: boolean) => (<>
+    {permissions.length > 0 && <Link className={link} href="/admin" onClick={() => close && setOpen(false)}>Admin</Link>}
+    {session && <Link className={link} href="/account" onClick={() => close && setOpen(false)}>Account</Link>}
+    {!loading && (session
+      ? <button className={link} onClick={() => signOut()}>Sign out</button>
+      : <button className={link} onClick={() => signInWithGoogle()}>Sign in</button>)}
+  </>);
   const cart = `Cart${count > 0 ? ` (${count})` : ""}`;
   return (
     <>
@@ -44,7 +55,7 @@ export function Header() {
             <button ref={opener} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} gap-3 xl:hidden`}>
               <span aria-hidden className="flex w-5 flex-col gap-[5px]"><i className="block h-px bg-current" /><i className="block h-px w-3/4 bg-current" /></span>Menu
             </button>
-            <nav aria-label="Main" className="hidden items-center gap-6 xl:flex xl:gap-8">{LEFT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
+            <nav aria-label="Main" className="hidden items-center gap-6 xl:flex xl:gap-8">{LEFT.filter(([h]) => shown(h)).map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
           </div>
           <Link href="/" className="inline-flex min-h-[44px] items-center gap-3 font-serif text-2xl whitespace-nowrap" aria-label="Milsen & Croft, home">
             <img src="/logo.png" alt="" width={40} height={40} className="h-10 w-10" /><span className="hidden sm:inline">Milsen &amp; Croft</span>
@@ -52,7 +63,7 @@ export function Header() {
           <div className="flex items-center justify-end gap-6 xl:gap-8">
             <nav aria-label="More" className="hidden items-center gap-6 xl:flex xl:gap-8">{RIGHT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
             <Link className={link} href="/cart">{cart}</Link>
-            <button type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} hidden xl:inline-flex`}>Menu</button>
+            <div className="hidden items-center gap-6 xl:flex xl:gap-8">{acct(false)}</div>
           </div>
         </div>
       </header>
@@ -61,20 +72,17 @@ export function Header() {
         <div aria-hidden className="grain" />
         <div className="wrap relative flex min-h-full flex-col py-5">
           <div className="flex h-16 items-center justify-between">
-            <span className="inline-flex items-center gap-3 font-serif text-xl"><img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" />Milsen &amp; Croft</span>
+            <span className="inline-flex items-center gap-3 whitespace-nowrap font-serif text-lg min-[360px]:text-xl"><img src="/logo.png" alt="" width={36} height={36} className="h-9 w-9" />Milsen &amp; Croft</span>
             <button ref={closeBtn} type="button" onClick={() => { setOpen(false); opener.current?.focus(); }} className="min-h-[44px] px-2 text-xs font-medium uppercase tracking-[0.2em]">Close</button>
           </div>
-          <nav aria-label="Menu" className="mt-8 grid gap-1">
-            {ALL.map(([h, l], i) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ animationDelay: `${120 + i * 50}ms` }} className="menu-link font-serif text-4xl leading-tight hover:text-brass sm:text-5xl">{l}</Link>)}
-          </nav>
-          <div className="mt-auto flex flex-wrap items-center gap-x-8 border-t border-stone/40 pt-6">
+          <div className="mt-4 flex flex-wrap items-center gap-x-8 border-b border-stone/40 pb-4">
             <Link href="/cart" onClick={() => setOpen(false)} className={link}>{cart}</Link>
-            {session && <Link className={link} href="/account" onClick={() => setOpen(false)}>Account</Link>}
-            {permissions.length > 0 && <Link className={link} href="/admin" onClick={() => setOpen(false)}>Admin</Link>}
-            {!loading && (session
-              ? <button className={link} onClick={() => signOut()}>Sign out</button>
-              : <button className={link} onClick={() => signInWithGoogle()}>Sign in with Google</button>)}
+            {acct(true)}
           </div>
+          <nav aria-label="Menu" className="mt-8 grid gap-1">
+            {ALL.filter(([h]) => shown(h)).map(([h, l], i) => <Link key={h} href={h} onClick={() => setOpen(false)} style={{ animationDelay: `${120 + i * 50}ms` }} className="menu-link font-serif text-4xl leading-tight hover:text-brass sm:text-5xl">{l}</Link>)}
+          </nav>
+          <div className="mt-auto pt-8 text-xs text-ivory/60">© Milsen &amp; Croft · Kerala, India</div>
         </div>
       </div>
     </>

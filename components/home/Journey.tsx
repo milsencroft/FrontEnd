@@ -1,4 +1,5 @@
 "use client";
+import { ShopLink } from "@/components/ShopLink";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Flacon } from "@/components/Flacon";
@@ -59,7 +60,7 @@ export function Journey() {
                   <p className="text-sm text-ivory/80">{x.place}</p>
                   <h2 className="mt-2 text-6xl sm:text-8xl">{x.name}</h2>
                   <p className="mt-4 max-w-md text-lg text-ivory/85">{x.line}</p>
-                  <div className="mt-6"><Link href="/shop" className="btn-light">Shop {x.name}</Link></div>
+                  <div className="mt-6"><ShopLink className="btn-light">Shop {x.name}</ShopLink></div>
                 </div>
               ))}
             </div>

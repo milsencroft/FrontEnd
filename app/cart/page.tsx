@@ -1,4 +1,5 @@
 "use client";
+import { ShopLink } from "@/components/ShopLink";
 import { PageHero } from "@/components/PageHero";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,7 +16,7 @@ export default function Cart() {
   const [coupon, setCoupon] = useState(""); const [paying, setPaying] = useState(false);
   const lines = cart.lines;
   if (loading) return <><PageHero title="Cart" tone="noir" /><section className="wrap py-16"><p>Loading your cart…</p></section></>;
-  if (lines.length === 0) return <><PageHero title="Cart" tone="noir" /><section className="wrap py-16"><p className="text-lg">Your cart is empty.</p><Link className="btn mt-8" href="/shop">Shop</Link></section></>;
+  if (lines.length === 0) return <><PageHero title="Cart" tone="noir" /><section className="wrap py-16"><p className="text-lg">Your cart is empty.</p><ShopLink className="btn mt-8" fallback={<Link className="btn mt-8" href="/">Back home</Link>}>Shop</ShopLink></section></>;
   const unavailable = lines.some((l) => !l.ok);
   const ref = (l: (typeof lines)[number]) => (l.sku ? { sku: l.sku } : { bundle: l.bundle! });
 

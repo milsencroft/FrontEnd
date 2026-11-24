@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { Guard } from "@/components/Guard";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { REVALIDATE_SECONDS, fetchBundles, fetchCatalogue } from "@/lib/seo/data";
 import { ShopClient } from "./ShopClient";
@@ -11,5 +13,7 @@ export const metadata = pageMetadata({
 export default async function Shop() {
   // Server-rendered first paint so the products are in the HTML; the client then keeps them live.
   const [rows, bundles] = await Promise.all([fetchCatalogue(), fetchBundles()]);
-  return <ShopClient initialRows={rows} initialBundles={rows ? bundles ?? [] : undefined} />;
+  // Nothing published yet: there is no shop page to show.
+  if (rows && rows.length === 0 && (bundles ?? []).length === 0) redirect("/");
+  return <Guard need="shop"><ShopClient initialRows={rows} initialBundles={rows ? bundles ?? [] : undefined} /></Guard>;
 }
