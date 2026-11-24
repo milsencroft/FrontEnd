@@ -21,6 +21,31 @@ export function Header() {
   const path = usePathname();
   const [hide, setHide] = useState(false);
   const [open, setOpen] = useState(false);
+  // Show the links inline only when they genuinely fit; otherwise fall back to the Menu button.
+  const [compact, setCompact] = useState(false);
+  const bar = useRef<HTMLDivElement>(null);
+  const linkCount = `${av.shop}${av.launch}${session ? 1 : 0}${permissions.length}${loading}`;
+  useEffect(() => {
+    let raf = 0;
+    const check = () => {
+      setCompact(false);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => raf = requestAnimationFrame(() => {
+        const el = bar.current; if (!el) return;
+        const [l, mid, rt] = Array.from(el.children) as HTMLElement[];
+        const gap = 16, m = mid.getBoundingClientRect();
+        const lastR = Math.max(0, ...Array.from(l.querySelectorAll("a,button")).map((n) => n.getBoundingClientRect()).filter((r) => r.width).map((r) => r.right));
+        const firstL = Math.min(Infinity, ...Array.from(rt.querySelectorAll("a,button")).map((n) => n.getBoundingClientRect()).filter((r) => r.width).map((r) => r.left));
+        const over = innerWidth >= 1280 && (lastR > m.left - gap || firstL < m.right + gap);
+        setCompact(over);
+      }));
+    };
+    check();
+    let w = innerWidth;
+    const on = () => { if (innerWidth !== w) { w = innerWidth; check(); } };
+    addEventListener("resize", on);
+    return () => { removeEventListener("resize", on); cancelAnimationFrame(raf); };
+  }, [linkCount, count]);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
 
@@ -49,20 +74,20 @@ export function Header() {
   return (
     <>
       <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/30 bg-ivory/85 backdrop-blur-md transition-transform duration-300 ${hide && !open ? "-translate-y-full" : ""}`}>
-        <div className="wrap grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
+        <div ref={bar} className="wrap grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
           <div className="flex min-w-0 items-center justify-start gap-6">
-            <button ref={opener} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} gap-3 xl:hidden`}>
+            <button ref={opener} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} gap-3 ${compact ? "" : "xl:hidden"}`}>
               <span aria-hidden className="flex w-5 flex-col gap-[5px]"><i className="block h-px bg-current" /><i className="block h-px w-3/4 bg-current" /></span>Menu
             </button>
-            <nav aria-label="Main" className="hidden items-center gap-6 xl:flex xl:gap-8">{LEFT.filter(([h]) => shown(h)).map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
+            <nav aria-label="Main" className={`hidden items-center gap-6 ${compact ? "" : "xl:flex xl:gap-8"}`}>{LEFT.filter(([h]) => shown(h)).map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
           </div>
           <Link href="/" className="inline-flex min-h-[44px] items-center gap-3 font-serif text-2xl whitespace-nowrap" aria-label="Milsen & Croft, home">
             <img src="/logo.png" alt="" width={40} height={40} className="h-10 w-10" /><span className="hidden sm:inline">Milsen &amp; Croft</span>
           </Link>
           <div className="flex min-w-0 items-center justify-end gap-5 xl:gap-6">
-            <nav aria-label="More" className="hidden items-center gap-6 xl:flex xl:gap-8">{RIGHT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
+            <nav aria-label="More" className={`hidden items-center gap-6 ${compact ? "" : "xl:flex xl:gap-8"}`}>{RIGHT.map(([h, l]) => <Link key={h} className={link} href={h}>{l}</Link>)}</nav>
             <Link className={link} href="/cart">{cart}</Link>
-            <div className="hidden items-center gap-6 xl:flex xl:gap-8">{acct(false)}</div>
+            <div className={`hidden items-center gap-6 ${compact ? "" : "xl:flex xl:gap-8"}`}>{acct(false)}</div>
           </div>
         </div>
       </header>
