@@ -334,3 +334,8 @@ a.admin-stat:hover, .admin-tile:hover { transform: translateY(-2px); box-shadow:
 .admin-pill[data-on="true"] { background: rgb(var(--c-bone)); color: rgb(var(--c-brass)); box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .5) inset; }
 .admin-meter { height: .5rem; border-radius: 999px; background: rgb(var(--c-bone)); overflow: hidden; box-shadow: 0 0 0 1px rgb(var(--c-stone) / .35) inset; }
 .admin-meter > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, rgb(var(--c-sage)), rgb(var(--c-brass))); }
+.admin-media-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; min-width: 0; overflow: hidden; }
+.admin-thumb { position: relative; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 1rem; background: rgb(var(--c-stone) / .2); }
+.admin-thumb > *, .admin-thumb img, .admin-thumb video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.admin-main li, .admin-main .card { min-width: 0; }
+.admin-main .card.grid { grid-template-columns: minmax(0, 1fr); }
