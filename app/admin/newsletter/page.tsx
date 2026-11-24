@@ -1,4 +1,5 @@
 "use client";
+import { Art } from "@/components/admin/Art";
 import { Empty } from "@/components/admin/Empty";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -32,7 +33,7 @@ function List() {
   return (
     <section className="wrap py-12 grid gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Newsletter</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin</Link></div>
-      <p className="text-charcoal/80">{active.length} subscribed, {list.length - active.length} unsubscribed.</p>
+      <div className="cq-grid grid grid-cols-1 gap-4 sm:grid-cols-2"><div className="admin-stat card"><span className="admin-stat-art"><Art name="newsletter" size={30} /></span><span><span className="block text-sm text-charcoal/70">Subscribed</span><span className="block font-serif text-3xl">{active.length}</span></span></div><div className="admin-stat card"><span className="admin-stat-art"><Art name="staff" size={30} /></span><span><span className="block text-sm text-charcoal/70">Unsubscribed</span><span className="block font-serif text-3xl">{list.length - active.length}</span></span></div></div>
       <div className="flex flex-wrap items-end gap-4"><div className="admin-reason"><label className="label" htmlFor="why">Reason for unsubscribing someone (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
         <button className="btn-ghost" onClick={exportCsv} disabled={active.length === 0}>Download subscribers (CSV)</button></div>
       {msg && <p role="status" className="text-sm">{msg}</p>}

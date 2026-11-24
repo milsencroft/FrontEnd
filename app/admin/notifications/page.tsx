@@ -27,20 +27,20 @@ function Notifications() {
   return (
     <section className="wrap py-12 grid gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4"><h1 className="text-5xl">Notifications</h1><Link href="/admin" className="text-sm underline underline-offset-4">Admin home</Link></div>
-      <p className="max-w-2xl text-charcoal/80">Every customer and staff message is queued here first, so a failed message never blocks or duplicates an order. A message only counts as delivered when the provider confirms it.</p>
+      <p className="max-w-2xl text-sm text-charcoal/70">Messages wait here first, so a failed one never holds up an order. Delivered means the provider confirmed it.</p>
       <p className="max-w-2xl surface p-4 text-sm" role="note">Sending is not switched on yet. Email starts once the domain and email provider are connected. Until then, messages wait in the queue.</p>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
         <button className={status === "" ? "btn" : "btn-ghost"} aria-pressed={status === ""} onClick={() => setStatus("")}>All</button>
         {STATUSES.map((s) => <button key={s} className={status === s ? "btn" : "btn-ghost"} aria-pressed={status === s} onClick={() => setStatus(s)}>{LABEL[s]} ({d.counts[s] ?? 0})</button>)}
       </div>
-      {canManage && <div className="admin-reason"><label className="label" htmlFor="why">Reason for retry or cancel (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>}
+      {canManage && (d.items as any[]).some((i) => ["pending", "failed"].includes(i.status)) && <div className="admin-reason"><label className="label" htmlFor="why">Reason for retry or cancel (recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>}
       {msg && <p role="status" className="text-sm">{msg}</p>}
       {(d.items as any[]).length === 0 ? <Empty art="notifications">No messages here.</Empty> : (
         <ul className="grid gap-3">{(d.items as any[]).map((i) => (
           <li key={i.id} className="card flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 text-sm"><p className="font-medium">{human(i.template)} <span className="text-charcoal/70">via {label(CHANNEL_LABEL, i.channel)}</span></p>
               <p className="break-all text-charcoal/70">{i.recipient ?? "Staff"}{i.order_number ? ` · ${i.order_number}` : ""}</p>
-              <p className="text-charcoal/70">{LABEL[i.status]} · tried {i.attempts} time{i.attempts === 1 ? "" : "s"} · queued {new Date(i.created_at).toLocaleString("en-IN")}{i.delivered_at ? ` · delivered ${new Date(i.delivered_at).toLocaleString("en-IN")}` : ""}</p>
+              <p className="text-charcoal/70"><span className="chip" data-tone={i.status === "failed" ? "warn" : i.status === "delivered" ? "good" : undefined}>{LABEL[i.status]}</span> · tried {i.attempts} time{i.attempts === 1 ? "" : "s"} · queued {new Date(i.created_at).toLocaleString("en-IN")}{i.delivered_at ? ` · delivered ${new Date(i.delivered_at).toLocaleString("en-IN")}` : ""}</p>
               {i.last_error && <p className="text-danger">Last error: {i.last_error}</p>}</div>
             {canManage && <div className="flex gap-2">
               {i.status === "failed" && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => act("admin_outbox_retry", i.id, "Queued for another try.")}>Retry</button>}
