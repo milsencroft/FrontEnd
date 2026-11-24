@@ -295,3 +295,6 @@ img, video { border-radius: inherit; }
 header { backdrop-filter: saturate(1.2) blur(14px); }
 /* Soft dividers instead of ruled boxes */
 hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgb(var(--c-bronze) / .5), transparent); }
+
+/* No elastic bounce at the top and bottom: the fixed film behind the page would otherwise flicker as the page overshoots. */
+html, body { overscroll-behavior-y: none; }

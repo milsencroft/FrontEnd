@@ -5,6 +5,7 @@ import { Photo } from "./ProductImage";
 import { imagesOf } from "@/lib/media";
 import { Flacon, type Tone } from "./Flacon";
 import { useLaunch } from "@/lib/useLaunch";
+import { useShop } from "@/lib/useShop";
 import { Split } from "./Split";
 import { rupees } from "@/lib/money";
 
@@ -18,8 +19,13 @@ export function PlaceHero() {
   const p = PLACES[i];
   const box = useRef<HTMLElement>(null);
   const { state, items } = useLaunch();
-  const item = items.find((x) => x.region_name.toLowerCase() === p.region.toLowerCase());
+  const { rows } = useShop();
   const open = state?.status === "preorder_active";
+  // While pre-orders run, show the launch item and launch price. Afterwards show the regular shop product and its price.
+  const launchItem = items.find((x) => x.region_name.toLowerCase() === p.region.toLowerCase());
+  const shopRows = (rows ?? []).filter((r) => r.region_name.toLowerCase() === p.region.toLowerCase());
+  const shopFrom = shopRows.length ? Math.min(...shopRows.map((r) => r.price_paise)) : null;
+  const item = open ? launchItem : shopRows[0] ? { product_name: shopRows[0].product_name, images: shopRows[0].images } : undefined;
 
   const light = (e: React.PointerEvent) => {
     const el = box.current; if (!el) return;
@@ -47,11 +53,14 @@ export function PlaceHero() {
           <div key={p.id} role="tabpanel" className="hero-in hero-in-3 mt-6 max-w-md" aria-live="polite">
             <p className="font-serif text-3xl">{item?.product_name ?? `${p.name} Fresh`}</p>
             <p className="mt-2 text-ivory/80">{p.line}</p>
-            <p className="mt-4 text-ivory/80">50 ml{item ? ` · ${rupees(item.launch_price_paise)} launch price` : ""}</p>
+            <p className="mt-4 text-ivory/80">50 ml{open && launchItem ? ` · ${rupees(launchItem.launch_price_paise)} launch price` : !open && shopFrom !== null ? ` · from ${rupees(shopFrom)}` : ""}</p>
           </div>
           <div className="hero-in hero-in-3 mt-10 flex flex-wrap gap-4">
-            <Link href="/launch" className="btn-light">{open ? "Reserve your place" : "See the launch"}</Link>
-            <Link href="/shop" className="inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link>
+            {open
+              ? <><Link href="/launch" className="btn-light">Reserve your place</Link>
+                  <Link href="/shop" className="inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">Shop</Link></>
+              : <><Link href="/shop" className="btn-light">Shop now</Link>
+                  <Link href="/society" className="inline-flex min-h-[48px] items-center rounded-full border border-ivory/50 px-9 text-xs font-medium uppercase tracking-[0.2em] hover:bg-ivory hover:text-charcoal">The Society</Link></>}
           </div>
         </div>
         {imagesOf(item?.images)[0]
