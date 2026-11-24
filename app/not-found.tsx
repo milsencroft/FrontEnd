@@ -1,3 +1,4 @@
+import { ShopLink } from "@/components/ShopLink";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { NOINDEX } from "@/lib/seo/metadata";
@@ -9,7 +10,7 @@ export default function NotFound() {
     <section className="wrap py-24">
       <h1 className="text-4xl sm:text-5xl">We could not find that page</h1>
       <p className="mt-4 text-charcoal/80">It may have moved, or it may no longer exist.</p>
-      <div className="mt-8 flex flex-wrap gap-4"><Link className="btn" href="/shop">Browse the shop</Link><Link className="btn-ghost" href="/">Back home</Link></div>
+      <div className="mt-8 flex flex-wrap gap-4"><ShopLink className="btn">Browse the shop</ShopLink><Link className="btn-ghost" href="/">Back home</Link></div>
     </section>
   );
 }

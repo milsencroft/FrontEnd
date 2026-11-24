@@ -24,6 +24,10 @@ const list = <T,>(v: unknown): T[] | undefined => (Array.isArray(v) ? (v as T[])
 
 /** Published, purchasable catalogue. Launch-only and draft products are never returned by the backend. */
 export const fetchCatalogue = async () => list<ShopRow>(await fetchRpc("shop_catalogue"));
+export const fetchLaunchOpen = async (code: string) => {
+  const r = await fetchRpc<{ status: string }[]>("public_launch_state", { p_code: code });
+  return Array.isArray(r) ? ["preorder_active", "paused", "closed"].includes(r[0]?.status ?? "") : undefined;
+};
 export const fetchBundles = async () => list<ShopBundle>(await fetchRpc("shop_bundles"));
 export const fetchPageList = async (kind: "journal" | "legal") => list<PageRow>(await fetchRpc("public_pages", { p_kind: kind }));
 

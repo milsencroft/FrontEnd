@@ -1,4 +1,5 @@
 "use client";
+import { ShopLink } from "@/components/ShopLink";
 import { useEffect, useState } from "react";
 import { SignedInOnly } from "@/components/Gate";
 import { db } from "@/lib/api";
@@ -68,7 +69,7 @@ function Wishlist() {
   return (
     <div>
       <h2 className="text-2xl mb-4">Wishlist</h2>
-      {items.length === 0 ? <p className="text-charcoal/70">Nothing saved yet. <Link className="underline underline-offset-4" href="/shop">Browse the shop</Link>.</p> : (
+      {items.length === 0 ? <p className="text-charcoal/70">Nothing saved yet.</p> : (
         <ul className="grid gap-3">{items.map((r) => (
           <li key={r.product_code} className="card flex flex-wrap items-center justify-between gap-3">
             <Link href={`/shop/${r.product_code}`}><p className="font-serif text-xl">{r.product_name}</p><p className="text-sm text-charcoal/70">{r.region_name} · from {rupees(r.price_paise)}</p></Link>
