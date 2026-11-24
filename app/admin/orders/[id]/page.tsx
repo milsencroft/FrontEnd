@@ -1,4 +1,5 @@
 "use client";
+import { Fold } from "@/components/admin/Fold";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -60,7 +61,7 @@ function Detail() {
     <section className="wrap py-12">
       <Link href="/admin/orders" className="text-sm underline underline-offset-4">All orders</Link>
       <h1 className="mt-4 text-4xl sm:text-5xl">{o.order_number}</h1>
-      <p className="mt-2">{TYPE_LABEL[o.order_type]}{d.launch ? ` · ${d.launch.name} (${d.launch.code})` : ""} · {PAYMENT_LABEL[o.payment_status]} · {FULFIL_LABEL[o.fulfilment_status]}</p>
+      <p className="mt-2 flex flex-wrap items-center gap-2"><span className="chip">{TYPE_LABEL[o.order_type]}{d.launch ? ` · ${d.launch.name}` : ""}</span><span className="chip" data-tone={o.payment_status === "captured" ? "good" : "warn"}>{PAYMENT_LABEL[o.payment_status]}</span><span className="chip">{FULFIL_LABEL[o.fulfilment_status]}</span><span className="text-sm text-charcoal/70">{rupees(o.total_paise)}</span></p>
       {msg && <p role="status" className="mt-4 text-sm">{msg}</p>}
       <div className="cq mt-10"><div className="cq-grid grid grid-cols-1 gap-8">
         <div className="card"><h2 className="text-2xl">Customer</h2><dl className="mt-3 text-sm">{row("Name", c.name)}{row("Customer ID", c.internal_id)}{row("Google email", c.email)}{row("Phone", c.phone ?? a.phone)}{row("WhatsApp consent", c.whatsapp_consent ? "Yes" : "No")}
@@ -92,8 +93,7 @@ function Detail() {
         </div>)}
 
       {can("orders.manage") && o.tracking_number && (
-        <div className="card mt-8 grid max-w-3xl gap-3">
-          <h2 className="text-2xl">Send tracking update</h2>
+        <div className="mt-8 max-w-3xl"><Fold title="Send tracking update" hint="Prepare a WhatsApp message for the customer."><div className="grid gap-3">
           <p className="text-sm text-charcoal/70">Courier: {o.courier ?? "—"} · Tracking: {o.tracking_number}{shownLink ? <> · <a className="underline underline-offset-4" href={shownLink} target="_blank" rel="noopener noreferrer">Open tracking page</a></> : " · No tracking link saved for this courier"}</p>
           <label className="label" htmlFor="msg">Message</label>
           <textarea id="msg" className="field" rows={4} value={message} onChange={(e) => setText(e.target.value)} />
@@ -105,16 +105,16 @@ function Detail() {
           {!wa && <p className="text-sm text-charcoal/70">{c.whatsapp_consent ? "This customer has no usable phone number." : "This customer has not agreed to WhatsApp updates. Copy the message and use another channel."}</p>}
           <p className="text-sm text-charcoal/70">Opening WhatsApp only prepares the message. Nothing is marked as delivered.</p>
           {updates.length > 0 && <ul className="text-sm text-charcoal/70">{updates.map((u, i) => <li key={i}>{new Date(u.at).toLocaleString("en-IN")} · {u.channel === "whatsapp" ? "WhatsApp opened" : "Message copied"} · {u.by ?? "Staff"}</li>)}</ul>}
-        </div>)}
+        </div></Fold></div>)}
 
       {o.payment_status === "captured" && o.fulfilment_status === "processing" && can("orders.manage") && <div className="mt-8 max-w-2xl"><Packing id={id} onError={setMsg} /></div>}
 
       <div className="cq mt-8"><div className="cq-grid grid grid-cols-1 gap-8">
-        <div className="card"><h2 className="text-2xl">Status history</h2><ol className="mt-3 text-sm">{d.history.map((h: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{new Date(h.at).toLocaleString("en-IN")} · {label(HISTORY_KIND_LABEL, h.kind)} · {h.from ? (PAYMENT_LABEL[h.from] ?? FULFIL_LABEL[h.from] ?? human(h.from)) : "—"} → {PAYMENT_LABEL[h.to] ?? FULFIL_LABEL[h.to] ?? human(h.to)}{h.note ? ` · ${h.note}` : ""}</li>)}</ol></div>
-        <div className="card"><h2 className="text-2xl">Internal notes</h2><p className="text-sm text-charcoal/70">Never shown to customers.</p>
+        <Fold title="Status history" hint="Every change, oldest last."><ol className="text-sm">{d.history.map((h: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{new Date(h.at).toLocaleString("en-IN")} · {label(HISTORY_KIND_LABEL, h.kind)} · {h.from ? (PAYMENT_LABEL[h.from] ?? FULFIL_LABEL[h.from] ?? human(h.from)) : "—"} → {PAYMENT_LABEL[h.to] ?? FULFIL_LABEL[h.to] ?? human(h.to)}{h.note ? ` · ${h.note}` : ""}</li>)}</ol></Fold>
+        <Fold title="Internal notes" hint="Never shown to customers.">
           <ul className="mt-3 text-sm">{d.notes.map((n: any, i: number) => <li key={i} className="border-b border-stone/30 py-1.5">{n.note}<br /><span className="text-charcoal/70">{n.by ?? "Staff"} · {new Date(n.at).toLocaleString("en-IN")}</span></li>)}</ul>
           {can("orders.manage") && <form className="mt-4 flex gap-2" onSubmit={async (e) => { e.preventDefault(); if (!note.trim()) return; const { error } = await db.rpc("admin_add_order_note", { p_order: id, p_note: note }); setMsg(error ? "Could not add the note." : "Note added."); setNote(""); void load(); }}>
-            <label className="sr-only" htmlFor="nn">Add a note</label><input id="nn" className="field" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note" /><button className="btn">Add</button></form>}</div>
+            <label className="sr-only" htmlFor="nn">Add a note</label><input id="nn" className="field" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note" /><button className="btn">Add</button></form>}</Fold>
       </div></div>
     </section>
   );

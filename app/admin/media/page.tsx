@@ -1,4 +1,5 @@
 "use client";
+import { Fold } from "@/components/admin/Fold";
 import { Empty } from "@/components/admin/Empty";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
@@ -66,7 +67,7 @@ function Media() {
       <Modal open={adding} onClose={() => setAdding(false)} title="Add media">
       <form onSubmit={upload} className="grid gap-3" key={mode}>
         <fieldset><legend className="label">Type</legend><div className="flex flex-wrap gap-3">{(["image", "video", "link"] as const).map((k) => (
-          <label key={k} className={`flex min-h-[44px] cursor-pointer items-center border px-5 ${mode === k ? "border-charcoal bg-charcoal text-ivory" : "border-stone"}`}><input type="radio" name="mode" className="sr-only" checked={mode === k} onChange={() => setMode(k)} />{k === "image" ? "Image" : k === "video" ? "Short video" : "YouTube or Vimeo link"}</label>))}</div></fieldset>
+          <label key={k} data-on={mode === k} className="admin-pill"><input type="radio" name="mode" className="sr-only" checked={mode === k} onChange={() => setMode(k)} />{k === "image" ? "Image" : k === "video" ? "Short video" : "YouTube or Vimeo link"}</label>))}</div></fieldset>
         {mode !== "link" && <div><label className="label" htmlFor="file">{mode === "image" ? "Image (JPG, PNG, WebP or AVIF, up to 5 MB)" : "Video (MP4 or WebM, up to 50 MB; about 15 MB or less loads best)"}</label><input id="file" type="file" accept={mode === "image" ? "image/jpeg,image/png,image/webp,image/avif" : "video/mp4,video/webm"} className="field" onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>}
         {mode === "video" && <div><label className="label" htmlFor="poster">Poster image shown before the video plays (optional)</label><input id="poster" type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="field" onChange={(e) => setPoster(e.target.files?.[0] ?? null)} /></div>}
         {mode === "link" && <div><label className="label" htmlFor="link">YouTube or Vimeo link</label><input id="link" className="field" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." /></div>}
@@ -77,19 +78,11 @@ function Media() {
       </form>
       </Modal>
 
-      <div><h2 className="mb-4 text-2xl">Where media appears</h2>
-        <ul className="grid max-w-2xl gap-3">{(d.slots as any[]).map((sl) => (
-          <li key={sl.slot} className="card grid gap-2"><label className="label" htmlFor={`sl-${sl.slot}`}>{sl.label}</label>
-            <select id={`sl-${sl.slot}`} className="field" value={sl.media_id ?? ""} disabled={!ok} onChange={async (e) => { const { error } = await db.rpc("admin_set_media_slot", { p_slot: sl.slot, p_media: e.target.value || null, p_reason: reason }); setMsg(error ? mediaError(error.message) : "Placement saved."); void load(); }}>
-              <option value="">Nothing (hidden)</option>{(d.media as any[]).map((m) => <option key={m.id} value={m.id}>{m.kind === "image" ? "Image" : m.kind === "video" ? "Video" : "Link"}: {m.alt}</option>)}</select></li>))}</ul>
-        {!ok && <p className="mt-2 text-sm text-charcoal/70">Enter a reason above to change placements.</p>}
-      </div>
-
       <div><h2 className="mb-4 text-2xl">Library</h2>
         {(d.media as any[]).length === 0 && <Empty art="media">No images yet. Upload your first photo or film.</Empty>}
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{(d.media as any[]).map((m) => (
           <li key={m.id} className="card grid gap-3">
-            <div className="aspect-square overflow-hidden bg-stone/20">{m.kind === "image" ? <Photo image={{ path: m.path, alt: m.alt }} /> : m.kind === "video" ? <video src={mediaUrl(m.path)} poster={m.poster ? mediaUrl(m.poster) : undefined} controls muted preload="metadata" className="h-full w-full object-cover" aria-label={m.alt} /> : <div className="grid h-full place-items-center p-4 text-center text-sm">YouTube or Vimeo link<br />{m.embed}</div>}</div>
+            <div className="aspect-square overflow-hidden rounded-2xl bg-stone/20">{m.kind === "image" ? <Photo image={{ path: m.path, alt: m.alt }} /> : m.kind === "video" ? <video src={mediaUrl(m.path)} poster={m.poster ? mediaUrl(m.poster) : undefined} controls muted preload="metadata" className="h-full w-full object-cover" aria-label={m.alt} /> : <div className="grid h-full place-items-center p-4 text-center text-sm">YouTube or Vimeo link<br />{m.embed}</div>}</div>
             <label className="label" htmlFor={`a${m.id}`}>Description</label>
             <input id={`a${m.id}`} className="field" value={alts[m.id] ?? m.alt} onChange={(e) => setAlts({ ...alts, [m.id]: e.target.value })} />
             <p className="text-sm text-charcoal/70">{m.used_by.length ? `Used by ${m.used_by.join(", ")}` : "Not used yet"}</p>
@@ -100,16 +93,24 @@ function Media() {
           </li>))}</ul>
       </div>
 
-      {canAssign && <div><h2 className="mb-4 text-2xl">Product images</h2>
+      <Fold title="Where media appears" hint="Choose the photo or film for each place on the site.">
+        <ul className="grid max-w-2xl gap-3">{(d.slots as any[]).map((sl) => (
+          <li key={sl.slot} className="card grid gap-2"><label className="label" htmlFor={`sl-${sl.slot}`}>{sl.label}</label>
+            <select id={`sl-${sl.slot}`} className="field" value={sl.media_id ?? ""} disabled={!ok} onChange={async (e) => { const { error } = await db.rpc("admin_set_media_slot", { p_slot: sl.slot, p_media: e.target.value || null, p_reason: reason }); setMsg(error ? mediaError(error.message) : "Placement saved."); void load(); }}>
+              <option value="">Nothing (hidden)</option>{(d.media as any[]).map((m) => <option key={m.id} value={m.id}>{m.kind === "image" ? "Image" : m.kind === "video" ? "Video" : "Link"}: {m.alt}</option>)}</select></li>))}</ul>
+        {!ok && <p className="mt-2 text-sm text-charcoal/70">Enter a reason above to change placements.</p>}
+      </Fold>
+
+      {canAssign && <Fold title="Product images" hint="Tick the images each product shows.">
         <p className="mb-3 max-w-2xl text-sm text-charcoal/70">Tick the images each product shows. The first one is the main image.</p>
         <ul className="grid gap-4">{(d.products as any[]).map((p) => (
           <li key={p.code} className="card grid gap-3"><p className="font-medium">{p.name} <span className="text-sm text-charcoal/70">{p.code}</span></p>
             {(d.media as any[]).filter((m) => m.kind === "image").length === 0 ? <p className="text-sm text-charcoal/70">Add images to the library first.</p> :
               <div className="flex flex-wrap gap-3">{(d.media as any[]).filter((m) => m.kind === "image").map((m) => { const on = current(p).includes(m.path); return (
-                <label key={m.id} className={`block h-24 w-24 cursor-pointer overflow-hidden border-2 ${on ? "border-charcoal" : "border-transparent opacity-60"}`}>
+                <label key={m.id} className={`block h-24 w-24 cursor-pointer overflow-hidden rounded-2xl border-2 ${on ? "border-brass" : "border-transparent opacity-50"}`}>
                   <input type="checkbox" className="sr-only" checked={on} onChange={() => toggle(p, m.path)} /><Photo image={{ path: m.path, alt: m.alt }} /></label>); })}</div>}
             <div><button className="btn-ghost" disabled={!ok || !sel[p.code]} onClick={async () => { const { error } = await db.rpc("admin_set_product_images", { p_code: p.code, p_paths: sel[p.code], p_reason: reason }); setMsg(error ? mediaError(error.message) : `Saved images for ${p.code}.`); setSel({ ...sel, [p.code]: undefined as never }); void load(); }}>Save images</button></div>
-          </li>))}</ul></div>}
+          </li>))}</ul></Fold>}
     </section>
   );
 }

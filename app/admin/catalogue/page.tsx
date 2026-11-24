@@ -1,4 +1,5 @@
 "use client";
+import { Fold } from "@/components/admin/Fold";
 import { Loader } from "@/components/Loader";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -36,27 +37,7 @@ function Catalogue() {
       <div className="admin-reason"><label className="label" htmlFor="why">Reason for your changes (required, recorded in the audit log)</label><input id="why" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
       {msg && <p role="status" className="mt-4 text-sm">{msg}</p>}
 
-      <div className="mt-12 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Regions</h2><button className="btn" onClick={() => { setMsg(null); setR({ code: "", name: "", country: "", description: "", story: "" }); setDlg("region"); }}>Add region</button></div>
-      <ul className="mt-4 grid gap-3">{cat.regions.map((x: any) => (
-        <li key={x.code} className="flex flex-wrap items-center justify-between gap-3 surface p-4">
-          <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/70">{x.code} · {x.country}</span></p></div>
-          <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`rs${x.code}`}>Status of {x.name}</label>
-            <select id={`rs${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_region_status", { p_region: x.id, p_status: e.target.value, p_reason: reason })}>{REGION_STATUS.map((s) => <option key={s} value={s}>{label(PAGE_LABEL, s)}</option>)}</select>
-            <button className="btn-ghost" onClick={() => { setMsg(null); setR({ code: x.code, name: x.name, country: x.country, description: x.description ?? "", story: x.story ?? "" }); setDlg("region"); }}>Edit</button></div>
-        </li>))}</ul>
-      <Modal open={dlg === "region"} onClose={() => setDlg(null)} title="Add or edit a region"><form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); void run("admin_save_region", { p_code: r.code, p_name: r.name, p_country: r.country, p_description: r.description || null, p_story: r.story || null, p_cover_image_url: null, p_seo_title: null, p_seo_description: null, p_reason: reason }); }}>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div><label className="label" htmlFor="rc">Code (2–6 capitals)</label><input id="rc" className="field" required pattern="[A-Z]{2,6}" value={r.code} onChange={(e) => setR({ ...r, code: e.target.value.toUpperCase() })} /></div>
-          <div><label className="label" htmlFor="rn">Name</label><input id="rn" className="field" required value={r.name} onChange={(e) => setR({ ...r, name: e.target.value })} /></div>
-          <div><label className="label" htmlFor="ry">Country</label><input id="ry" className="field" required value={r.country} onChange={(e) => setR({ ...r, country: e.target.value })} /></div></div>
-        <div><label className="label" htmlFor="rd">Description</label><textarea id="rd" className="field py-2" rows={2} value={r.description} onChange={(e) => setR({ ...r, description: e.target.value })} /></div>
-        <div><label className="label" htmlFor="rt">Regional story</label><textarea id="rt" className="field py-2" rows={4} value={r.story} onChange={(e) => setR({ ...r, story: e.target.value })} /></div>
-        <div><label className="label" htmlFor="cwhy">Reason (required, recorded in the audit log)</label><input id="cwhy" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
-        {msg && <p role="alert" className="text-sm">{msg}</p>}
-        <div><button className="btn" disabled={need}>Save region</button></div>
-      </form></Modal>
-
-      <div className="mt-16 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Products</h2><button className="btn" onClick={() => { setMsg(null); setP({ code: "", name: "", region: "", family: "", story: "", notes: "" }); setDlg("product"); }}>Add product</button></div>
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-3"><h2 className="text-2xl">Products</h2><button className="btn" onClick={() => { setMsg(null); setP({ code: "", name: "", region: "", family: "", story: "", notes: "" }); setDlg("product"); }}>Add product</button></div>
       <ul className="mt-4 grid gap-3">{cat.products.map((x: any) => (
         <li key={x.code} className="surface p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -79,7 +60,30 @@ function Catalogue() {
         <div><button className="btn" disabled={need}>Save product</button></div>
       </form></Modal>
 
-      <div className="mt-16 flex flex-wrap items-center justify-between gap-3"><h2 className="text-3xl">Launches</h2><div className="flex gap-2"><button className="btn" onClick={() => { setMsg(null); setDlg("launch"); }}>New launch</button><button className="btn-ghost" onClick={() => { setMsg(null); setDlg("lines"); }}>Sizes and prices</button></div></div>
+      <div className="mt-10"><Fold title="Regions" hint="Places the fragrances come from.">
+      <div className="flex flex-wrap items-center justify-between gap-3"><span className="text-sm text-charcoal/70">Add or edit a region</span><button className="btn" onClick={() => { setMsg(null); setR({ code: "", name: "", country: "", description: "", story: "" }); setDlg("region"); }}>Add region</button></div>
+      <ul className="mt-4 grid gap-3">{cat.regions.map((x: any) => (
+        <li key={x.code} className="flex flex-wrap items-center justify-between gap-3 surface p-4">
+          <div><p className="font-serif text-xl">{x.name} <span className="text-sm text-charcoal/70">{x.code} · {x.country}</span></p></div>
+          <div className="flex items-center gap-2"><label className="sr-only" htmlFor={`rs${x.code}`}>Status of {x.name}</label>
+            <select id={`rs${x.code}`} className="field w-auto" value={x.status} disabled={need} onChange={(e) => run("admin_set_region_status", { p_region: x.id, p_status: e.target.value, p_reason: reason })}>{REGION_STATUS.map((s) => <option key={s} value={s}>{label(PAGE_LABEL, s)}</option>)}</select>
+            <button className="btn-ghost" onClick={() => { setMsg(null); setR({ code: x.code, name: x.name, country: x.country, description: x.description ?? "", story: x.story ?? "" }); setDlg("region"); }}>Edit</button></div>
+        </li>))}</ul>
+      <Modal open={dlg === "region"} onClose={() => setDlg(null)} title="Add or edit a region"><form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); void run("admin_save_region", { p_code: r.code, p_name: r.name, p_country: r.country, p_description: r.description || null, p_story: r.story || null, p_cover_image_url: null, p_seo_title: null, p_seo_description: null, p_reason: reason }); }}>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div><label className="label" htmlFor="rc">Code (2–6 capitals)</label><input id="rc" className="field" required pattern="[A-Z]{2,6}" value={r.code} onChange={(e) => setR({ ...r, code: e.target.value.toUpperCase() })} /></div>
+          <div><label className="label" htmlFor="rn">Name</label><input id="rn" className="field" required value={r.name} onChange={(e) => setR({ ...r, name: e.target.value })} /></div>
+          <div><label className="label" htmlFor="ry">Country</label><input id="ry" className="field" required value={r.country} onChange={(e) => setR({ ...r, country: e.target.value })} /></div></div>
+        <div><label className="label" htmlFor="rd">Description</label><textarea id="rd" className="field py-2" rows={2} value={r.description} onChange={(e) => setR({ ...r, description: e.target.value })} /></div>
+        <div><label className="label" htmlFor="rt">Regional story</label><textarea id="rt" className="field py-2" rows={4} value={r.story} onChange={(e) => setR({ ...r, story: e.target.value })} /></div>
+        <div><label className="label" htmlFor="cwhy">Reason (required, recorded in the audit log)</label><input id="cwhy" className="field" value={reason} onChange={(e) => setReason(e.target.value)} /></div>
+        {msg && <p role="alert" className="text-sm">{msg}</p>}
+        <div><button className="btn" disabled={need}>Save region</button></div>
+      </form></Modal>
+
+      </Fold></div>
+      <div className="mt-6"><Fold title="Launches" hint="Draft a launch and set its sizes and prices.">
+      <div className="flex flex-wrap items-center justify-between gap-3"><span className="text-sm text-charcoal/70">Create a draft launch</span><div className="flex gap-2"><button className="btn" onClick={() => { setMsg(null); setDlg("launch"); }}>New launch</button><button className="btn-ghost" onClick={() => { setMsg(null); setDlg("lines"); }}>Sizes and prices</button></div></div>
       <p className="mt-2 max-w-2xl text-sm text-charcoal/70">Launches start as drafts with 100 shared places. Add the sizes and launch prices while it is a draft, then ask a Super Admin to publish it from the Launches tab.</p>
       <Modal open={dlg === "launch"} onClose={() => setDlg(null)} title="New launch"><form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); void run("admin_create_launch", { p_code: l.code, p_name: l.name, p_region_codes: l.regions.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean), p_story: l.story || null, p_reason: reason }); }}>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -98,6 +102,7 @@ function Catalogue() {
         {msg && <p role="alert" className="text-sm">{msg}</p>}
         <div><button className="btn" disabled={need}>Replace launch items</button></div>
       </form></Modal>
+      </Fold></div>
     </section>
   );
 }

@@ -36,12 +36,11 @@ function Editor() {
       {msg && <p role="status" className="text-sm">{msg}</p>}
       <ul className="grid max-w-3xl gap-3">{list.length === 0 && <li><Empty art="content">No pages yet.</Empty></li>}
         {list.map((r) => <li key={r.slug} className="card flex flex-wrap items-center justify-between gap-3">
-          <div><p className="font-medium">{r.title}</p><p className="text-sm text-charcoal/70">{path(r)} · {label(PAGE_LABEL, r.status)}</p></div>
+          <div><p className="font-medium">{r.title}</p><p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-charcoal/70"><span className="chip" data-tone={r.status === "published" ? "good" : undefined}>{label(PAGE_LABEL, r.status)}</span>{path(r)}</p></div>
           <div className="flex flex-wrap gap-2">
             <button className="btn-ghost" onClick={() => { setMsg(null); setF({ slug: r.slug, kind: r.kind, title: r.title, summary: r.summary ?? "", body: r.body }); setOpen(true); }}>Edit</button>
-            {r.status !== "published" && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "published")}>Publish</button>}
-            {r.status === "published" && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "draft")}>Unpublish</button>}
-            {r.status !== "archived" && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "archived")}>Archive</button>}
+            {r.status !== "published" ? <button className="btn" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "published")}>Publish</button> : <button className="btn-ghost" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "draft")}>Unpublish</button>}
+            {r.status !== "archived" && <button className="btn-ghost" disabled={!reason.trim()} onClick={() => setStatus(r.slug, "archived")} aria-label={`Archive ${r.title}`}>Archive</button>}
           </div></li>)}</ul>
       <Modal open={open} onClose={() => setOpen(false)} title="Write or edit a page">
       <form onSubmit={save} className="grid gap-3">
