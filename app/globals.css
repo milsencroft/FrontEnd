@@ -2,47 +2,26 @@
 
 /* Design tokens (the only place hex values live). Space-separated RGB for Tailwind alpha support. */
 :root {
-  --c-ivory: 247 243 235;    /* #F7F3EB  Parchment: the page */
-  --c-bone: 234 227 213;     /* #EAE3D5  Bone: quiet alternate sections */
-  --c-charcoal: 22 19 15;    /* #16130F  Noir: warm ink for type and dark sections */
-  --c-sage: 58 75 62;        /* #3A4B3E  Vetiver: links, hover, quiet accents */
-  --c-bronze: 146 113 60;    /* #92713C  Brass: hairlines and small details, never large fills */
-  --c-stone: 189 177 156;    /* #BDB19C  Stone: borders and soft fills */
-  --c-white: 255 255 255;    /* #FFFFFF */
+  /* One theme: dark. Warm noir page, parchment type, brass accents. */
+  --c-ivory: 18 16 13;       /* #12100D  Noir: the page */
+  --c-bone: 28 25 21;        /* #1C1915  quiet alternate sections */
+  --c-charcoal: 238 232 220; /* #EEE8DC  Parchment: type */
+  --c-sage: 150 172 148;     /* #96AC94  Vetiver (light): links, hover, quiet accents */
+  --c-bronze: 192 158 98;    /* #C09E62  Brass: hairlines and small details, never large fills */
+  --c-brass: 214 178 112;    /* #D6B270  Brass, text-safe on Noir */
+  --c-stone: 76 69 59;       /* #4C453B  borders */
+  --c-white: 31 28 23;       /* #1F1C17  raised surfaces */
   --c-kerala: 36 56 45;      /* #24382D  Kerala: deep monsoon forest */
   --c-japan: 29 39 51;       /* #1D2733  Japan: indigo ink */
-  --c-brass: 118 90 40;      /* #765A28  Brass, text-safe on Parchment (6:1). Use for brass words and numerals; --c-bronze stays for hairlines */
-  --c-danger: 140 54 44;
+  --c-danger: 217 122 110;
   /* Cormorant Garamond keeps the luxury of a high-contrast serif but stays legible; Jost 400 is the clear, Futura-like body. */
   --font-serif: "Cormorant Garamond", "Cormorant", Garamond, Georgia, serif;
   --font-sans: "Jost", "Futura", system-ui, sans-serif;
-}
-:root[data-theme="light"] { color-scheme: light; }
-:root[data-theme="dark"] {
-  --c-ivory: 18 16 13;       /* #12100D  page in dark */
-  --c-bone: 28 25 21;        /* #1C1915 */
-  --c-charcoal: 238 232 220; /* #EEE8DC  text in dark */
-  --c-sage: 150 172 148;     /* #96AC94  links in dark */
-  --c-bronze: 192 158 98;    /* #C09E62 */
-  --c-brass: 214 178 112;    /* #D6B270  brass text in dark */
-  --c-stone: 76 69 59;       /* #4C453B  borders in dark */
-  --c-white: 31 28 23;       /* #1F1C17  raised surfaces in dark */
-  --c-danger: 217 122 110;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-  --c-ivory: 18 16 13;       /* #12100D  page in dark */
-  --c-bone: 28 25 21;        /* #1C1915 */
-  --c-charcoal: 238 232 220; /* #EEE8DC  text in dark */
-  --c-sage: 150 172 148;     /* #96AC94  links in dark */
-  --c-bronze: 192 158 98;    /* #C09E62 */
-  --c-brass: 214 178 112;    /* #D6B270  brass text in dark */
-  --c-stone: 76 69 59;       /* #4C453B  borders in dark */
-  --c-white: 31 28 23;       /* #1F1C17  raised surfaces in dark */
-  --c-danger: 217 122 110;
-  color-scheme: dark;
-  }
+/* Printing (membership certificate, order pages) stays on white paper. */
+@media print {
+  :root { --c-ivory: 247 243 235; --c-bone: 234 227 213; --c-charcoal: 22 19 15; --c-sage: 58 75 62; --c-bronze: 146 113 60; --c-brass: 118 90 40; --c-stone: 189 177 156; --c-white: 255 255 255; --c-danger: 140 54 44; color-scheme: light; }
 }
 /* Sections that are dark in both themes (hero, journey, launch band) keep light-on-dark text. */
 .dark-surface { --c-ivory: 247 243 235; --c-charcoal: 22 19 15; --c-white: 255 255 255; --c-stone: 189 177 156; --c-bronze: 192 158 98; --c-brass: 214 178 112; color-scheme: dark; }
@@ -280,10 +259,10 @@ header nav a:hover, footer a:hover { background-size: 100% 1px; }
 
 
 /* ---- Soft luxury surfaces: no outlines. Depth comes from tone, a hairline of light and a long, quiet shadow. ---- */
-.surface, .card { background: rgb(var(--c-white) / .78); border-radius: 1.5rem; box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 1px 2px rgb(0 0 0 / .04), 0 24px 48px -28px rgb(0 0 0 / .28); }
+.surface, .card { background: rgb(var(--c-white) / .78); border-radius: 1.5rem; box-shadow: 0 1px 0 rgb(255 255 255 / .05) inset, 0 24px 48px -28px rgb(0 0 0 / .7); }
 .surface-glass { background: linear-gradient(160deg, rgb(var(--c-white) / .16), rgb(var(--c-white) / .04)); border-radius: 1.5rem; box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .28) inset, 0 24px 48px -30px rgb(0 0 0 / .5); backdrop-filter: blur(10px); }
 .surface-flat { background: rgb(var(--c-ivory)); border-radius: 1.5rem; box-shadow: 0 40px 90px -30px rgb(0 0 0 / .45); }
-:root[data-theme="dark"] .surface, :root[data-theme="dark"] .card { box-shadow: 0 1px 0 rgb(255 255 255 / .05) inset, 0 24px 48px -28px rgb(0 0 0 / .7); }
+
 dialog { border: 0; border-radius: 1.5rem; overflow: hidden; }
 
 /* Pill buttons: calm, rounded, generous */

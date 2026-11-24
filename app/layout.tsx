@@ -27,13 +27,11 @@ export const metadata: Metadata = {
   openGraph: { title: SITE_NAME, description: TAGLINE, siteName: SITE_NAME, type: "website", locale: "en_IN" },
   twitter: { card: "summary_large_image", title: SITE_NAME, description: TAGLINE },
 };
-export const viewport: Viewport = { width: "device-width", initialScale: 1, colorScheme: "light dark", themeColor: [{ media: "(prefers-color-scheme: light)", color: "#F7F3EB" }, { media: "(prefers-color-scheme: dark)", color: "#12100D" }] };
-const THEME_SCRIPT = `try{var t=localStorage.getItem("mc_theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}`;
+export const viewport: Viewport = { width: "device-width", initialScale: 1, colorScheme: "dark", themeColor: "#12100D" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-IN" suppressHydrationWarning><head>
-      <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+    <html lang="en-IN" data-theme="dark" suppressHydrationWarning><head>
       {/* Fonts load from the head (not a CSS @import) so they start sooner; display=swap keeps text visible meanwhile. */}
       <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       {env.supabaseUrl && <link rel="preconnect" href={env.supabaseUrl} crossOrigin="" />}
