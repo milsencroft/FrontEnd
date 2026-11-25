@@ -12,10 +12,11 @@ import { rupees } from "@/lib/money";
 import { shipMessage, trackingLink, whatsappLink, type Courier } from "@/lib/couriers";
 import { FULFIL_LABEL, NEXT_ACTIONS, PAYMENT_LABEL, TYPE_LABEL, orderError } from "@/lib/orders";
 import { HISTORY_KIND_LABEL, REFUND_LABEL, human, label } from "@/lib/labels";
+const REFUND_ERROR: Record<string, string> = { already_refunded: "This payment was already refunded in Razorpay. The order updates on its own in a minute.", refund_already_started: "A refund for this order is already in progress.", not_refundable: "This payment cannot be refunded.", forbidden: "You do not have permission to refund.", unauthorized: "Please sign in again.", refund_failed: "Razorpay could not process the refund. Please try again, or refund from the Razorpay dashboard." };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function Packing({ id, onError }: { id: string; onError: (m: string) => void }) {
-  const [items, setItems] = useState<any[]>([]);
+const [items, setItems] = useState<any[]>([]);
   const load = useCallback(async () => { const { data } = await db.rpc("admin_order_packing", { p_order: id }); setItems((data as any[]) ?? []); }, [id]);
   useEffect(() => { void load(); }, [load]);
   const done = items.filter((i) => i.checked).length;
@@ -35,6 +36,7 @@ function Detail() {
   const can = (p: string) => permissions.includes(p);
   const [couriers, setCouriers] = useState<Courier[]>([]); const [updates, setUpdates] = useState<any[]>([]); const [text, setText] = useState<string | null>(null);
   const [d, setD] = useState<any>(null); const [msg, setMsg] = useState<string | null>(null);
+  const [askRefund, setAskRefund] = useState(false); const [refundWhy, setRefundWhy] = useState(""); const [busy, setBusy] = useState(false);
   const [t, setT] = useState({ courier: "", tracking: "", url: "", eta: "", note: "" }); const [note, setNote] = useState("");
   const load = useCallback(async () => {
     const { data, error } = await db.rpc("admin_order_detail", { p_order: id });
@@ -70,7 +72,13 @@ function Detail() {
           <dl className="mt-3 text-sm">{row("Subtotal", rupees(o.subtotal_paise))}{row("Discount", rupees(o.discount_paise))}{row("Shipping", rupees(o.shipping_paise))}{row("Tax", rupees(o.tax_paise))}{row("Total", <strong>{rupees(o.total_paise)}</strong>)}</dl></div>
         <div className="card"><h2 className="text-2xl">Payment</h2><dl className="mt-3 text-sm">{row("Status", PAYMENT_LABEL[o.payment_status])}{row("Gateway order", d.payment?.razorpay_order_id)}{row("Transaction", d.payment?.razorpay_payment_id)}{row("Confirmed at", d.payment?.status === "captured" ? new Date(d.payment.updated_at).toLocaleString("en-IN") : null)}{row("Failure", d.payment?.failure_reason)}
           {d.refunds.map((r: any, i: number) => row(`Refund ${i + 1}`, `${rupees(r.amount_paise)} · ${label(REFUND_LABEL, r.status)}`))}</dl>
-          {can("payments.refund") && ["captured", "refund_pending"].includes(o.payment_status) && <button className="btn-ghost mt-4" onClick={async () => { const reason = window.prompt("Reason for full refund?"); if (!reason) return; try { await refundOrder(id, reason); setMsg("Refund started."); } catch { setMsg("Refund failed."); } void load(); }}>Refund in full</button>}</div>
+          {can("payments.refund") && ["captured", "refund_pending"].includes(o.payment_status) && (askRefund
+            ? <form className="admin-reason mt-4" onSubmit={async (e) => { e.preventDefault(); if (!refundWhy.trim()) return; setBusy(true); try { await refundOrder(id, refundWhy.trim()); setMsg("Refund started. It shows as Refunded once Razorpay confirms."); setAskRefund(false); setRefundWhy(""); } catch (err) { setMsg(REFUND_ERROR[(err as { code?: string }).code ?? ""] ?? "The refund did not go through. Please try again, or refund from the Razorpay dashboard."); } setBusy(false); void load(); }}>
+                <label className="label" htmlFor="rfw">Reason for refunding this order in full</label>
+                <input id="rfw" className="field" value={refundWhy} onChange={(e) => setRefundWhy(e.target.value)} autoFocus />
+                <div className="mt-3 flex gap-2"><button className="btn" disabled={busy || !refundWhy.trim()}>{busy ? "Refunding…" : "Refund in full"}</button><button type="button" className="btn-ghost" onClick={() => setAskRefund(false)}>Cancel</button></div>
+              </form>
+            : <button className="btn-ghost mt-4" onClick={() => setAskRefund(true)}>Refund in full</button>)}</div>
       </div></div>
 
       {can("orders.manage") && (
