@@ -7,7 +7,8 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     { href: "/admin/orders", label: "Orders", art: "orders", perm: "orders.view", blurb: "Find orders, pack them and track delivery." },
     { href: "/admin/catalogue", label: "Catalogue", art: "catalogue", perm: "catalog.manage", blurb: "Fragrances, sizes and prices." },
     { href: "/admin/stock", label: "Stock", art: "stock", perm: "inventory.view", blurb: "What is on the shelf and what is running low." },
-    { href: "/admin/coupons", label: "Coupons", art: "coupons", perm: "coupons.manage", blurb: "Offers and discount codes." },
+    { href: "/admin/offers", label: "Offers", art: "coupons", perm: "coupons.manage", blurb: "Buy 1 get 1, clearance sales and member offers that apply by themselves." },
+    { href: "/admin/coupons", label: "Coupons", art: "coupons", perm: "coupons.manage", blurb: "Discount codes customers type in." },
     { href: "/admin/couriers", label: "Couriers", art: "couriers", perm: "orders.manage", blurb: "Delivery partners and tracking links." },
   ] },
   { title: "Launch", items: [

@@ -39,7 +39,7 @@ export const db = { rpc };
 
 // ---- Cart (stored and decided by the backend) ----
 export interface CartLineView { sku: string | null; bundle: string | null; qty: number; name: string | null; unit_paise: number | null; max_qty: number; ok: boolean }
-export interface CartView { lines: CartLineView[]; count: number; subtotal_paise: number; capped?: boolean }
+export interface CartView { lines: CartLineView[]; count: number; subtotal_paise: number; capped?: boolean; offer_discount_paise?: number; after_offers_paise?: number; offer_labels?: string[]; offers_block_coupon?: boolean }
 export type LineRef = { sku?: string; bundle?: string };
 export const cartApi = {
   get: () => request<CartView>("GET", "/cart", undefined, { guest: true }),

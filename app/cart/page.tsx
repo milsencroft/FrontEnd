@@ -38,6 +38,10 @@ export default function Cart() {
       {error && <p role="alert" className="mt-4 text-danger">{error}</p>}
       {notice && <p role="status" className="mt-4 text-sm">{notice}</p>}
       <div className="mt-6 flex items-baseline justify-between gap-4 border-b border-stone/60 pb-4"><p className="text-lg">Subtotal ({cart.count} {cart.count === 1 ? "item" : "items"})</p><p className="font-serif text-3xl">{rupees(cart.subtotal_paise)}</p></div>
+      {(cart.offer_discount_paise ?? 0) > 0 && <>
+        <div className="mt-3 flex items-baseline justify-between gap-4"><p className="text-sm">Offer applied: {(cart.offer_labels ?? []).join(", ")}</p><p className="text-lg text-sage">−{rupees(cart.offer_discount_paise!)}</p></div>
+        <div className="mt-2 flex items-baseline justify-between gap-4 border-b border-stone/60 pb-4"><p className="text-lg">After offers</p><p className="font-serif text-3xl">{rupees(cart.after_offers_paise ?? cart.subtotal_paise)}</p></div>
+        {cart.offers_block_coupon && <p className="mt-2 text-sm text-charcoal/70">Discount codes cannot be added to this offer.</p>}</>}
       <p className="mt-4 text-sm text-charcoal/70">Discounts, shipping, tax and the final total are calculated securely when you continue to payment.</p>
       {!paying && (
         <div className="mt-8 flex flex-wrap items-end gap-4">
