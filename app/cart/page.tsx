@@ -37,6 +37,7 @@ export default function Cart() {
       </ul>
       {error && <p role="alert" className="mt-4 text-danger">{error}</p>}
       {notice && <p role="status" className="mt-4 text-sm">{notice}</p>}
+      <div className="mt-6 flex items-baseline justify-between gap-4 border-b border-stone/60 pb-4"><p className="text-lg">Subtotal ({cart.count} {cart.count === 1 ? "item" : "items"})</p><p className="font-serif text-3xl">{rupees(cart.subtotal_paise)}</p></div>
       <p className="mt-4 text-sm text-charcoal/70">Discounts, shipping, tax and the final total are calculated securely when you continue to payment.</p>
       {!paying && (
         <div className="mt-8 flex flex-wrap items-end gap-4">
