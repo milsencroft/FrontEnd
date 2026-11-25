@@ -55,7 +55,7 @@ export function ScrollVideo() {
 
   if (!slot || !s || s.kind === "embed" || !s.path) return null;
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-charcoal">
+    <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[100lvh] overflow-hidden bg-ivory [transform:translateZ(0)] [backface-visibility:hidden]">
       {s.kind === "image"
         // eslint-disable-next-line @next/next/no-img-element
         ? <img src={mediaUrl(s.path)} alt="" className="h-full w-full object-cover" />

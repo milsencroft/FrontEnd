@@ -260,7 +260,7 @@ header nav a:hover, footer a:hover { background-size: 100% 1px; }
 
 /* ---- Soft luxury surfaces: no outlines. Depth comes from tone, a hairline of light and a long, quiet shadow. ---- */
 .surface, .card { background: rgb(var(--c-white) / .78); border-radius: 1.5rem; box-shadow: 0 1px 0 rgb(255 255 255 / .05) inset, 0 24px 48px -28px rgb(0 0 0 / .7); }
-.surface-glass { background: linear-gradient(160deg, rgb(var(--c-white) / .16), rgb(var(--c-white) / .04)); border-radius: 1.5rem; box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .28) inset, 0 24px 48px -30px rgb(0 0 0 / .5); backdrop-filter: blur(10px); }
+.surface-glass { background: linear-gradient(160deg, rgb(var(--c-ivory) / .66), rgb(var(--c-ivory) / .52)); border-radius: 1.5rem; box-shadow: 0 0 0 1px rgb(var(--c-bronze) / .28) inset, 0 24px 48px -30px rgb(0 0 0 / .5); }
 .surface-flat { background: rgb(var(--c-ivory)); border-radius: 1.5rem; box-shadow: 0 40px 90px -30px rgb(0 0 0 / .45); }
 
 dialog { border: 0; border-radius: 1.5rem; overflow: hidden; }
@@ -271,7 +271,7 @@ dialog { border: 0; border-radius: 1.5rem; overflow: hidden; }
 .btn-ghost:hover { border-color: rgb(var(--c-charcoal)); }
 @layer components { input[type=checkbox] { border-radius: 6px; } input[type=checkbox]::after { left: 6px; top: 2px; } }
 img, video { border-radius: inherit; }
-header { backdrop-filter: saturate(1.2) blur(14px); }
+/* No backdrop-filter over the moving film: re-blurring every seeked frame is what made it flicker. */
 /* Soft dividers instead of ruled boxes */
 hr { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgb(var(--c-bronze) / .5), transparent); }
 
