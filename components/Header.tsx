@@ -33,7 +33,7 @@ export function Header() {
       raf = requestAnimationFrame(() => raf = requestAnimationFrame(() => {
         const el = bar.current; if (!el) return;
         const [l, mid, rt] = Array.from(el.children) as HTMLElement[];
-        const gap = 16, m = mid.getBoundingClientRect();
+        const gap = 36, m = mid.getBoundingClientRect();
         const lastR = Math.max(0, ...Array.from(l.querySelectorAll("a,button")).map((n) => n.getBoundingClientRect()).filter((r) => r.width).map((r) => r.right));
         const firstL = Math.min(Infinity, ...Array.from(rt.querySelectorAll("a,button")).map((n) => n.getBoundingClientRect()).filter((r) => r.width).map((r) => r.left));
         const over = innerWidth >= 1280 && (lastR > m.left - gap || firstL < m.right + gap);
