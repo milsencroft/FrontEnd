@@ -73,7 +73,7 @@ export function Header() {
   const cart = `Cart${count > 0 ? ` (${count})` : ""}`;
   return (
     <>
-      <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/30 bg-ivory/85 backdrop-blur-md transition-transform duration-300 ${hide && !open ? "-translate-y-full" : ""}`}>
+      <header onFocusCapture={() => setHide(false)} className={`sticky top-0 z-30 border-b border-stone/30 bg-ivory/95 transition-transform duration-300 ${hide && !open ? "-translate-y-full" : ""}`}>
         <div ref={bar} className="wrap grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
           <div className="flex min-w-0 items-center justify-start gap-6">
             <button ref={opener} type="button" onClick={() => setOpen(true)} aria-expanded={open} aria-controls="site-menu" className={`${link} gap-3 ${compact ? "" : "xl:hidden"}`}>
