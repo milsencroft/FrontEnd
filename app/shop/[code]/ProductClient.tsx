@@ -9,6 +9,8 @@ import { Flacon } from "@/components/Flacon";
 import { Photo } from "@/components/ProductImage";
 import { imagesOf } from "@/lib/media";
 import { WishlistButton } from "@/components/WishlistButton";
+import { useOffers } from "@/lib/useOffers";
+import { OfferBadge } from "@/components/OfferBadge";
 
 function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fallback: React.ReactNode }) {
   const [i, setI] = useState(0);
@@ -24,6 +26,7 @@ function Gallery({ images, fallback }: { images: ReturnType<typeof imagesOf>; fa
 
 export function ProductClient({ code, initialRows }: { code: string; initialRows?: ShopRow[] }) {
   const { rows } = useShop({ rows: initialRows });
+  const offers = useOffers();
   const variants = (rows ?? []).filter((r) => r.product_code === code);
   const firstSku = () => (variants.find((v) => v.in_stock) ?? variants[0])?.sku ?? "";
   const [sku, setSku] = useState(firstSku);
@@ -50,7 +53,11 @@ export function ProductClient({ code, initialRows }: { code: string; initialRows
               <label key={x.sku} className={`flex min-h-[48px] cursor-pointer items-center rounded-full border px-6 transition-colors ${x.sku === sku ? "border-charcoal bg-charcoal text-ivory" : "border-charcoal/30 hover:border-charcoal"} ${x.in_stock ? "" : "opacity-40"}`}>
                 <input type="radio" name="size" className="sr-only" checked={x.sku === sku} onChange={() => setSku(x.sku)} disabled={!x.in_stock} />{x.size_ml} ml · {rupees(x.price_paise)}</label>))}</div>
           </fieldset>
-          <p className="mt-6 text-2xl">{rupees(v.price_paise)}{v.compare_at_paise ? <span className="ml-3 text-base text-charcoal/70 line-through">{rupees(v.compare_at_paise)}</span> : null}</p>
+          {offers[v.sku]?.sale_price_paise != null
+            ? <p className="mt-6 text-2xl">{rupees(offers[v.sku].sale_price_paise!)}<span className="ml-3 text-base text-charcoal/70 line-through">{rupees(v.price_paise)}</span></p>
+            : <p className="mt-6 text-2xl">{rupees(v.price_paise)}{v.compare_at_paise ? <span className="ml-3 text-base text-charcoal/70 line-through">{rupees(v.compare_at_paise)}</span> : null}</p>}
+          <div className="mt-3"><OfferBadge offer={offers[v.sku]} /></div>
+          {offers[v.sku] && <p className="mt-2 text-sm text-charcoal/70">Applied automatically in your cart.</p>}
           <p className="mt-1 text-sm">{v.in_stock ? "In stock" : "Out of stock"}</p>
           <div className="mt-6 flex flex-wrap items-end gap-4">
             <AddToCart key={v.sku} id={`d-${v.sku}`} line={{ sku: v.sku }} max={v.max_qty} />

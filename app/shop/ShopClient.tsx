@@ -9,11 +9,14 @@ import { rupees } from "@/lib/money";
 import { Flacon } from "@/components/Flacon";
 import { Photo } from "@/components/ProductImage";
 import { imagesOf } from "@/lib/media";
+import { useOffers } from "@/lib/useOffers";
+import { OfferBadge } from "@/components/OfferBadge";
 
 const tone = (region: string) => (region === "Japan" ? "bronze" : "sage");
 
 export function ShopClient({ initialRows, initialBundles }: { initialRows?: ShopRow[]; initialBundles?: ShopBundle[] }) {
   const { rows, bundles } = useShop({ rows: initialRows, bundles: initialBundles });
+  const offers = useOffers();
   const [q, setQ] = useState(""); const [region, setRegion] = useState(""); const [family, setFamily] = useState("");
   const [inStock, setInStock] = useState(false); const [sort, setSort] = useState("featured");
 
@@ -48,7 +51,8 @@ export function ShopClient({ initialRows, initialBundles }: { initialRows?: Shop
             <p className="mt-4 text-sm text-brass">{p.region_name}</p>
             <h2 className="mt-1 text-3xl"><Link href={`/shop/${p.product_code}`}>{p.product_name}</Link></h2>
             <p className="text-sm text-charcoal/70">{p.family}</p>
-            <p className="mt-3">From {rupees(p.price_paise)}</p>
+            <p className="mt-3">From {offers[p.sku]?.sale_price_paise != null ? <>{rupees(offers[p.sku].sale_price_paise!)} <span className="text-sm text-charcoal/70 line-through">{rupees(p.price_paise)}</span></> : rupees(p.price_paise)}</p>
+            <div className="mt-2"><OfferBadge offer={offers[p.sku]} /></div>
             <div className="mt-4 flex flex-wrap gap-3">
               <AddToCart id={p.sku} line={{ sku: p.sku }} max={p.max_qty} compact />
               <Link className="btn-ghost self-end" href={`/shop/${p.product_code}`} aria-label={`Details: ${p.product_name}`}>Details</Link>
