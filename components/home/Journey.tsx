@@ -26,7 +26,7 @@ export function Journey() {
   const onP = useCallback((p: number) => {
     const t = smooth(0.38, 0.62, p);
     if (bg2.current) bg2.current.style.opacity = String(t);
-    const put = (el: HTMLElement | null, show: number, dir: number) => { if (el) { el.style.opacity = String(show); el.style.transform = `translateY(${(1 - show) * 28 * dir}px)`; } };
+    const put = (el: HTMLElement | null, show: number, dir: number) => { if (el) { el.style.opacity = String(show); el.style.transform = `translateY(${(1 - show) * 28 * dir}px)`; el.style.pointerEvents = show > 0.5 ? "auto" : "none"; } };
     put(k.current, 1 - smooth(0.3, 0.46, p), -1); put(j.current, smooth(0.54, 0.7, p), 1);
     put(kf.current, 1 - smooth(0.3, 0.5, p), -1); put(jf.current, smooth(0.5, 0.7, p), 1);
     if (bar.current) bar.current.style.transform = `scaleX(${p})`;
@@ -56,7 +56,7 @@ export function Journey() {
           <div className="grid items-center gap-6 md:grid-cols-[1.1fr_0.9fr]">
             <div className="relative order-2 min-h-[210px] md:order-1">
               {PLACES.map((x, i) => (
-                <div key={x.name} ref={i === 0 ? k : j} className="absolute inset-0 flex flex-col justify-center" style={{ opacity: i === 0 ? 1 : 0 }}>
+                <div key={x.name} ref={i === 0 ? k : j} className="absolute inset-0 flex flex-col justify-center" style={{ opacity: i === 0 ? 1 : 0, pointerEvents: i === 0 ? "auto" : "none" }}>
                   <p className="text-sm text-ivory/80">{x.place}</p>
                   <h2 className="mt-2 text-6xl sm:text-8xl">{x.name}</h2>
                   <p className="mt-4 max-w-md text-lg text-ivory/85">{x.line}</p>
