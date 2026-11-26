@@ -19,7 +19,7 @@ export function PlaceHero() {
   const [i, setI] = useState(0);
   const p = PLACES[i];
   const box = useRef<HTMLElement>(null);
-  const { state, items } = useLaunch();
+  const { state, items, loaded } = useLaunch();
   const { rows } = useShop();
   const av = useAvailability();
   const open = state?.status === "preorder_active";
@@ -67,7 +67,9 @@ export function PlaceHero() {
         </div>
         {imagesOf(item?.images)[0]
           ? <div data-parallax="0.12" className="hero-in hero-in-2 mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[1.75rem] shadow-2xl ring-1 ring-ivory/15"><Photo image={imagesOf(item?.images)[0]} /></div>
-          : <Flacon tone={p.tone} label={p.name} className="hero-in hero-in-2" />}
+          : loaded && rows !== null
+            ? <Flacon tone={p.tone} label={p.name} className="hero-in hero-in-2" />
+            : <div aria-hidden className="mx-auto aspect-[4/5] w-full max-w-sm rounded-[1.75rem] bg-ivory/10" />}
       </div>
     </section>
   );

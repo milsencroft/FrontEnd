@@ -10,15 +10,16 @@ export interface LaunchItem { sku: string; product_name: string; region_name: st
 export function useLaunch(poll = 15000) {
   const [state, setState] = useState<LaunchState | null>(null);
   const [items, setItems] = useState<LaunchItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let live = true;
     const load = async () => {
       const [s, c] = await Promise.all([db.rpc("public_launch_state", { p_code: env.currentLaunch }), db.rpc("launch_catalogue", { p_code: env.currentLaunch })]);
       if (!live) return;
-      setState(((s.data as LaunchState[]) ?? [])[0] ?? null); setItems((c.data as LaunchItem[]) ?? []);
+      setState(((s.data as LaunchState[]) ?? [])[0] ?? null); setItems((c.data as LaunchItem[]) ?? []); setLoaded(true);
     };
     void load(); const t = setInterval(load, poll);
     return () => { live = false; clearInterval(t); };
   }, [poll]);
-  return { state, items };
+  return { state, items, loaded };
 }
